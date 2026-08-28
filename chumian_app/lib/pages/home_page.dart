@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'chat_page.dart';
-import 'explore_page.dart';
 import 'creative_page.dart';
+import 'explore_page.dart';
 import 'profile_page.dart';
 import '../theme.dart';
 
@@ -18,34 +18,31 @@ class _HomePageState extends State<HomePage> {
 
   final List<_NavItem> _navItems = [
     _NavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '对话'),
-    _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: '探索'),
     _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '创意'),
+    _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: '探索'),
     _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           ChatPage(),
-          ExplorePage(),
           CreativePage(),
+          ExplorePage(),
           ProfilePage(),
         ],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceColor,
+          color: isDark ? AppTheme.darkSurface : AppTheme.surfaceColor,
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5)),
           ],
         ),
         child: SafeArea(
@@ -64,19 +61,14 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isSelected ? 24 : 16,
-                        vertical: 12,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: isSelected ? 24 : 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : Colors.transparent,
+                        color: isSelected ? AppTheme.primaryColor : Colors.transparent,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Icon(
                         isSelected ? item.activeIcon : item.icon,
-                        color: isSelected ? Colors.white : AppTheme.textSecondary,
+                        color: isSelected ? Colors.white : (isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary),
                         size: 24,
                       ),
                     ),
@@ -91,9 +83,7 @@ class _HomePageState extends State<HomePage> {
                               item.label,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : Colors.transparent,
+                                color: isSelected ? AppTheme.primaryColor : Colors.transparent,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -116,10 +106,5 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-
-  _NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
+  _NavItem({required this.icon, required this.activeIcon, required this.label});
 }

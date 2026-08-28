@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'theme.dart';
-import 'providers/user_provider.dart';
+import 'services/api_service.dart';
+import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/oobe_page.dart';
-import 'pages/home_page.dart';
-import 'services/api_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiService.init();
   runApp(const ChumianApp());
 }
 
@@ -17,14 +16,13 @@ class ChumianApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserProvider()..init(),
-      child: MaterialApp(
-        title: '初眠AI',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AppInitializer(),
-      ),
+    return MaterialApp(
+      title: '初眠AI',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: const AppInitializer(),
     );
   }
 }
@@ -37,27 +35,48 @@ class AppInitializer extends StatefulWidget {
 }
 
 class _AppInitializerState extends State<AppInitializer> {
-  bool _verifying = true;
+  bool _loading = true;
+  bool _isValid = true;
+  bool _isLoggedIn = false;
+  bool _oobeCompleted = false;
 
   @override
   void initState() {
     super.initState();
-    _verifyApp();
+    _checkStatus();
   }
 
-  Future<void> _verifyApp() async {
-    String packageName = 'com.chumian.chumian_ai';
-    String apkMd5 = 'official_release';
-    await Future.delayed(const Duration(milliseconds: 800));
-    await ApiService.verifyApp(packageName, apkMd5);
+  Future<void> _checkStatus() async {
+    try {
+      final valid = await ApiService.verifyApp('com.chumian.ai', 'official_release');
+      if (!valid) {
+        setState(() {
+          _isValid = false;
+          _loading = false;
+        });
+        return;
+      }
+
+      if (ApiService.token != null) {
+        try {
+          final info = await ApiService.getUserInfo();
+          _isLoggedIn = true;
+          _oobeCompleted = info['oobe_completed'] == true;
+        } catch (_) {
+          await ApiService.setToken(null);
+          _isLoggedIn = false;
+        }
+      }
+    } catch (_) {}
+
     if (mounted) {
-      setState(() => _verifying = false);
+      setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_verifying) {
+    if (_loading) {
       return Scaffold(
         backgroundColor: AppTheme.backgroundColor,
         body: Center(
@@ -71,48 +90,53 @@ class _AppInitializerState extends State<AppInitializer> {
                   color: AppTheme.primaryColor.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  size: 40,
-                  color: AppTheme.primaryColor,
-                ),
+                child: const Icon(Icons.auto_awesome, size: 40, color: AppTheme.primaryColor),
               ),
               const SizedBox(height: 24),
-              const Text(
-                '初眠AI',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '正在启动...',
-                style: TextStyle(color: AppTheme.textSecondary),
-              ),
+              const Text('初眠AI', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 16),
+              const CircularProgressIndicator(),
             ],
           ),
         ),
       );
     }
 
-    return Consumer<UserProvider>(
-      builder: (context, user, _) {
-        if (user.isLoading) {
-          return const Scaffold(
-            backgroundColor: AppTheme.backgroundColor,
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (!user.isLoggedIn) {
-          return const LoginPage();
-        }
-        if (!user.oobeCompleted) {
-          return const OobePage();
-        }
-        return const HomePage();
-      },
-    );
+    if (!_isValid) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text('你使用的不是官方版', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                const Text('请从官方渠道下载初眠AI', textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (!_isLoggedIn) {
+      return LoginPage(onLoginSuccess: () {
+        setState(() {
+          _isLoggedIn = true;
+          _oobeCompleted = false;
+        });
+      });
+    }
+
+    if (!_oobeCompleted) {
+      return OobePage(onComplete: () {
+        setState(() => _oobeCompleted = true);
+      });
+    }
+
+    return const HomePage();
   }
 }

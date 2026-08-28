@@ -1,118 +1,120 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static String get _baseUrl {
-    const encoded = 'aHR0cDovLzEwMy4yMzYuOTkuMTc3OjI0NTEz';
-    return utf8.decode(base64.decode(encoded));
-  }
+  static const String baseUrl = 'http://103.236.99.177:24512';
+  static final Dio _dio = Dio(BaseOptions(
+    baseUrl: baseUrl,
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 120),
+    headers: {'Content-Type': 'application/json'},
+  ));
 
   static String? _token;
-  static void setToken(String? token) {
-    _token = token;
+
+  static Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token');
+    if (_token != null) {
+      _dio.options.headers['Authorization'] = 'Bearer $_token';
+    }
   }
 
-  static Map<String, String> get _headers {
-    final h = {'Content-Type': 'application/json'};
-    if (_token != null) {
-      h['Cookie'] = 'token=$_token';
+  static Future<void> setToken(String? token) async {
+    _token = token;
+    final prefs = await SharedPreferences.getInstance();
+    if (token != null) {
+      prefs.setString('token', token);
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+    } else {
+      prefs.remove('token');
+      _dio.options.headers.remove('Authorization');
     }
-    return h;
+  }
+
+  static String? get token => _token;
+
+  static Future<bool> verifyApp(String packageName, String apkMd5) async {
+    try {
+      final resp = await _dio.post('/api/verify-app', data: {
+        'package_name': packageName,
+        'apk_md5': apkMd5,
+      });
+      return resp.data['valid'] == true;
+    } catch (_) {
+      return true;
+    }
   }
 
   static Future<Map<String, dynamic>> sendCode(String email) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/auth/send-code'),
-      headers: _headers,
-      body: jsonEncode({'email': email}),
-    );
-    return jsonDecode(resp.body);
+    final resp = await _dio.post('/api/auth/send-code', data: {'email': email});
+    return Map<String, dynamic>.from(resp.data);
   }
 
-  static Future<Map<String, dynamic>> register(
-      String email, String code, String password, String nickname) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/auth/register'),
-      headers: _headers,
-      body: jsonEncode({
-        'email': email,
-        'code': code,
-        'password': password,
-        'nickname': nickname,
-      }),
-    );
-    final data = jsonDecode(resp.body);
-    if (resp.statusCode != 200) {
-      throw data['error'] ?? data['detail'] ?? '注册失败';
-    }
-    final cookie = resp.headers['set-cookie'];
-    if (cookie != null) {
-      final match = RegExp(r'token=([^;]+)').firstMatch(cookie);
-      if (match != null) {
-        _token = match.group(1);
-        data['token'] = _token;
-      }
+  static Future<Map<String, dynamic>> register({
+    required String email,
+    required String code,
+    required String password,
+    required String nickname,
+    required String authCode,
+  }) async {
+    final resp = await _dio.post('/api/auth/register', data: {
+      'email': email,
+      'code': code,
+      'password': password,
+      'nickname': nickname,
+      'auth_code': authCode,
+    });
+    final data = Map<String, dynamic>.from(resp.data);
+    if (data['token'] != null) {
+      await setToken(data['token']);
     }
     return data;
   }
 
-  static Future<Map<String, dynamic>> login(
-      String email, String password) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/auth/login'),
-      headers: _headers,
-      body: jsonEncode({'email': email, 'password': password}),
-    );
-    final data = jsonDecode(resp.body);
-    if (resp.statusCode != 200) {
-      throw data['error'] ?? data['detail'] ?? '登录失败';
-    }
-    final cookie = resp.headers['set-cookie'];
-    if (cookie != null) {
-      final match = RegExp(r'token=([^;]+)').firstMatch(cookie);
-      if (match != null) {
-        _token = match.group(1);
-        data['token'] = _token;
-      }
+  static Future<Map<String, dynamic>> login(String email, String password) async {
+    final resp = await _dio.post('/api/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    final data = Map<String, dynamic>.from(resp.data);
+    if (data['token'] != null) {
+      await setToken(data['token']);
     }
     return data;
   }
 
   static Future<void> logout() async {
     try {
-      await http.post(Uri.parse('$_baseUrl/api/auth/logout'), headers: _headers);
+      await _dio.post('/api/auth/logout');
     } catch (_) {}
-    _token = null;
+    await setToken(null);
   }
 
   static Future<void> completeOobe() async {
-    await http.post(Uri.parse('$_baseUrl/api/auth/complete-oobe'),
-        headers: _headers);
+    await _dio.post('/api/auth/complete-oobe');
   }
 
   static Future<Map<String, dynamic>> getUserInfo() async {
-    final resp = await http.get(Uri.parse('$_baseUrl/api/user/info'),
-        headers: _headers);
-    if (resp.statusCode != 200) {
-      throw '未登录';
-    }
-    return jsonDecode(resp.body);
+    final resp = await _dio.get('/api/user/info');
+    return Map<String, dynamic>.from(resp.data);
   }
 
-  static Future<bool> verifyApp(String packageName, String apkMd5) async {
-    try {
-      final resp = await http.post(
-        Uri.parse('$_baseUrl/api/verify-app'),
-        headers: _headers,
-        body: jsonEncode(
-            {'package_name': packageName, 'apk_md5': apkMd5}),
-      );
-      final data = jsonDecode(resp.body);
-      return data['valid'] == true;
-    } catch (e) {
-      return true;
-    }
+  static Future<List<dynamic>> getPointsLog() async {
+    final resp = await _dio.get('/api/user/points-log');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> getModels() async {
+    final resp = await _dio.get('/api/models');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getTemplates() async {
+    final resp = await _dio.get('/api/templates');
+    return List<dynamic>.from(resp.data);
   }
 
   static Stream<Map<String, dynamic>> chatStream({
@@ -121,204 +123,141 @@ class ApiService {
     String model = 'glm-4-flash',
     String? imageUrl,
     String? agentId,
-  }) async* {
-    final client = http.Client();
-    final request = http.Request(
-      'POST',
-      Uri.parse('$_baseUrl/api/chat/stream'),
-    );
-    request.headers.addAll(_headers);
-    request.body = jsonEncode({
+  }) {
+    final controller = StreamController<Map<String, dynamic>>();
+    final data = {
       'conversation_id': conversationId,
       'message': message,
       'model': model,
       if (imageUrl != null) 'image_url': imageUrl,
       if (agentId != null) 'agent_id': agentId,
+    };
+
+    _dio.post(
+      '/api/chat/stream',
+      data: jsonEncode(data),
+      options: Options(
+        responseType: ResponseType.stream,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream',
+          if (_token != null) 'Authorization': 'Bearer $_token',
+        },
+      ),
+    ).then((response) {
+      final stream = response.data.stream as Stream<List<int>>;
+      String buffer = '';
+      stream.listen(
+        (bytes) {
+          buffer += utf8.decode(bytes);
+          final lines = buffer.split('\n');
+          buffer = lines.removeLast();
+          for (final line in lines) {
+            if (line.startsWith('data: ')) {
+              final jsonStr = line.substring(6);
+              if (jsonStr.isNotEmpty) {
+                try {
+                  final parsed = jsonDecode(jsonStr);
+                  if (parsed is Map<String, dynamic>) {
+                    controller.add(parsed);
+                  }
+                } catch (_) {}
+              }
+            }
+          }
+        },
+        onDone: () => controller.close(),
+        onError: (e) {
+          controller.add({'type': 'error', 'message': e.toString()});
+          controller.close();
+        },
+      );
+    }).catchError((e) {
+      controller.add({'type': 'error', 'message': e.toString()});
+      controller.close();
     });
-    final streamedResponse = await client.send(request);
-    final transformer = StreamTransformer<List<int>, String>.fromHandlers(
-      handleData: (data, sink) {
-        sink.add(utf8.decode(data));
-      },
-    );
-    await for (final chunk in streamedResponse.stream
-        .transform(transformer)
-        .transform(const LineSplitter())) {
-      if (chunk.startsWith('data: ')) {
-        final dataStr = chunk.substring(6);
-        if (dataStr.isNotEmpty) {
-          try {
-            yield jsonDecode(dataStr);
-          } catch (_) {}
-        }
-      }
-    }
-    client.close();
-  }
 
-  static Future<List<dynamic>> getConversations() async {
-    final resp = await http.get(Uri.parse('$_baseUrl/api/conversations'),
-        headers: _headers);
-    if (resp.statusCode != 200) {
-      return [];
-    }
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
-  }
-
-  static Future<List<dynamic>> getMessages(String conversationId) async {
-    if (conversationId.isEmpty) return [];
-    final resp = await http.get(
-      Uri.parse('$_baseUrl/api/conversations/$conversationId/messages'),
-      headers: _headers,
-    );
-    if (resp.statusCode != 200) {
-      return [];
-    }
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
-  }
-
-  static Future<void> deleteConversation(String conversationId) async {
-    if (conversationId.isEmpty) return;
-    await http.delete(
-      Uri.parse('$_baseUrl/api/conversations/$conversationId'),
-      headers: _headers,
-    );
-  }
-
-  static Future<Map<String, dynamic>> generateImage(String prompt,
-      {String size = '1024x1024'}) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/generate/image'),
-      headers: _headers,
-      body: jsonEncode({'prompt': prompt, 'size': size}),
-    );
-    final data = jsonDecode(resp.body);
-    if (resp.statusCode != 200) {
-      throw data['detail'] ?? data['error'] ?? '图片生成失败';
-    }
-    return data;
-  }
-
-  static Future<Map<String, dynamic>> generateVideo(String prompt) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/generate/video'),
-      headers: _headers,
-      body: jsonEncode({'prompt': prompt}),
-    );
-    final data = jsonDecode(resp.body);
-    if (resp.statusCode != 200) {
-      throw data['detail'] ?? data['error'] ?? '视频生成失败';
-    }
-    return data;
+    return controller.stream;
   }
 
   static Future<Map<String, dynamic>> getVideoStatus(String taskId) async {
-    final resp = await http.get(
-      Uri.parse('$_baseUrl/api/generate/video/$taskId'),
-      headers: _headers,
-    );
-    if (resp.statusCode != 200) {
-      return {'status': 'failed'};
-    }
-    return jsonDecode(resp.body);
+    final resp = await _dio.get('/api/generate/video/$taskId');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getConversations() async {
+    final resp = await _dio.get('/api/conversations');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getConversationMessages(String convId) async {
+    final resp = await _dio.get('/api/conversations/$convId/messages');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<void> deleteConversation(String convId) async {
+    await _dio.delete('/api/conversations/$convId');
   }
 
   static Future<List<dynamic>> getPosts() async {
-    final resp =
-        await http.get(Uri.parse('$_baseUrl/api/posts'), headers: _headers);
-    if (resp.statusCode != 200) return [];
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
+    final resp = await _dio.get('/api/posts');
+    return List<dynamic>.from(resp.data);
   }
 
-  static Future<Map<String, dynamic>> createPost(
-      String title, String content) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/posts'),
-      headers: _headers,
-      body: jsonEncode({'title': title, 'content': content}),
-    );
-    final data = jsonDecode(resp.body);
-    if (resp.statusCode != 200) {
-      throw data['detail'] ?? data['error'] ?? '发布失败';
-    }
-    return data;
+  static Future<Map<String, dynamic>> getPost(String postId) async {
+    final resp = await _dio.get('/api/posts/$postId');
+    return Map<String, dynamic>.from(resp.data);
   }
 
-  static Future<bool> toggleLike(String postId) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/posts/$postId/like'),
-      headers: _headers,
-    );
-    if (resp.statusCode != 200) return false;
-    return jsonDecode(resp.body)['liked'] == true;
+  static Future<Map<String, dynamic>> createPost(String title, String content) async {
+    final resp = await _dio.post('/api/posts', data: {'title': title, 'content': content});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> likePost(String postId) async {
+    final resp = await _dio.post('/api/posts/$postId/like');
+    return Map<String, dynamic>.from(resp.data);
   }
 
   static Future<List<dynamic>> getComments(String postId) async {
-    final resp = await http.get(
-      Uri.parse('$_baseUrl/api/posts/$postId/comments'),
-      headers: _headers,
-    );
-    if (resp.statusCode != 200) return [];
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
+    final resp = await _dio.get('/api/posts/$postId/comments');
+    return List<dynamic>.from(resp.data);
   }
 
-  static Future<void> addComment(String postId, String content) async {
-    await http.post(
-      Uri.parse('$_baseUrl/api/posts/$postId/comments'),
-      headers: _headers,
-      body: jsonEncode({'content': content}),
-    );
+  static Future<Map<String, dynamic>> createComment(String postId, String content) async {
+    final resp = await _dio.post('/api/posts/$postId/comments', data: {'content': content});
+    return Map<String, dynamic>.from(resp.data);
   }
 
   static Future<List<dynamic>> getAgents() async {
-    final resp =
-        await http.get(Uri.parse('$_baseUrl/api/agents'), headers: _headers);
-    if (resp.statusCode != 200) return [];
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
+    final resp = await _dio.get('/api/agents');
+    return List<dynamic>.from(resp.data);
   }
 
-  static Future<Map<String, dynamic>> createAgent(
-      String name, String description, String systemPrompt) async {
-    final resp = await http.post(
-      Uri.parse('$_baseUrl/api/agents'),
-      headers: _headers,
-      body: jsonEncode({
-        'name': name,
-        'description': description,
-        'system_prompt': systemPrompt,
-      }),
-    );
-    return jsonDecode(resp.body);
+  static Future<Map<String, dynamic>> getAgent(String agentId) async {
+    final resp = await _dio.get('/api/agents/$agentId');
+    return Map<String, dynamic>.from(resp.data);
   }
 
-  static Future<List<dynamic>> getTemplates() async {
-    final resp = await http.get(Uri.parse('$_baseUrl/api/templates'),
-        headers: _headers);
-    if (resp.statusCode != 200) return [];
-    final data = jsonDecode(resp.body);
-    if (data is List) return data;
-    return [];
-  }
-
-  static Future<Map<String, dynamic>> getModels() async {
-    final resp =
-        await http.get(Uri.parse('$_baseUrl/api/models'), headers: _headers);
-    if (resp.statusCode != 200) return {};
-    return jsonDecode(resp.body);
+  static Future<Map<String, dynamic>> createAgent({
+    required String name,
+    required String description,
+    required String systemPrompt,
+    String openingMessage = '',
+    String avatar = '',
+  }) async {
+    final resp = await _dio.post('/api/agents', data: {
+      'name': name,
+      'description': description,
+      'system_prompt': systemPrompt,
+      'opening_message': openingMessage,
+      'avatar': avatar,
+    });
+    return Map<String, dynamic>.from(resp.data);
   }
 
   static String getMediaUrl(String path) {
     if (path.startsWith('http')) return path;
-    return '$_baseUrl$path';
+    return '$baseUrl$path';
   }
 }

@@ -11,13 +11,7 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> {
   List<dynamic> _posts = [];
-  bool _isLoading = true;
-  final TextEditingController _commentController = TextEditingController();
-
-  String _safeInitial(String? name) {
-    if (name == null || name.isEmpty) return '?';
-    return name[0];
-  }
+  bool _loading = true;
 
   @override
   void initState() {
@@ -26,402 +20,176 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Future<void> _loadPosts() async {
-    setState(() => _isLoading = true);
     try {
-      _posts = await ApiService.getPosts();
-    } catch (e) {
-      // ignore
+      final posts = await ApiService.getPosts();
+      if (mounted) setState(() { _posts = posts; _loading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
-    if (mounted) setState(() => _isLoading = false);
   }
 
   Future<void> _toggleLike(dynamic post) async {
     try {
-      final liked = await ApiService.toggleLike(post['id']);
-      setState(() {
-        post['likes'] = liked ? post['likes'] + 1 : post['likes'] - 1;
-      });
-    } catch (e) {
-      // ignore
-    }
+      final result = await ApiService.likePost(post['id']);
+      if (mounted) {
+        setState(() {
+          post['likes'] = (result['liked'] == true) ? (post['likes'] ?? 0) + 1 : (post['likes'] ?? 0) - 1;
+        });
+      }
+    } catch (_) {}
   }
 
-  void _showComments(dynamic post) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _CommentsSheet(
-        postId: post['id'],
-        onCommentAdded: () {
-          setState(() => post['comments_count']++);
-        },
-      ),
-    );
-  }
-
-  void _showCreatePost() {
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-
+  void _showCreatePostDialog() {
+    final titleCtrl = TextEditingController();
+    final contentCtrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('发布帖子'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: '标题'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: contentController,
-              maxLines: 4,
-              decoration: const InputDecoration(labelText: '内容'),
-            ),
-          ],
-        ),
+        content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: '标题')),
+          const SizedBox(height: 12),
+          TextField(controller: contentCtrl, maxLines: 5, decoration: const InputDecoration(labelText: '内容')),
+        ])),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (titleController.text.isEmpty ||
-                  contentController.text.isEmpty) return;
-              try {
-                await ApiService.createPost(
-                    titleController.text, contentController.text);
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-                _loadPosts();
-              } catch (e) {
-                // ignore
-              }
-            },
-            child: const Text('发布'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          ElevatedButton(onPressed: () async {
+            if (titleCtrl.text.isEmpty || contentCtrl.text.isEmpty) {
+              ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('请填写标题和内容')));
+              return;
+            }
+            try {
+              await ApiService.createPost(titleCtrl.text, contentCtrl.text);
+              Navigator.pop(ctx);
+              _loadPosts();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('发布成功')));
+            } catch (e) {
+              ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('发布失败（可能包含违规内容）: $e')));
+            }
+          }, child: const Text('发布')),
         ],
       ),
     );
+  }
+
+  void _showPostDetail(dynamic post) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailPage(post: post, onLike: () => _toggleLike(post))));
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: const Text('探索'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _showCreatePost,
-          ),
-        ],
+      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.backgroundColor,
+      appBar: AppBar(title: const Text('探索'), actions: [IconButton(icon: const Icon(Icons.add), onPressed: _showCreatePostDialog)]),
+      body: _loading ? const Center(child: CircularProgressIndicator()) : RefreshIndicator(
+        onRefresh: _loadPosts,
+        child: _posts.isEmpty ? ListView(children: [SizedBox(height: MediaQuery.of(context).size.height * 0.3), const Center(child: Text('暂无帖子，点击右上角发布', style: TextStyle(color: AppTheme.textSecondary)))]) : ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: _posts.length,
+          itemBuilder: (context, index) {
+            final post = _posts[index];
+            return GestureDetector(
+              onTap: () => _showPostDetail(post),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    CircleAvatar(radius: 18, backgroundColor: AppTheme.primaryColor.withOpacity(0.2), child: Text((post['author_nickname'] ?? '?')[0], style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold))),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(post['author_nickname'] ?? '匿名', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                    Text(post['created_at']?.toString().substring(0, 10) ?? '', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                  ]),
+                  const SizedBox(height: 12),
+                  Text(post['title'] ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 8),
+                  Text(post['content'] ?? '', style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary), maxLines: 3, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 12),
+                  Row(children: [
+                    GestureDetector(onTap: () => _toggleLike(post), child: Row(children: [Icon(Icons.favorite_border, size: 18, color: post['likes'] > 0 ? Colors.red : AppTheme.textSecondary), const SizedBox(width: 4), Text('${post['likes'] ?? 0}', style: const TextStyle(fontSize: 13))])),
+                    const SizedBox(width: 20),
+                    Row(children: [const Icon(Icons.comment_outlined, size: 18, color: AppTheme.textSecondary), const SizedBox(width: 4), Text('${post['comments_count'] ?? 0}', style: const TextStyle(fontSize: 13))]),
+                  ]),
+                ]),
+              ),
+            );
+          },
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _loadPosts,
-              child: _posts.isEmpty
-                  ? ListView(
-                      children: const [
-                        SizedBox(height: 100),
-                        Center(
-                          child: Text(
-                            '暂无帖子，快来发布第一个吧！',
-                            style: TextStyle(color: AppTheme.textSecondary),
-                          ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _posts.length,
-                      itemBuilder: (context, index) {
-                        final post = _posts[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor:
-                                          AppTheme.primaryColor.withOpacity(0.2),
-                                      child: Text(
-                                        _safeInitial(post['author_nickname']),
-                                        style: const TextStyle(
-                                          color: AppTheme.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          post['author_nickname'] ?? '匿名',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          post['created_at']
-                                                  ?.toString()
-                                                  .substring(0, 10) ??
-                                              '',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: AppTheme.textSecondary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  post['title'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  post['content'] ?? '',
-                                  style: const TextStyle(height: 1.5),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () => _toggleLike(post),
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.favorite_border,
-                                                size: 20,
-                                                color: AppTheme.textSecondary),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${post['likes'] ?? 0}',
-                                              style: const TextStyle(
-                                                color: AppTheme.textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    InkWell(
-                                      onTap: () => _showComments(post),
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.chat_bubble_outline,
-                                                size: 20,
-                                                color: AppTheme.textSecondary),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${post['comments_count'] ?? 0}',
-                                              style: const TextStyle(
-                                                color: AppTheme.textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
     );
   }
 }
 
-class _CommentsSheet extends StatefulWidget {
-  final String postId;
-  final VoidCallback onCommentAdded;
-
-  const _CommentsSheet({required this.postId, required this.onCommentAdded});
+class PostDetailPage extends StatefulWidget {
+  final dynamic post;
+  final VoidCallback onLike;
+  const PostDetailPage({super.key, required this.post, required this.onLike});
 
   @override
-  State<_CommentsSheet> createState() => _CommentsSheetState();
+  State<PostDetailPage> createState() => _PostDetailPageState();
 }
 
-class _CommentsSheetState extends State<_CommentsSheet> {
+class _PostDetailPageState extends State<PostDetailPage> {
   List<dynamic> _comments = [];
-  final _controller = TextEditingController();
-  bool _loading = true;
-
-  String _safeInitial(String? name) {
-    if (name == null || name.isEmpty) return '?';
-    return name[0];
-  }
+  final _commentCtrl = TextEditingController();
+  bool _loadingComments = true;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadComments();
   }
 
-  Future<void> _load() async {
+  Future<void> _loadComments() async {
     try {
-      _comments = await ApiService.getComments(widget.postId);
-    } catch (e) {
-      // ignore
+      final comments = await ApiService.getComments(widget.post['id']);
+      if (mounted) setState(() { _comments = comments; _loadingComments = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loadingComments = false);
     }
-    if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _add() async {
-    if (_controller.text.trim().isEmpty) return;
+  Future<void> _submitComment() async {
+    if (_commentCtrl.text.trim().isEmpty) return;
     try {
-      await ApiService.addComment(widget.postId, _controller.text.trim());
-      _controller.clear();
-      widget.onCommentAdded();
-      _load();
+      await ApiService.createComment(widget.post['id'], _commentCtrl.text.trim());
+      _commentCtrl.clear();
+      _loadComments();
     } catch (e) {
-      // ignore
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('评论失败: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text('评论',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-          ),
-          const Divider(),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _comments.isEmpty
-                    ? const Center(child: Text('暂无评论'))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _comments.length,
-                        itemBuilder: (context, index) {
-                          final c = _comments[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  radius: 16,
-                                  backgroundColor:
-                                      AppTheme.secondaryColor.withOpacity(0.3),
-                                  child: Text(
-                                    _safeInitial(c['author_nickname']),
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        c['author_nickname'] ?? '匿名',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(c['content'] ?? ''),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-          ),
-          Container(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 8,
-            ),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: '说点什么...',
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: AppTheme.primaryColor),
-                  onPressed: _add,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
+      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.backgroundColor,
+      appBar: AppBar(title: const Text('帖子详情')),
+      body: Column(children: [
+        Expanded(child: ListView(padding: const EdgeInsets.all(16), children: [
+          Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [CircleAvatar(radius: 20, backgroundColor: AppTheme.primaryColor.withOpacity(0.2), child: Text((widget.post['author_nickname'] ?? '?')[0], style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold))), const SizedBox(width: 8), Expanded(child: Text(widget.post['author_nickname'] ?? '', style: const TextStyle(fontWeight: FontWeight.w500)))]),
+            const SizedBox(height: 12),
+            Text(widget.post['title'] ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Text(widget.post['content'] ?? '', style: const TextStyle(fontSize: 15, height: 1.6)),
+            const SizedBox(height: 16),
+            Row(children: [
+              GestureDetector(onTap: widget.onLike, child: Row(children: [Icon(Icons.favorite, size: 20, color: widget.post['likes'] > 0 ? Colors.red : AppTheme.textSecondary), const SizedBox(width: 4), Text('${widget.post['likes'] ?? 0}')])),
+              const SizedBox(width: 20),
+              Row(children: [const Icon(Icons.comment_outlined, size: 20, color: AppTheme.textSecondary), const SizedBox(width: 4), Text('${_comments.length}')]),
+            ]),
+          ])),
+          const SizedBox(height: 20),
+          const Text('评论', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          if (_loadingComments) const Center(child: CircularProgressIndicator()) else if (_comments.isEmpty) const Padding(padding: EdgeInsets.all(24), child: Text('暂无评论', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.textSecondary))) else ..._comments.map((c) => Container(margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(12)), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [CircleAvatar(radius: 16, backgroundColor: AppTheme.primaryColor.withOpacity(0.2), child: Text((c['author_nickname'] ?? '?')[0], style: const TextStyle(fontSize: 12, color: AppTheme.primaryColor))), const SizedBox(width: 8), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(c['author_nickname'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)), const SizedBox(height: 4), Text(c['content'] ?? '', style: const TextStyle(fontSize: 14))])),]))),
+        ])),
+        Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isDark ? AppTheme.darkSurface : AppTheme.surfaceColor, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2))]), child: SafeArea(child: Row(children: [Expanded(child: TextField(controller: _commentCtrl, decoration: InputDecoration(hintText: '写评论...', filled: true, fillColor: isDark ? AppTheme.darkBackground : AppTheme.backgroundColor, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)))), const SizedBox(width: 8), ElevatedButton(onPressed: _submitComment, style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))), child: const Text('发送'))]))),
+      ]),
     );
   }
 }

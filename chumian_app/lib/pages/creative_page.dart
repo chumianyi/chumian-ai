@@ -10,8 +10,7 @@ class CreativePage extends StatefulWidget {
   State<CreativePage> createState() => _CreativePageState();
 }
 
-class _CreativePageState extends State<CreativePage>
-    with SingleTickerProviderStateMixin {
+class _CreativePageState extends State<CreativePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<dynamic> _templates = [];
   List<dynamic> _agents = [];
@@ -24,98 +23,72 @@ class _CreativePageState extends State<CreativePage>
     _loadData();
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadData() async {
     try {
-      final results = await Future.wait([
-        ApiService.getTemplates(),
-        ApiService.getAgents(),
-      ]);
-      _templates = results[0];
-      _agents = results[1];
-    } catch (e) {
-      // ignore
+      final results = await Future.wait([ApiService.getTemplates(), ApiService.getAgents()]);
+      if (mounted) {
+        setState(() {
+          _templates = results[0];
+          _agents = results[1];
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
-    if (mounted) setState(() => _loading = false);
   }
 
-  void _useTemplate(dynamic template) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatPage(initialPrompt: template['prompt']),
-      ),
-    );
+  void _useTemplate(dynamic t) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(initialPrompt: t['prompt'], initialModel: 'glm-4-flash')));
   }
 
-  void _useAgent(dynamic agent) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatPage(
-          initialPrompt: '你好',
-          agentId: agent['id'],
-        ),
-      ),
-    );
+  void _useAgent(dynamic a) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(initialPrompt: a['opening_message'] ?? '你好', initialModel: 'glm-4-flash')));
   }
 
-  void _createAgent() {
-    final nameController = TextEditingController();
-    final descController = TextEditingController();
-    final promptController = TextEditingController();
+  void _showCreateAgentDialog() {
+    final nameCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final promptCtrl = TextEditingController();
+    final openingCtrl = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('创建智能体'),
         content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: '名称'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: descController,
-                decoration: const InputDecoration(labelText: '描述'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: promptController,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: '系统提示词',
-                  hintText: '定义这个智能体的角色和行为...',
-                ),
-              ),
-            ],
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: '名称')),
+            const SizedBox(height: 12),
+            TextField(controller: descCtrl, decoration: const InputDecoration(labelText: '描述')),
+            const SizedBox(height: 12),
+            TextField(controller: promptCtrl, maxLines: 3, decoration: const InputDecoration(labelText: '系统提示词')),
+            const SizedBox(height: 12),
+            TextField(controller: openingCtrl, decoration: const InputDecoration(labelText: '开场白')),
+          ]),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (nameController.text.isEmpty) return;
-              try {
-                await ApiService.createAgent(
-                  nameController.text,
-                  descController.text,
-                  promptController.text,
-                );
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-                _loadData();
-              } catch (e) {
-                // ignore
-              }
-            },
-            child: const Text('创建'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+          ElevatedButton(onPressed: () async {
+            if (nameCtrl.text.isEmpty || promptCtrl.text.isEmpty) {
+              ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('请填写名称和系统提示词')));
+              return;
+            }
+            try {
+              await ApiService.createAgent(name: nameCtrl.text, description: descCtrl.text, systemPrompt: promptCtrl.text, openingMessage: openingCtrl.text);
+              Navigator.pop(ctx);
+              _loadData();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('智能体创建成功')));
+            } catch (e) {
+              ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('创建失败: $e')));
+            }
+          }, child: const Text('创建')),
         ],
       ),
     );
@@ -123,164 +96,84 @@ class _CreativePageState extends State<CreativePage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('创意和玩乐'),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppTheme.primaryColor,
-          unselectedLabelColor: AppTheme.textSecondary,
-          indicatorColor: AppTheme.primaryColor,
-          tabs: const [
-            Tab(text: '模板'),
-            Tab(text: '智能体'),
-          ],
-        ),
-        actions: [
-          if (_tabController.index == 1)
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: _createAgent,
-            ),
-        ],
+        title: const Text('创意'),
+        bottom: TabBar(controller: _tabController, labelColor: AppTheme.primaryColor, unselectedLabelColor: AppTheme.textSecondary, indicatorColor: AppTheme.primaryColor, tabs: const [Tab(text: '模板'), Tab(text: '智能体')]),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildTemplatesGrid(),
-                _buildAgentsGrid(),
-              ],
-            ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [_buildTemplatesTab(), _buildAgentsTab()],
+      ),
     );
   }
 
-  Widget _buildTemplatesGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1.1,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: _templates.length,
-      itemBuilder: (context, index) {
-        final t = _templates[index];
-        return InkWell(
-          onTap: () => _useTemplate(t),
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryColor.withOpacity(0.15),
-                  AppTheme.secondaryColor.withOpacity(0.15),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  t['icon'] ?? '✨',
-                  style: const TextStyle(fontSize: 40),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  t['name'] ?? '',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildAgentsGrid() {
-    if (_agents.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.smart_toy_outlined,
-                size: 64, color: AppTheme.textSecondary.withOpacity(0.5)),
-            const SizedBox(height: 16),
-            const Text(
-              '暂无智能体，点击右上角创建',
-              style: TextStyle(color: AppTheme.textSecondary),
-            ),
-          ],
-        ),
-      );
-    }
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.9,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: _agents.length,
-      itemBuilder: (context, index) {
-        final a = _agents[index];
-        return InkWell(
-          onTap: () => _useAgent(a),
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
-                  child: const Icon(Icons.smart_toy,
-                      color: AppTheme.primaryColor),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  a['name'] ?? '',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+  Widget _buildTemplatesTab() {
+    if (_loading) return const Center(child: CircularProgressIndicator());
+    return RefreshIndicator(
+      onRefresh: _loadData,
+      child: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.2, crossAxisSpacing: 12, mainAxisSpacing: 12),
+        itemCount: _templates.length,
+        itemBuilder: (context, index) {
+          final t = _templates[index];
+          return GestureDetector(
+            onTap: () => _useTemplate(t),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(t['icon'] ?? '✨', style: const TextStyle(fontSize: 28)),
+                const Spacer(),
+                Text(t['name'] ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
-                Text(
-                  a['description'] ?? '暂无描述',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                Text(t['category'] ?? '', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+              ]),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAgentsTab() {
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: _loadData,
+          child: _agents.isEmpty
+              ? ListView(children: [SizedBox(height: MediaQuery.of(context).size.height * 0.3), const Center(child: Text('暂无智能体，点击右下角创建', style: TextStyle(color: AppTheme.textSecondary)))])
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _agents.length,
+                  itemBuilder: (context, index) {
+                    final a = _agents[index];
+                    return GestureDetector(
+                      onTap: () => _useAgent(a),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+                        child: Row(children: [
+                          Container(width: 48, height: 48, decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.15), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.smart_toy_outlined, color: AppTheme.primaryColor)),
+                          const SizedBox(width: 12),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(a['name'] ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 4),
+                            Text(a['description'] ?? '', style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          ])),
+                          const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+                        ]),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        Positioned(right: 16, bottom: 16, child: FloatingActionButton(onPressed: _showCreateAgentDialog, backgroundColor: AppTheme.primaryColor, child: const Icon(Icons.add, color: Colors.white))),
+      ],
     );
   }
 }
