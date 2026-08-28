@@ -48,24 +48,15 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> sendCode(String email) async {
-    final resp = await _dio.post('/api/auth/send-code', data: {'email': email});
-    return Map<String, dynamic>.from(resp.data);
-  }
-
   static Future<Map<String, dynamic>> register({
-    required String email,
-    required String code,
+    required String username,
     required String password,
     required String nickname,
-    required String authCode,
   }) async {
     final resp = await _dio.post('/api/auth/register', data: {
-      'email': email,
-      'code': code,
+      'username': username,
       'password': password,
       'nickname': nickname,
-      'auth_code': authCode,
     });
     final data = Map<String, dynamic>.from(resp.data);
     if (data['token'] != null) {
@@ -74,9 +65,9 @@ class ApiService {
     return data;
   }
 
-  static Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(String username, String password) async {
     final resp = await _dio.post('/api/auth/login', data: {
-      'email': email,
+      'username': username,
       'password': password,
     });
     final data = Map<String, dynamic>.from(resp.data);

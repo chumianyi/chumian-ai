@@ -239,14 +239,12 @@ async def cleanup_media():
         await asyncio.sleep(3600)
 
 class RegisterRequest(BaseModel):
-    email: str
-    code: str
+    username: str
     password: str
     nickname: str
-    auth_code: str
 
 class LoginRequest(BaseModel):
-    email: str
+    username: str
     password: str
 
 class SendCodeRequest(BaseModel):
@@ -314,33 +312,26 @@ async def send_code(req: SendCodeRequest):
 
 @app.post("/api/auth/register")
 async def register(req: RegisterRequest):
-    if req.auth_code != AUTH_CODE:
-        raise HTTPException(400, "授权码错误")
-    if not req.email.endswith("@qq.com"):
-        raise HTTPException(400, "仅支持QQ邮箱注册")
-    if req.email not in verification_codes:
-        raise HTTPException(400, "请先获取验证码")
-    stored = verification_codes[req.email]
-    if time.time() > stored["expires"]:
-        del verification_codes[req.email]
-        raise HTTPException(400, "验证码已过期")
-    if stored["code"] != req.code:
-        raise HTTPException(400, "验证码错误")
+    if len(req.username) < 2:
+        raise HTTPException(400, "用户名至少2位")
+    if len(req.password) < 4:
+        raise HTTPException(400, "密码至少4位")
+    if not req.nickname:
+        raise HTTPException(400, "请输入昵称")
     db = await get_db()
-    cursor = await db.execute("SELECT id FROM users WHERE email = ?", (req.email,))
+    cursor = await db.execute("SELECT id FROM users WHERE email = ?", (req.username,))
     if await cursor.fetchone():
         await db.close()
-        raise HTTPException(400, "该邮箱已注册")
+        raise HTTPException(400, "该账号已注册")
     user_id = str(uuid.uuid4())
     token = str(uuid.uuid4())
     now = datetime.now().isoformat()
     await db.execute(
         "INSERT INTO users (id, email, password_hash, nickname, token, last_reset, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (user_id, req.email, hash_password(req.password), req.nickname, token, datetime.now().strftime("%Y-%m-%d"), now)
+        (user_id, req.username, hash_password(req.password), req.nickname, token, datetime.now().strftime("%Y-%m-%d"), now)
     )
     await db.commit()
     await db.close()
-    del verification_codes[req.email]
     response = JSONResponse({"success": True, "user_id": user_id, "nickname": req.nickname, "token": token})
     response.set_cookie("token", token, httponly=True, samesite="lax", max_age=30*24*3600)
     return response
@@ -348,11 +339,11 @@ async def register(req: RegisterRequest):
 @app.post("/api/auth/login")
 async def login(req: LoginRequest):
     db = await get_db()
-    cursor = await db.execute("SELECT * FROM users WHERE email = ?", (req.email,))
+    cursor = await db.execute("SELECT * FROM users WHERE email = ?", (req.username,))
     user = await cursor.fetchone()
     if not user or user["password_hash"] != hash_password(req.password):
         await db.close()
-        raise HTTPException(400, "邮箱或密码错误")
+        raise HTTPException(400, "账号或密码错误")
     token = str(uuid.uuid4())
     await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user["id"]))
     await db.commit()

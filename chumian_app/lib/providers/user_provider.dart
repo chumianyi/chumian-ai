@@ -64,8 +64,8 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> register(
-      String email, String code, String password, String nickname, String authCode) async {
-    final result = await ApiService.register(email: email, code: code, password: password, nickname: nickname, authCode: authCode);
+      String username, String password, String nickname) async {
+    final result = await ApiService.register(username: username, password: password, nickname: nickname);
     _token = result['token'];
     _userId = result['user_id'];
     _nickname = result['nickname'];
