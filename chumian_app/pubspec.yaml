@@ -1,0 +1,43 @@
+name: chumian_ai
+description: "初眠AI - 智能AI助手"
+publish_to: 'none'
+version: 1.1.0+2
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http: ^1.2.0
+  flutter_markdown: ^0.7.4
+  shared_preferences: ^2.3.2
+  provider: ^6.1.2
+  image_picker: ^1.1.2
+  intl: ^0.19.0
+  url_launcher: ^6.3.0
+  file_picker: ^8.1.2
+  cached_network_image: ^3.4.1
+  markdown: ^7.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 26
+  windows:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    icon_size: 48
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/

@@ -1,0 +1,55 @@
+# Flutter build artifacts
+chumian_app/build/
+chumian_app/.dart_tool/
+chumian_app/.flutter-plugins
+chumian_app/.flutter-plugins-dependencies
+chumian_app/.packages
+chumian_app/.metadata
+chumian_app/ios/Pods/
+chumian_app/ios/.symlinks/
+chumian_app/ios/Flutter/Flutter.framework
+chumian_app/ios/Flutter/Flutter.podspec
+chumian_app/android/.gradle/
+chumian_app/android/local.properties
+chumian_app/**/key.properties
+chumian_app/**/keystore.jks
+chumian_app/**/*.jks
+chumian_app/**/*.keystore
+
+# Pre-built artifacts
+artifacts/
+artifacts_v2/
+download/
+final/
+chumian_ai_project.zip
+
+# Python
+server/__pycache__/
+server/*.pyc
+server/data/
+server/media/
+*.egg-info/
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temp / deployment scripts
+check_server*.py
+deploy_server.py
+deploy_download.py
+add_download_routes.py
+build_apk.sh
+*.zip
+*.apk
+*.ipa
