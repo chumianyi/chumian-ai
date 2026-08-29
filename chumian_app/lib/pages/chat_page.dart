@@ -18,6 +18,7 @@ import '../utils/constants.dart';
 import '../utils/formatters.dart';
 import 'image_preview_page.dart';
 import 'video_preview_page.dart';
+import '../widgets/gradient_header.dart';
 
 class ChatPage extends StatefulWidget {
   final String? initialPrompt;

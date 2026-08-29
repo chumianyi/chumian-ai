@@ -4,6 +4,7 @@ import '../widgets/context_ext.dart';
 import '../widgets/app_card.dart';
 import '../widgets/feedback.dart';
 import '../widgets/buttons.dart';
+import '../utils/constants.dart';
 
 class CheckinPage extends StatefulWidget {
   const CheckinPage({super.key});

@@ -6,6 +6,7 @@ import '../widgets/feedback.dart';
 import '../widgets/gradient_header.dart';
 import '../widgets/buttons.dart';
 import '../utils/formatters.dart';
+import '../utils/constants.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});

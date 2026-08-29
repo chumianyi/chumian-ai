@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'context_ext.dart';
 import '../utils/animations.dart';
+import '../widgets/gradient_header.dart';
 
 /// 渐变 Hero 头部。
 class GradientHero extends StatelessWidget {

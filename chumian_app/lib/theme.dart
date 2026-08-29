@@ -323,7 +323,7 @@ class ThemeProvider extends ChangeNotifier {
           statusBarBrightness: _isDark ? Brightness.dark : Brightness.light,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: surfaceColor,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -408,7 +408,7 @@ class ThemeProvider extends ChangeNotifier {
         shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
         backgroundColor: _isDark ? const Color(0xFF30303E) : const Color(0xFF2A2A38),
       ),
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
@@ -424,7 +424,7 @@ class ThemeProvider extends ChangeNotifier {
         textColor: textPrimary,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
       ),
-      tabBarTheme: TabBarThemeData(
+      tabBarTheme: TabBarTheme(
         labelColor: primaryColor,
         unselectedLabelColor: textSecondary,
         indicatorColor: primaryColor,

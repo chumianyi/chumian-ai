@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../utils/constants.dart';
 
 /// 可用的对话模型清单（用于本地展示与选择，实际调用逻辑在 ApiService）。
 class AppModels {

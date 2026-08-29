@@ -7,6 +7,7 @@ import '../widgets/gradient_header.dart';
 import '../widgets/buttons.dart';
 import '../widgets/tiles.dart';
 import '../utils/formatters.dart';
+import '../utils/constants.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({super.key});
