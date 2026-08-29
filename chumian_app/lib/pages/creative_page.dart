@@ -94,6 +94,18 @@ class _CreativePageState extends State<CreativePage> with SingleTickerProviderSt
     );
   }
 
+  Future<void> _publishAgent(dynamic a) async {
+    try {
+      await ApiService.publishAgent(a['id']);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已发布到探索')));
+        _loadData();
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('发布失败（可能含违规内容）: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -164,8 +176,23 @@ class _CreativePageState extends State<CreativePage> with SingleTickerProviderSt
                             Text(a['name'] ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 4),
                             Text(a['description'] ?? '', style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 6),
+                            Row(children: [
+                              Icon(Icons.favorite, size: 12, color: (a['likes'] ?? 0) > 0 ? Colors.red : AppTheme.textSecondary),
+                              const SizedBox(width: 3),
+                              Text('${a['likes'] ?? 0}', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                              const SizedBox(width: 10),
+                              Icon(Icons.download, size: 12, color: AppTheme.textSecondary),
+                              const SizedBox(width: 3),
+                              Text('${a['download_count'] ?? 0}', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                              if (a['is_published'] == 1) ...[const SizedBox(width: 10), Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.green.withOpacity(0.15), borderRadius: BorderRadius.circular(8)), child: const Text('已发布', style: TextStyle(fontSize: 10, color: Colors.green)))],
+                            ]),
                           ])),
-                          const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+                          Column(children: [
+                            if (a['is_published'] != 1) GestureDetector(onTap: () => _publishAgent(a), child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(14)), child: const Text('发布', style: TextStyle(fontSize: 11, color: AppTheme.primaryColor)))),
+                            const SizedBox(height: 6),
+                            const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
+                          ]),
                         ]),
                       ),
                     );

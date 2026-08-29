@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:video_player/video_player.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 
@@ -51,6 +53,13 @@ class _ChatPageState extends State<ChatPage> {
   String? _currentConvId;
   StreamSubscription? _streamSub;
   VideoPlayerController? _videoController;
+  String _pendingChars = '';
+  Timer? _typewriterTimer;
+  bool _streamDone = false;
+  ChatMessage? _currentAiMsg;
+  final SpeechToText _speech = SpeechToText();
+  bool _isListening = false;
+  bool _speechInitialized = false;
 
   final List<String> _allModels = [
     'glm-4-flash', 'glm-4-flash-250414', 'glm-4.7-flash', 'glm-z1-flash',
@@ -68,9 +77,15 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Widget _buildWaveform() {
+    return Row(mainAxisSize: MainAxisSize.min, children: List.generate(5, (i) => Container(margin: EdgeInsets.symmetric(horizontal: 1), width: 3, height: 8.0 + (i % 3) * 4, decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(2)))).toList());
+  }
+
   @override
   void dispose() {
     _streamSub?.cancel();
+    _typewriterTimer?.cancel();
+    _speech.stop();
     _controller.dispose();
     _scrollController.dispose();
     _focusNode.dispose();
@@ -87,10 +102,108 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _newConversation() {
+    _stopTypewriter();
     setState(() {
       _messages.clear();
       _currentConvId = null;
+      _pendingChars = '';
+      _currentAiMsg = null;
     });
+  }
+
+  void _startTypewriter() {
+    _typewriterTimer?.cancel();
+    _typewriterTimer = Timer.periodic(const Duration(milliseconds: 15), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_pendingChars.isEmpty) {
+        if (_streamDone) {
+          timer.cancel();
+          setState(() => _isSending = false);
+        }
+        return;
+      }
+      final charsToAdd = _pendingChars.length > 3 ? 3 : 1;
+      final chunk = _pendingChars.substring(0, charsToAdd);
+      _pendingChars = _pendingChars.substring(charsToAdd);
+      setState(() {
+        _currentAiMsg?.content += chunk;
+      });
+      _scrollToBottom();
+    });
+  }
+
+  void _stopTypewriter() {
+    _typewriterTimer?.cancel();
+    _typewriterTimer = null;
+  }
+
+  void _stopGeneration() {
+    _streamSub?.cancel();
+    _streamSub = null;
+    _streamDone = true;
+    if (_pendingChars.isNotEmpty && _currentAiMsg != null) {
+      setState(() {
+        _currentAiMsg!.content += _pendingChars;
+        _pendingChars = '';
+        _currentAiMsg!.isThinking = false;
+        _isSending = false;
+      });
+    } else {
+      setState(() {
+        _currentAiMsg?.isThinking = false;
+        _isSending = false;
+      });
+    }
+    _stopTypewriter();
+  }
+
+  Future<void> _initSpeech() async {
+    if (_speechInitialized) return;
+    try {
+      _speechInitialized = await _speech.initialize();
+    } catch (_) {
+      _speechInitialized = false;
+    }
+  }
+
+  Future<void> _startListening() async {
+    await _initSpeech();
+    final status = await Permission.microphone.request();
+    if (!status.isGranted) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('需要麦克风权限')));
+      return;
+    }
+    if (!_speechInitialized) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('语音识别不可用')));
+      return;
+    }
+    setState(() => _isListening = true);
+    _speech.listen(
+      onResult: (result) {
+        if (mounted) {
+          setState(() {
+            _controller.text = result.recognizedWords;
+            _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
+          });
+        }
+      },
+      listenFor: const Duration(seconds: 60),
+      pauseFor: const Duration(seconds: 3),
+      localeId: 'zh_CN',
+    );
+  }
+
+  Future<void> _stopListening() async {
+    await _speech.stop();
+    if (mounted) {
+      setState(() => _isListening = false);
+      if (_controller.text.trim().isNotEmpty) {
+        _sendMessage();
+      }
+    }
   }
 
   Future<void> _sendMessage() async {
@@ -116,6 +229,10 @@ class _ChatPageState extends State<ChatPage> {
     _scrollToBottom();
 
     final aiMsg = _messages.last;
+    _currentAiMsg = aiMsg;
+    _streamDone = false;
+    _pendingChars = '';
+    _startTypewriter();
 
     try {
       _streamSub = ApiService.chatStream(
@@ -131,11 +248,8 @@ class _ChatPageState extends State<ChatPage> {
               aiMsg.thinkContent = (aiMsg.thinkContent ?? '') + (data['content'] ?? '');
             });
           } else if (type == 'content') {
-            setState(() {
-              aiMsg.isThinking = false;
-              aiMsg.content += data['content'] ?? '';
-            });
-            _scrollToBottom();
+            aiMsg.isThinking = false;
+            _pendingChars += data['content'] ?? '';
           } else if (type == 'image') {
             setState(() {
               aiMsg.imageUrl = data['url'];
@@ -151,11 +265,11 @@ class _ChatPageState extends State<ChatPage> {
             if (data['conversation_id'] != null) {
               _currentConvId = data['conversation_id'];
             }
-            setState(() {
-              aiMsg.isThinking = false;
-              _isSending = false;
-            });
+            _streamDone = true;
+            setState(() => aiMsg.isThinking = false);
           } else if (type == 'error') {
+            _streamDone = true;
+            _stopTypewriter();
             setState(() {
               aiMsg.isThinking = false;
               aiMsg.content = '错误: ${data['message']}';
@@ -165,6 +279,8 @@ class _ChatPageState extends State<ChatPage> {
         },
         onError: (e) {
           if (!mounted) return;
+          _streamDone = true;
+          _stopTypewriter();
           setState(() {
             aiMsg.isThinking = false;
             aiMsg.content = '网络错误: $e';
@@ -172,12 +288,13 @@ class _ChatPageState extends State<ChatPage> {
           });
         },
         onDone: () {
-          if (!mounted) return;
-          setState(() => _isSending = false);
+          _streamDone = true;
         },
       );
     } catch (e) {
       if (!mounted) return;
+      _streamDone = true;
+      _stopTypewriter();
       setState(() {
         aiMsg.isThinking = false;
         aiMsg.content = '发送失败: $e';
@@ -217,8 +334,10 @@ class _ChatPageState extends State<ChatPage> {
   void _showModelPicker() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.6),
         decoration: BoxDecoration(color: Theme.of(ctx).scaffoldBackgroundColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -227,16 +346,22 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             const Text('选择模型', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            ..._allModels.map((m) => ListTile(
-              leading: Icon(_getModelIcon(m), color: AppTheme.primaryColor),
-              title: Text(m, style: const TextStyle(fontSize: 14)),
-              trailing: m == _selectedModel ? const Icon(Icons.check, color: AppTheme.primaryColor) : null,
-              onTap: () {
-                setState(() => _selectedModel = m);
-                Navigator.pop(ctx);
+            Expanded(child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _allModels.length,
+              itemBuilder: (context, index) {
+                final m = _allModels[index];
+                return ListTile(
+                  leading: Icon(_getModelIcon(m), color: AppTheme.primaryColor),
+                  title: Text(m, style: const TextStyle(fontSize: 14)),
+                  trailing: m == _selectedModel ? const Icon(Icons.check, color: AppTheme.primaryColor) : null,
+                  onTap: () {
+                    setState(() => _selectedModel = m);
+                    Navigator.pop(ctx);
+                  },
+                );
               },
             )),
-            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -257,8 +382,10 @@ class _ChatPageState extends State<ChatPage> {
       if (!mounted) return;
       showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (ctx) => Container(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.7),
           decoration: BoxDecoration(color: Theme.of(ctx).scaffoldBackgroundColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -268,28 +395,35 @@ class _ChatPageState extends State<ChatPage> {
               const Text('历史对话', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               if (convs.isEmpty) const Padding(padding: EdgeInsets.all(24), child: Text('暂无历史对话', textAlign: TextAlign.center)),
-              ...convs.take(20).map((c) => ListTile(
-                leading: const Icon(Icons.history, color: AppTheme.primaryColor),
-                title: Text(c['title'] ?? '新对话', maxLines: 1, overflow: TextOverflow.ellipsis),
-                subtitle: Text(c['model'] ?? '', style: const TextStyle(fontSize: 11)),
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  final msgs = await ApiService.getConversationMessages(c['id']);
-                  setState(() {
-                    _currentConvId = c['id'];
-                    _messages.clear();
-                    for (final m in msgs) {
-                      _messages.add(ChatMessage(
-                        id: m['id'] ?? DateTime.now().toString(),
-                        role: m['role'],
-                        content: m['content'] ?? '',
-                        thinkContent: m['think_content'],
-                        model: m['model'],
-                        imageUrl: m['image_url'],
-                        videoUrl: m['video_url'],
-                      ));
-                    }
-                  });
+              if (convs.isNotEmpty) Expanded(child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: convs.length,
+                itemBuilder: (context, index) {
+                  final c = convs[index];
+                  return ListTile(
+                    leading: const Icon(Icons.history, color: AppTheme.primaryColor),
+                    title: Text(c['title'] ?? '新对话', maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: Text(c['model'] ?? '', style: const TextStyle(fontSize: 11)),
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      final msgs = await ApiService.getConversationMessages(c['id']);
+                      setState(() {
+                        _currentConvId = c['id'];
+                        _messages.clear();
+                        for (final m in msgs) {
+                          _messages.add(ChatMessage(
+                            id: m['id'] ?? DateTime.now().toString(),
+                            role: m['role'],
+                            content: m['content'] ?? '',
+                            thinkContent: m['think_content'],
+                            model: m['model'],
+                            imageUrl: m['image_url'],
+                            videoUrl: m['video_url'],
+                          ));
+                        }
+                      });
+                    },
+                  );
                 },
               )),
             ],
@@ -478,13 +612,21 @@ class _ChatPageState extends State<ChatPage> {
       child: SafeArea(
         child: Column(
           children: [
+            if (_isListening) Container(margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [Container(width: 10, height: 10, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle), child: const SizedBox()), const SizedBox(width: 8), const Text('正在聆听... 松开发送', style: TextStyle(fontSize: 13, color: Colors.red)), const SizedBox(width: 8), _buildWaveform()])),
             Row(
               children: [
                 GestureDetector(onTap: _showModelPicker, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8), decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(_getModelIcon(_selectedModel), size: 16, color: AppTheme.primaryColor), const SizedBox(width: 4), Text(_selectedModel.length > 12 ? '${_selectedModel.substring(0, 10)}..' : _selectedModel, style: const TextStyle(fontSize: 11, color: AppTheme.primaryColor, fontWeight: FontWeight.w500))]))),
                 const SizedBox(width: 8),
                 Expanded(child: TextField(controller: _controller, focusNode: _focusNode, maxLines: null, textInputAction: TextInputAction.send, onSubmitted: (_) => _sendMessage(), decoration: InputDecoration(hintText: '输入消息...', filled: true, fillColor: isDark ? AppTheme.darkBackground : AppTheme.backgroundColor, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)))),
                 const SizedBox(width: 8),
-                GestureDetector(onTap: _isSending ? null : _sendMessage, child: Container(width: 44, height: 44, decoration: BoxDecoration(color: _isSending ? AppTheme.textSecondary : AppTheme.primaryColor, shape: BoxShape.circle), child: const Icon(Icons.send, color: Colors.white, size: 20))),
+                GestureDetector(
+                  onLongPressStart: (_) => _startListening(),
+                  onLongPressEnd: (_) => _stopListening(),
+                  onLongPressCancel: () => _stopListening(),
+                  child: Container(width: 44, height: 44, decoration: BoxDecoration(color: _isListening ? Colors.red : AppTheme.primaryColor.withOpacity(0.15), shape: BoxShape.circle), child: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.white : AppTheme.primaryColor, size: 22)),
+                ),
+                const SizedBox(width: 6),
+                GestureDetector(onTap: _isSending ? _stopGeneration : _sendMessage, child: Container(width: 44, height: 44, decoration: BoxDecoration(color: _isSending ? Colors.red : AppTheme.primaryColor, shape: BoxShape.circle), child: Icon(_isSending ? Icons.stop : Icons.send, color: Colors.white, size: 20))),
               ],
             ),
           ],

@@ -201,8 +201,38 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> createPost(String title, String content) async {
-    final resp = await _dio.post('/api/posts', data: {'title': title, 'content': content});
+    final resp = await _dio.post('/api/posts', data: {'title': title, 'content': content, 'type': 'image'});
     return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> createMediaPost({required String title, required String content, required String type, String mediaUrl = '', String agentId = ''}) async {
+    final resp = await _dio.post('/api/posts', data: {'title': title, 'content': content, 'type': type, 'media_url': mediaUrl, 'agent_id': agentId});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getExplore({String type = 'all'}) async {
+    final resp = await _dio.get('/api/explore', queryParameters: {'type': type});
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> cloneAgent(String agentId) async {
+    final resp = await _dio.post('/api/agents/$agentId/clone');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> likeAgent(String agentId) async {
+    final resp = await _dio.post('/api/agents/$agentId/like');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> publishAgent(String agentId) async {
+    final resp = await _dio.post('/api/agents/$agentId/publish');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getAgentLeaderboard({int limit = 50}) async {
+    final resp = await _dio.get('/api/agents/leaderboard', queryParameters: {'limit': limit});
+    return List<dynamic>.from(resp.data);
   }
 
   static Future<Map<String, dynamic>> likePost(String postId) async {

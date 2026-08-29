@@ -150,6 +150,33 @@ async def init_db():
         );
     """)
     await db.commit()
+    # Migration: add new columns if not exist
+    migrations = [
+        "ALTER TABLE agents ADD COLUMN likes INTEGER DEFAULT 0",
+        "ALTER TABLE agents ADD COLUMN download_count INTEGER DEFAULT 0",
+        "ALTER TABLE agents ADD COLUMN is_published INTEGER DEFAULT 0",
+        "ALTER TABLE posts ADD COLUMN type TEXT DEFAULT 'text'",
+        "ALTER TABLE posts ADD COLUMN media_url TEXT",
+        "ALTER TABLE posts ADD COLUMN agent_id TEXT",
+    ]
+    for m in migrations:
+        try:
+            await db.execute(m)
+        except Exception:
+            pass
+    try:
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS agent_likes (
+                id TEXT PRIMARY KEY,
+                agent_id TEXT NOT NULL,
+                user_id TEXT NOT NULL,
+                created_at TEXT,
+                UNIQUE(agent_id, user_id)
+            )
+        """)
+    except Exception:
+        pass
+    await db.commit()
     await db.close()
 
 def hash_password(password):
@@ -268,6 +295,9 @@ class GenerateImageRequest(BaseModel):
 class PostCreateRequest(BaseModel):
     title: str
     content: str
+    type: str = "image"
+    media_url: str = ""
+    agent_id: str = ""
 
 class CommentCreateRequest(BaseModel):
     content: str
@@ -281,11 +311,17 @@ class AgentCreateRequest(BaseModel):
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/verify-app", "/media/", "/api/models", "/api/templates", "/api/agents", "/api/posts"]
+    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/verify-app", "/media/", "/api/models", "/api/templates"]
+    public_get_paths = ["/api/agents", "/api/posts", "/api/explore"]
     path = request.url.path
+    method = request.method
     for p in public_paths:
         if path.startswith(p):
             return await call_next(request)
+    if method == "GET":
+        for p in public_get_paths:
+            if path.startswith(p):
+                return await call_next(request)
     token = request.cookies.get("token") or ""
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
@@ -667,14 +703,16 @@ async def get_post(post_id: str):
 @app.post("/api/posts")
 async def create_post(request: Request, req: PostCreateRequest):
     user = request.state.user
+    if req.type not in ("agent", "image", "video"):
+        raise HTTPException(400, "仅支持发布智能体、图片、视频")
     is_violation, reason = await glm_moderate(req.title + " " + req.content)
     if is_violation:
         raise HTTPException(400, "内容包含违规信息，无法发布")
     db = await get_db()
     post_id = str(uuid.uuid4())
     await db.execute(
-        "INSERT INTO posts (id, user_id, title, content, approved, created_at) VALUES (?, ?, ?, ?, 1, ?)",
-        (post_id, user["id"], req.title, req.content, datetime.now().isoformat())
+        "INSERT INTO posts (id, user_id, title, content, type, media_url, agent_id, approved, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)",
+        (post_id, user["id"], req.title, req.content, req.type, req.media_url, req.agent_id, datetime.now().isoformat())
     )
     await db.commit()
     await db.close()
@@ -788,6 +826,101 @@ async def update_agent(request: Request, agent_id: str, req: AgentCreateRequest)
     await db.commit()
     await db.close()
     return {"success": True}
+
+@app.post("/api/agents/{agent_id}/clone")
+async def clone_agent(request: Request, agent_id: str):
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM agents WHERE id = ?", (agent_id,))
+    agent = await cursor.fetchone()
+    if not agent:
+        await db.close()
+        raise HTTPException(404, "智能体不存在")
+    new_id = str(uuid.uuid4())
+    await db.execute(
+        "INSERT INTO agents (id, user_id, name, description, system_prompt, opening_message, avatar, created_at, likes, download_count, is_published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)",
+        (new_id, user["id"], agent["name"], agent["description"], agent["system_prompt"], agent["opening_message"], agent["avatar"], datetime.now().isoformat())
+    )
+    await db.execute("UPDATE agents SET download_count = download_count + 1 WHERE id = ?", (agent_id,))
+    await db.commit()
+    await db.close()
+    return {"success": True, "agent_id": new_id}
+
+@app.post("/api/agents/{agent_id}/like")
+async def like_agent(request: Request, agent_id: str):
+    user = request.state.user
+    db = await get_db()
+    try:
+        await db.execute("INSERT INTO agent_likes (id, agent_id, user_id, created_at) VALUES (?, ?, ?, ?)",
+            (str(uuid.uuid4()), agent_id, user["id"], datetime.now().isoformat()))
+        await db.execute("UPDATE agents SET likes = likes + 1 WHERE id = ?", (agent_id,))
+        await db.commit()
+        liked = True
+    except Exception:
+        await db.execute("DELETE FROM agent_likes WHERE agent_id = ? AND user_id = ?", (agent_id, user["id"]))
+        await db.execute("UPDATE agents SET likes = MAX(likes - 1, 0) WHERE id = ?", (agent_id,))
+        await db.commit()
+        liked = False
+    cursor = await db.execute("SELECT likes FROM agents WHERE id = ?", (agent_id,))
+    row = await cursor.fetchone()
+    await db.close()
+    return {"success": True, "liked": liked, "likes": row["likes"] if row else 0}
+
+@app.post("/api/agents/{agent_id}/publish")
+async def publish_agent(request: Request, agent_id: str):
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM agents WHERE id = ?", (agent_id,))
+    agent = await cursor.fetchone()
+    if not agent or agent["user_id"] != user["id"]:
+        await db.close()
+        raise HTTPException(403, "无权操作此智能体")
+    is_violation, reason = await glm_moderate(agent["name"] + " " + (agent["description"] or "") + " " + (agent["system_prompt"] or ""))
+    if is_violation:
+        await db.close()
+        raise HTTPException(400, "内容违规，无法发布: " + reason)
+    await db.execute("UPDATE agents SET is_published = 1 WHERE id = ?", (agent_id,))
+    await db.commit()
+    await db.close()
+    return {"success": True}
+
+@app.get("/api/agents/leaderboard")
+async def agent_leaderboard(limit: int = 50):
+    db = await get_db()
+    cursor = await db.execute("""
+        SELECT a.*, u.nickname as author_nickname
+        FROM agents a JOIN users u ON a.user_id = u.id
+        WHERE a.is_published = 1
+        ORDER BY a.likes DESC
+        LIMIT ?
+    """, (limit,))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/explore")
+async def explore_list(type: str = "all", page: int = 1, page_size: int = 20):
+    db = await get_db()
+    offset = (page - 1) * page_size
+    if type == "all":
+        cursor = await db.execute("""
+            SELECT p.*, u.nickname as author_nickname, a.name as agent_name, a.avatar as agent_avatar
+            FROM posts p JOIN users u ON p.user_id = u.id
+            LEFT JOIN agents a ON p.agent_id = a.id
+            WHERE p.approved = 1 AND p.type IN ('agent','image','video')
+            ORDER BY p.created_at DESC LIMIT ? OFFSET ?
+        """, (page_size, offset))
+    else:
+        cursor = await db.execute("""
+            SELECT p.*, u.nickname as author_nickname, a.name as agent_name, a.avatar as agent_avatar
+            FROM posts p JOIN users u ON p.user_id = u.id
+            LEFT JOIN agents a ON p.agent_id = a.id
+            WHERE p.approved = 1 AND p.type = ?
+            ORDER BY p.created_at DESC LIMIT ? OFFSET ?
+        """, (type, page_size, offset))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
 
 @app.get("/api/models")
 async def list_models():
