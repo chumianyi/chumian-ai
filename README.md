@@ -7,7 +7,7 @@
 - **客户端**: Flutter (Material 3)
 - **服务端**: Python FastAPI + SQLite
 - **AI模型**: 智谱AI (GLM-4, CogView, CogVideoX)
-- **部署**: systemd 服务，端口 24513
+- **部署**: systemd 服务
 
 ## 项目结构
 
@@ -32,14 +32,19 @@ chumian_ai/
 ## 功能特性
 
 - 流式AI对话（支持思考过程展示）
-- 多模型切换（GLM-4-Flash, GLM-4.7-Flash, GLM-Z1-Flash）
+- 多模型切换（GLM-4-Flash, GLM-4.7-Flash, GLM-Z1-Flash等）
 - 图片生成（CogView-3）
 - 视频生成（CogVideoX）
 - 对话历史管理
-- 社区广场（帖子、评论、点赞）
+- 社区广场（帖子、点赞）
 - 自定义AI智能体
-- 邮箱注册登录
+- 账号注册登录
 - 积分系统
+- 每日签到
+- 积分商店
+- 猜大小活动
+- 多主题切换
+- 关注/粉丝系统
 
 ## 服务端部署
 
@@ -47,8 +52,9 @@ chumian_ai/
 cd server
 pip install -r requirements.txt
 python3 main.py
-# 默认端口 24513
 ```
+
+服务端通过 systemd 管理，配置 API 地址后客户端即可连接。
 
 ## 客户端构建
 
@@ -58,9 +64,4 @@ flutter pub get
 flutter build apk --release --target-platform android-arm64
 ```
 
-## 服务器信息
-
-- 地址: 103.236.99.177
-- SSH: 29982
-- API端口: 24513 (TCP)
-- 服务管理: systemctl chumian-ai.service
+客户端 API 地址配置在 `lib/services/api_service.dart` 中，部署时需修改为实际服务端地址。
