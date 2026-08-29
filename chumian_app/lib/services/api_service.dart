@@ -350,3 +350,5 @@ class ApiService {
   static Future<void> readNotification(String nid) async {
     await _dio.post('/api/notifications/$nid/read');
   }
+
+}
