@@ -207,6 +207,7 @@ class _ChatPageState extends State<ChatPage> {
           } else if (type == 'search_results') {
             setState(() {
               aiMsg.searchResults = List<dynamic>.from(data['results'] ?? []);
+              aiMsg.searchKeyword = data['keyword'] as String?;
             });
           } else if (type == 'content') {
             aiMsg.isThinking = false;
@@ -923,8 +924,12 @@ class _ChatPageState extends State<ChatPage> {
                   children: [
                     Icon(Icons.public_rounded, size: 14, color: context.primary),
                     const SizedBox(width: 5),
-                    Text('已联网搜索 ${msg.searchResults!.length} 条结果',
-                        style: TextStyle(fontSize: 12, color: context.primary)),
+                    Text(
+                      msg.searchKeyword != null && msg.searchKeyword!.isNotEmpty
+                          ? '已联网搜索「${msg.searchKeyword!}」· ${msg.searchResults!.length}条'
+                          : '已联网搜索 ${msg.searchResults!.length} 条结果',
+                      style: TextStyle(fontSize: 12, color: context.primary),
+                    ),
                     const SizedBox(width: 4),
                     Icon(expanded ? Icons.expand_less : Icons.expand_more,
                         size: 16, color: context.primary),

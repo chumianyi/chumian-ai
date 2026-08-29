@@ -45,6 +45,33 @@ SYSTEM_PROMPT = """你是「初眠」，一个温柔、聪明、善解人意的A
 你会用Markdown格式回复用户，支持标题、加粗、斜体、列表、代码块等格式。
 请始终保持友好、有帮助的态度。"""
 
+async def extract_search_keyword(user_message: str) -> str:
+    """调用GLM从用户消息中提取搜索关键词。寒暄类返回NO_SEARCH。"""
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            payload = {
+                "model": "glm-4-flash",
+                "messages": [
+                    {"role": "system", "content": "你是一个搜索关键词提取助手。请从用户问题中提取最适合用于网络搜索的关键词。规则：1.只返回关键词本身，不要任何解释、引号、标点；2.如果是寒暄问候闲聊（如你好、谢谢、在吗、嗨），不需要搜索，返回NO_SEARCH；3.纯计算、纯闲聊、不需要联网的问题返回NO_SEARCH；4.关键词简洁准确，不超过20个字；5.提取核心实体和问题，去掉语气词。"},
+                    {"role": "user", "content": "用户问题：%s\n\n关键词：" % user_message}
+                ],
+                "stream": False
+            }
+            headers = {"Authorization": "Bearer %s" % GLM_API_KEY, "Content-Type": "application/json"}
+            resp = await client.post("%s/chat/completions" % GLM_BASE_URL, json=payload, headers=headers)
+            data = resp.json()
+            keyword = data["choices"][0]["message"]["content"].strip().strip('"').strip("'").strip()
+            # 清理可能的前缀
+            for prefix in ["关键词：", "关键词:", "搜索关键词：", "搜索关键词:"]:
+                if keyword.startswith(prefix):
+                    keyword = keyword[len(prefix):].strip()
+            if not keyword or len(keyword) > 30:
+                return user_message[:20]
+            return keyword
+    except Exception as e:
+        print("关键词提取失败，fallback:", e)
+        return user_message[:20]
+
 async def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
     """使用必应(cn.bing.com)搜索，不存储结果，实时获取实时返回。"""
     results = []
@@ -758,20 +785,24 @@ async def chat_stream(request: Request, req: ChatRequest):
             {"type": "text", "text": req.message},
             {"type": "image_url", "image_url": {"url": req.image_url}}
         ]
-    # 联网搜索：将搜索结果拼入系统提示词
+    # 联网搜索：AI提取关键词 -> 搜索 -> 拼入系统提示词
     search_results = []
+    search_keyword = ""
     if req.web_search and model in TEXT_MODELS:
-        search_results = await web_search(req.message, max_results=5)
-        if search_results:
-            search_context = "\n\n【联网搜索结果】\n" + "\n".join(
-                ["[%d] %s\n%s\n来源: %s" % (i+1, r["title"], r["snippet"], r["url"]) for i, r in enumerate(search_results)]
-            ) + "\n\n请结合以上搜索结果回答用户问题，回答中可引用来源编号。"
-            messages[0]["content"] = SYSTEM_PROMPT + search_context
+        search_keyword = await extract_search_keyword(req.message)
+        print("联网搜索关键词:", search_keyword)
+        if search_keyword and search_keyword.upper() != "NO_SEARCH":
+            search_results = await web_search(search_keyword, max_results=5)
+            if search_results:
+                search_context = "\n\n【联网搜索结果】\n" + "\n".join(
+                    ["[%d] %s\n%s\n来源: %s" % (i+1, r["title"], r["snippet"], r["url"]) for i, r in enumerate(search_results)]
+                ) + "\n\n请结合以上搜索结果回答用户问题，回答中可引用来源编号。"
+                messages[0]["content"] = SYSTEM_PROMPT + search_context
     async def generate():
         try:
-            # 先发送搜索结果事件
+            # 先发送搜索结果事件（含实际搜索关键词）
             if search_results:
-                yield "data: %s\n\n" % json.dumps({"type": "search_results", "results": search_results})
+                yield "data: %s\n\n" % json.dumps({"type": "search_results", "results": search_results, "keyword": search_keyword})
             async with httpx.AsyncClient(timeout=120.0) as client:
                 payload = {"model": model, "messages": messages, "stream": True}
                 headers = {"Authorization": "Bearer %s" % GLM_API_KEY, "Content-Type": "application/json"}
