@@ -44,7 +44,8 @@ class AgentAccessibilityService : AccessibilityService() {
         val desc = node.contentDescription?.toString() ?: ""
         val cls = node.className?.toString()?.split(".")?.last() ?: ""
         val clickable = node.isClickable
-        val bounds = node.getBoundsInScreen(android.graphics.Rect())
+        val bounds = android.graphics.Rect()
+        node.getBoundsInScreen(bounds)
         sb.append("$indent[$cls] text=\"$text\" desc=\"$desc\" clickable=$clickable bounds=[${bounds.left},${bounds.top},${bounds.right},${bounds.bottom}]\n")
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
