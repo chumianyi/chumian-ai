@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:dio/dio.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:gal/gal.dart';
 import '../theme.dart';
 
 class ImagePreviewPage extends StatefulWidget {
@@ -23,27 +21,12 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     if (_downloading) return;
     setState(() => _downloading = true);
     try {
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted && !status.isPermanentlyDenied) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('需要存储权限')));
-          setState(() => _downloading = false);
-          return;
-        }
-      }
       final response = await Dio().get(widget.imageUrl, options: Options(responseType: ResponseType.bytes));
       final bytes = Uint8List.fromList(response.data);
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final result = await ImageGallerySaver.saveImage(bytes, name: 'chumian_ai_$timestamp', quality: 100);
-      if (mounted) {
-        if (result['isSuccess'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('图片已保存到相册')));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: ${result['errorMessage'] ?? '未知错误'}')));
-        }
-      }
+      await Gal.putImage(bytes, album: '初眠AI');
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('图片已保存到相册')));
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('下载失败: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: $e')));
     } finally {
       if (mounted) setState(() => _downloading = false);
     }

@@ -7,7 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gal/gal.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'image_preview_page.dart';
@@ -583,17 +583,10 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _saveImage(String url) async {
     try {
-      final status = await Permission.storage.request();
-      if (!status.isGranted && !status.isPermanentlyDenied) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('需要存储权限')));
-        return;
-      }
       final response = await Dio().get(url, options: Options(responseType: ResponseType.bytes));
       final bytes = Uint8List.fromList(response.data);
-      final result = await ImageGallerySaver.saveImage(bytes, name: 'chumian_ai_${DateTime.now().millisecondsSinceEpoch}', quality: 100);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['isSuccess'] == true ? '图片已保存到相册' : '保存失败')));
-      }
+      await Gal.putImage(bytes, album: '初眠AI');
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('图片已保存到相册')));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: $e')));
     }

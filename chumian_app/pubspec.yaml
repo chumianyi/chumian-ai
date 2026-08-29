@@ -24,7 +24,7 @@ dependencies:
   speech_to_text: ^6.6.2
   permission_handler: ^11.3.1
   photo_view: ^0.15.0
-  image_gallery_saver: ^2.0.3
+  gal: ^2.3.0
 
 dev_dependencies:
   flutter_test:
