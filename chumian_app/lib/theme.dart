@@ -367,23 +367,23 @@ class ThemeProvider extends ChangeNotifier {
         hintStyle: TextStyle(color: textTertiary, fontSize: 15),
         labelStyle: TextStyle(color: textSecondary, fontSize: 15),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.allMd,
+          borderRadius: AppRadius.allXxl,
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allMd,
+          borderRadius: AppRadius.allXxl,
           borderSide: BorderSide(color: primaryColor.withOpacity(0.18)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allMd,
+          borderRadius: AppRadius.allXxl,
           borderSide: BorderSide(color: primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allMd,
+          borderRadius: AppRadius.allXxl,
           borderSide: const BorderSide(color: Color(0xFFE8445C)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allMd,
+          borderRadius: AppRadius.allXxl,
           borderSide: const BorderSide(color: Color(0xFFE8445C), width: 2),
         ),
         contentPadding:
