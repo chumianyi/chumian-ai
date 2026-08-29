@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
@@ -45,9 +44,6 @@ class _ChatPageState extends State<ChatPage> {
   Timer? _typewriterTimer;
   bool _streamDone = false;
   ChatMessage? _currentAiMsg;
-  final SpeechToText _speech = SpeechToText();
-  bool _isListening = false;
-  bool _speechInitialized = false;
   bool _webSearch = false;
 
   static const _galleryChannel = MethodChannel('com.chumian.chumian_ai/gallery');
@@ -80,7 +76,6 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _streamSub?.cancel();
     _typewriterTimer?.cancel();
-    _speech.stop();
     _controller.dispose();
     _scrollController.dispose();
     _focusNode.dispose();
@@ -157,54 +152,6 @@ class _ChatPageState extends State<ChatPage> {
       });
     }
     _stopTypewriter();
-  }
-
-  Future<void> _initSpeech() async {
-    if (_speechInitialized) return;
-    try {
-      _speechInitialized = await _speech.initialize();
-    } catch (_) {
-      _speechInitialized = false;
-    }
-  }
-
-  Future<void> _startListening() async {
-    await _initSpeech();
-    final status = await Permission.microphone.request();
-    if (!status.isGranted) {
-      if (mounted) _showSnack('需要麦克风权限');
-      return;
-    }
-    if (!_speechInitialized) {
-      if (mounted) _showSnack('语音识别不可用');
-      return;
-    }
-    setState(() => _isListening = true);
-    _speech.listen(
-      onResult: (result) {
-        if (mounted) {
-          setState(() {
-            _controller.text = result.recognizedWords;
-            _controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: _controller.text.length),
-            );
-          });
-        }
-      },
-      listenFor: const Duration(seconds: 60),
-      pauseFor: const Duration(seconds: 3),
-      localeId: 'zh_CN',
-    );
-  }
-
-  Future<void> _stopListening() async {
-    await _speech.stop();
-    if (mounted) {
-      setState(() => _isListening = false);
-      if (_controller.text.trim().isNotEmpty) {
-        _sendMessage();
-      }
-    }
   }
 
   void _showSnack(String msg) {
@@ -1216,97 +1163,99 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildInputBar() {
-    final option = AppModels.optionOf(_selectedModel);
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       decoration: BoxDecoration(
         color: context.surface,
-        boxShadow: const [
-          BoxShadow(color: Color(0x10000000), blurRadius: 12, offset: Offset(0, -2)),
-        ],
+        border: Border(
+          top: BorderSide(color: context.textTertiary.withValues(alpha: 0.08), width: 0.5),
+        ),
       ),
       child: SafeArea(
         top: false,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (_isListening)
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: context.danger.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE8445C),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      '正在聆听… 松开发送',
-                      style: TextStyle(fontSize: 13, color: Color(0xFFE8445C)),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildWaveform(),
-                  ],
-                ),
-              ),
+            // ===== 横条：联网搜索 + 更换模型 =====
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // 模型胶囊
+                // 联网搜索按钮
                 GestureDetector(
-                  onTap: _showModelPicker,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 9,
-                    ),
+                  onTap: _toggleWebSearch,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: option.color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
+                      color: _webSearch
+                          ? context.primary.withValues(alpha: 0.12)
+                          : context.surfaceSubtle,
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          _modelIcon(_selectedModel),
-                          size: 15,
-                          color: option.color,
+                          Icons.public_rounded,
+                          size: 16,
+                          color: _webSearch ? context.primary : context.textTertiary,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 6),
                         Text(
-                          option.name.length > 12
-                              ? '${option.name.substring(0, 10)}…'
-                              : option.name,
+                          '联网搜索',
                           style: TextStyle(
-                            fontSize: 11,
-                            color: option.color,
+                            fontSize: 13,
                             fontWeight: FontWeight.w600,
+                            color: _webSearch ? context.primary : context.textSecondary,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                // 输入框
-                Expanded(
+                const Spacer(),
+                // 更换模型按钮
+                GestureDetector(
+                  onTap: _showModelPicker,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: context.surfaceSubtle,
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(
-                        color: context.primary.withValues(alpha: 0.2),
-                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.smart_toy_rounded,
+                          size: 16,
+                          color: context.textTertiary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '更换模型',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: context.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // ===== 输入行：扁平输入框 + 发送按钮 =====
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // 扁平输入框
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.surfaceSubtle,
+                      borderRadius: BorderRadius.circular(22),
                     ),
                     child: TextField(
                       controller: _controller,
@@ -1316,91 +1265,44 @@ class _ChatPageState extends State<ChatPage> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 16,
                         color: context.textPrimary,
+                        height: 1.4,
                       ),
                       decoration: InputDecoration(
                         hintText: '输入消息…',
                         hintStyle: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: context.textTertiary,
                         ),
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
+                          horizontal: 18,
+                          vertical: 14,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                // 联网搜索开关
-                GestureDetector(
-                  onTap: _toggleWebSearch,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: _webSearch
-                          ? context.primary
-                          : context.primary.withValues(alpha: 0.14),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.public_rounded,
-                      color: _webSearch ? Colors.white : context.primary,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                // 语音按钮
-                GestureDetector(
-                  onLongPressStart: (_) => _startListening(),
-                  onLongPressEnd: (_) => _stopListening(),
-                  onLongPressCancel: () => _stopListening(),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: _isListening
-                          ? context.danger
-                          : context.primary.withValues(alpha: 0.14),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                      color: _isListening ? Colors.white : context.primary,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 10),
                 // 发送 / 停止
                 GestureDetector(
                   onTap: _isSending ? _stopGeneration : _sendMessage,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    width: 44,
-                    height: 44,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       gradient: _isSending ? null : context.vibrantGradient,
                       color: _isSending ? context.danger : null,
                       shape: BoxShape.circle,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x22000000),
-                          blurRadius: 10,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
                     ),
                     child: Icon(
                       _isSending ? Icons.stop_rounded : Icons.send_rounded,
                       color: Colors.white,
-                      size: 20,
+                      size: 22,
                     ),
                   ),
                 ),
@@ -1412,20 +1314,4 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildWaveform() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (i) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 1),
-          width: 3,
-          height: 8.0 + (i % 3) * 4,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8445C),
-            borderRadius: BorderRadius.circular(2),
-          ),
-        );
-      }),
-    );
-  }
 }
