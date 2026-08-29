@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'agent_leaderboard_page.dart';
+import 'image_preview_page.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -94,8 +95,10 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
               TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: '标题')),
               const SizedBox(height: 12),
               TextField(controller: contentCtrl, maxLines: 3, decoration: const InputDecoration(labelText: '描述')),
-              const SizedBox(height: 12),
-              TextField(controller: mediaCtrl, decoration: const InputDecoration(labelText: '媒体URL')),
+              if (selectedType != 'agent') ...[
+                const SizedBox(height: 12),
+                TextField(controller: mediaCtrl, decoration: const InputDecoration(labelText: '媒体URL')),
+              ],
             ]),
           ),
           actions: [
@@ -203,14 +206,17 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
         if (mediaUrl.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: mediaUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                placeholder: (_, __) => Container(height: 180, color: Colors.grey[200], child: const Center(child: CircularProgressIndicator())),
-                errorWidget: (_, __, ___) => Container(height: 180, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
+            child: GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ImagePreviewPage(imageUrl: mediaUrl))),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: mediaUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  placeholder: (_, __) => Container(height: 180, color: Colors.grey[200], child: const Center(child: CircularProgressIndicator())),
+                  errorWidget: (_, __, ___) => Container(height: 180, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
+                ),
               ),
             ),
           ),

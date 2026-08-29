@@ -1,11 +1,16 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:video_player/video_player.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'image_preview_page.dart';
 
 class ChatMessage {
   final String id;
@@ -513,7 +518,23 @@ class _ChatPageState extends State<ChatPage> {
                           ? Text(msg.content, style: const TextStyle(color: Colors.white, fontSize: 15))
                           : MarkdownBody(data: msg.content, styleSheet: MarkdownStyleSheet(p: const TextStyle(fontSize: 15), h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold), h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), h3: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), code: const TextStyle(fontSize: 13, backgroundColor: Colors.black12), codeblockDecoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(8)))),
                     if (msg.imageUrl != null)
-                      Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(ApiService.getMediaUrl(msg.imageUrl!), width: 250, fit: BoxFit.cover))),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ImagePreviewPage(imageUrl: ApiService.getMediaUrl(msg.imageUrl!)))),
+                          onLongPress: () => _showImageMenu(ApiService.getMediaUrl(msg.imageUrl!)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: CachedNetworkImage(
+                              imageUrl: ApiService.getMediaUrl(msg.imageUrl!),
+                              width: 250,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => Container(width: 250, height: 180, color: Colors.grey[200], child: const Center(child: CircularProgressIndicator(strokeWidth: 2))),
+                              errorWidget: (_, __, ___) => Container(width: 250, height: 180, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
+                            ),
+                          ),
+                        ),
+                      ),
                     if (msg.videoUrl != null) _buildVideoPlayer(msg.videoUrl!),
                     if (msg.videoLoading) const Padding(padding: EdgeInsets.only(top: 8), child: Row(children: [SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)), SizedBox(width: 8), Text('视频生成中...', style: TextStyle(fontSize: 13))])),
                   ],
@@ -557,6 +578,41 @@ class _ChatPageState extends State<ChatPage> {
           if (msg.isExpanded) Padding(padding: const EdgeInsets.only(top: 8), child: Text(msg.thinkContent!, style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary, height: 1.5))),
         ],
       ),
+    );
+  }
+
+  Future<void> _saveImage(String url) async {
+    try {
+      final status = await Permission.storage.request();
+      if (!status.isGranted && !status.isPermanentlyDenied) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('需要存储权限')));
+        return;
+      }
+      final response = await Dio().get(url, options: Options(responseType: ResponseType.bytes));
+      final bytes = Uint8List.fromList(response.data);
+      final result = await ImageGallerySaver.saveImage(bytes, name: 'chumian_ai_${DateTime.now().millisecondsSinceEpoch}', quality: 100);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['isSuccess'] == true ? '图片已保存到相册' : '保存失败')));
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+    }
+  }
+
+  void _showImageMenu(String imageUrl) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        ListTile(leading: const Icon(Icons.zoom_in), title: const Text('查看大图'), onTap: () {
+          Navigator.pop(ctx);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ImagePreviewPage(imageUrl: imageUrl)));
+        }),
+        ListTile(leading: const Icon(Icons.download), title: const Text('保存到相册'), onTap: () {
+          Navigator.pop(ctx);
+          _saveImage(imageUrl);
+        }),
+        ListTile(leading: const Icon(Icons.close), title: const Text('取消'), onTap: () => Navigator.pop(ctx)),
+      ])),
     );
   }
 
