@@ -284,6 +284,16 @@ class ApiService {
     return List<dynamic>.from(resp.data['results'] ?? []);
   }
 
+  static Future<Map<String, dynamic>> agentApply(String reason) async {
+    final resp = await _dio.post('/api/agent/apply', data: {'reason': reason});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> agentApplyStatus() async {
+    final resp = await _dio.get('/api/agent/apply/status');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
   static String getMediaUrl(String path) {
     if (path.startsWith('http')) return path;
     return '$baseUrl$path';

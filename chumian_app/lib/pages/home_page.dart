@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
+import 'agent_page.dart';
 import 'chat_page.dart';
 import 'creative_page.dart';
 import 'explore_page.dart';
@@ -19,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  static const List<NavItemSpec> _navItems = [
+  List<NavItemSpec> _navItems = [
     NavItemSpec(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '对话'),
     NavItemSpec(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '创意'),
     NavItemSpec(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: '探索'),
@@ -28,7 +31,8 @@ class _HomePageState extends State<HomePage> {
     NavItemSpec(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
   ];
 
-  late final List<Widget> _pages;
+  List<Widget> _pages = [];
+  bool _agentEnabled = false;
 
   @override
   void initState() {
@@ -41,6 +45,30 @@ class _HomePageState extends State<HomePage> {
       const PointsPage(),
       ProfilePage(themeProvider: widget.themeProvider),
     ];
+    _loadAgentStatus();
+  }
+
+  Future<void> _loadAgentStatus() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var status = prefs.getString('agent_status');
+      if (status == null) {
+        final data = await ApiService.agentApplyStatus();
+        status = data['status'];
+        if (status != null) prefs.setString('agent_status', status);
+      }
+      if (status == 'approved' && !_agentEnabled) {
+        setState(() {
+          _agentEnabled = true;
+          _navItems = List.from(_navItems)..insert(5, NavItemSpec(
+            icon: Icons.smart_toy_outlined,
+            activeIcon: Icons.smart_toy,
+            label: 'AGENT',
+          ));
+          _pages = List.from(_pages)..insert(5, const AgentPage());
+        });
+      }
+    } catch (_) {}
   }
 
   @override

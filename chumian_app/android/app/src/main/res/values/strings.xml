@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">mj盒子</string>
     <string name="accessibility_description">mj盒子无障碍服务，用于检测输入框中的 mj 关键词并触发全屏视频播放</string>
+<string name="accessibility_service_description">初眠AI本地AGENT服务，用于读取屏幕内容并执行自动化操作</string>
 </resources>

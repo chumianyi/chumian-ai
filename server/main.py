@@ -255,6 +255,16 @@ async def init_db():
             created_at TEXT,
             UNIQUE(user_id, guess_date)
         );
+        CREATE TABLE IF NOT EXISTS agent_applications (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            review_result TEXT,
+            created_at TEXT,
+            reviewed_at TEXT,
+            UNIQUE(user_id)
+        );
     """
     await db.executescript(new_tables)
     # New user fields
@@ -479,6 +489,12 @@ async def login(req: LoginRequest):
     token = str(uuid.uuid4())
     await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user["id"]))
     await db.commit()
+    # Check agent application status
+    agent_status = "none"
+    cursor = await db.execute("SELECT status FROM agent_applications WHERE user_id = ?", (user["id"],))
+    agent_row = await cursor.fetchone()
+    if agent_row:
+        agent_status = agent_row["status"]
     await db.close()
     # Check birthday
     birthday_blessing = None
@@ -500,7 +516,8 @@ async def login(req: LoginRequest):
         "birthday_blessing": birthday_blessing,
         "premium_points": user["premium_points"] or 0,
         "svip_type": user["svip_type"] or "none",
-        "svip_expire": user["svip_expire"]
+        "svip_expire": user["svip_expire"],
+        "agent_status": agent_status
     })
     response.set_cookie("token", token, httponly=True, samesite="lax", max_age=30*24*3600)
     return response
@@ -537,6 +554,9 @@ async def user_info(request: Request):
     mutual = (await cursor.fetchone())["c"]
     cursor = await db.execute("SELECT COUNT(*) as c FROM notifications WHERE user_id = ? AND is_read = 0", (user["id"],))
     unread = (await cursor.fetchone())["c"]
+    cursor = await db.execute("SELECT status FROM agent_applications WHERE user_id = ?", (user["id"],))
+    agent_row = await cursor.fetchone()
+    agent_status = agent_row["status"] if agent_row else "none"
     await db.close()
     return {
         "id": user["id"],
@@ -557,7 +577,8 @@ async def user_info(request: Request):
         "followers_count": followers,
         "following_count": following,
         "mutual_count": mutual,
-        "unread_notifications": unread
+        "unread_notifications": unread,
+        "agent_status": agent_status
     }
 
 @app.get("/api/user/points-log")
@@ -568,6 +589,100 @@ async def points_log(request: Request):
     rows = await cursor.fetchall()
     await db.close()
     return [dict(r) for r in rows]
+
+async def review_agent_application(reason: str) -> tuple:
+    """调用GLM审核申请理由，返回(是否通过, 审核结果说明)。"""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            payload = {
+                "model": "glm-4-flash",
+                "messages": [
+                    {"role": "system", "content": "你是一个严格的功能审核员。用户申请使用本地AGENT功能（AI操控手机）。请判断申请理由是否合理、是否有恶意用途。只回复JSON：{\"approved\": true/false, \"reason\": \"审核说明\"}"},
+                    {"role": "user", "content": "申请理由：%s" % reason}
+                ],
+                "stream": False
+            }
+            headers = {"Authorization": "Bearer %s" % GLM_API_KEY, "Content-Type": "application/json"}
+            resp = await client.post("%s/chat/completions" % GLM_BASE_URL, json=payload, headers=headers)
+            data = resp.json()
+            content = data["choices"][0]["message"]["content"]
+            # 解析JSON
+            import re as _re
+            json_match = _re.search(r'\{[^{}]*\}', content)
+            if json_match:
+                result = json.loads(json_match.group())
+                return (bool(result.get("approved", False)), result.get("reason", "审核完成"))
+            return (True, "审核通过")
+    except Exception as e:
+        return (True, "自动审核通过（审核服务暂不可用，默认通过）")
+
+class AgentApplyRequest(BaseModel):
+    reason: str
+
+@app.post("/api/agent/apply")
+async def agent_apply(request: Request, req: AgentApplyRequest):
+    user = request.state.user
+    if not req.reason or len(req.reason.strip()) < 10:
+        raise HTTPException(400, "申请理由至少10个字")
+    db = await get_db()
+    # 检查是否已有申请
+    cursor = await db.execute("SELECT id, status FROM agent_applications WHERE user_id = ?", (user["id"],))
+    existing = await cursor.fetchone()
+    if existing and existing["status"] == "pending":
+        await db.close()
+        raise HTTPException(400, "您已有审核中的申请，请耐心等待")
+    if existing and existing["status"] == "approved":
+        await db.close()
+        raise HTTPException(400, "您已通过审核，无需再次申请")
+    app_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+    if existing:
+        await db.execute("UPDATE agent_applications SET reason = ?, status = 'pending', review_result = NULL, created_at = ?, reviewed_at = NULL WHERE id = ?",
+                         (req.reason.strip(), now, existing["id"]))
+    else:
+        await db.execute("INSERT INTO agent_applications (id, user_id, reason, status, created_at) VALUES (?, ?, ?, 'pending', ?)",
+                         (app_id, user["id"], req.reason.strip(), now))
+    await db.commit()
+    await db.close()
+    # 异步触发审核（模拟3-4个工作日，这里立即审核但状态先pending，客户端显示审核中）
+    # 实际审核由定时任务或下次查询时触发
+    asyncio.create_task(_delayed_review(user["id"]))
+    return {"success": True, "status": "pending", "message": "申请已提交，审核中（预计3-4个工作日）"}
+
+async def _delayed_review(user_id: str):
+    """延迟审核：等待60秒后自动审核（模拟工作日，实际可配置）。"""
+    await asyncio.sleep(60)
+    try:
+        db = await get_db()
+        cursor = await db.execute("SELECT id, reason, status FROM agent_applications WHERE user_id = ?", (user_id,))
+        row = await cursor.fetchone()
+        if row and row["status"] == "pending":
+            approved, review_result = await review_agent_application(row["reason"])
+            status = "approved" if approved else "rejected"
+            await db.execute("UPDATE agent_applications SET status = ?, review_result = ?, reviewed_at = ? WHERE id = ?",
+                             (status, review_result, datetime.now().isoformat(), row["id"]))
+            await db.commit()
+        await db.close()
+    except Exception:
+        pass
+
+@app.get("/api/agent/apply/status")
+async def agent_apply_status(request: Request):
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM agent_applications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", (user["id"],))
+    row = await cursor.fetchone()
+    await db.close()
+    if not row:
+        return {"status": "none", "has_application": False}
+    return {
+        "status": row["status"],
+        "reason": row["reason"],
+        "review_result": row["review_result"],
+        "created_at": row["created_at"],
+        "reviewed_at": row["reviewed_at"],
+        "has_application": True
+    }
 
 @app.post("/api/verify-app")
 async def verify_app(req: VerifyAppRequest):

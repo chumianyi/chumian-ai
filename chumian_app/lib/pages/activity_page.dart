@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'agent_apply_page.dart';
+import '../services/api_service.dart';
 import '../services/api_service.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/app_card.dart';
@@ -17,6 +19,7 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   bool _loading = true;
+  String? _agentStatus;
   bool _loadFailed = false;
   bool _playedToday = false;
   Map<String, dynamic>? _todayRecord;
@@ -194,6 +197,7 @@ class _ActivityPageState extends State<ActivityPage> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
+          _buildAgentCard(),
           _buildGameCard(),
           SectionHeader(
             title: '历史记录',
@@ -249,6 +253,65 @@ class _ActivityPageState extends State<ActivityPage> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAgentCard() {
+    final status = _agentStatus;
+    IconData icon;
+    String title;
+    String subtitle;
+    Color color;
+    if (status == 'approved') {
+      icon = Icons.check_circle_rounded;
+      title = '本地AGENT已开通';
+      subtitle = '返回主页即可使用AGENT功能';
+      color = Colors.green;
+    } else if (status == 'pending') {
+      icon = Icons.hourglass_empty_rounded;
+      title = 'AGENT审核中';
+      subtitle = '预计3-4个工作日出结果';
+      color = Colors.orange;
+    } else if (status == 'rejected') {
+      icon = Icons.cancel_rounded;
+      title = 'AGENT审核未通过';
+      subtitle = '点击查看原因并重新申请';
+      color = Colors.red;
+    } else {
+      icon = Icons.smart_toy_rounded;
+      title = '测试本地AGENT功能';
+      subtitle = '让AI操控你的手机，写代码、自动化操作';
+      color = Colors.purple;
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GradientCard(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [color.withValues(alpha: 0.8), color.withValues(alpha: 0.6)],
+        ),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AgentApplyPage()));
+        },
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 36),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white),
+          ],
+        ),
       ),
     );
   }
