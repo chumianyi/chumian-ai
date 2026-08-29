@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'image_preview_page.dart';
+import 'video_preview_page.dart';
 
 class ChatMessage {
   final String id;
@@ -612,18 +613,27 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildVideoPlayer(String url) {
-    return FutureBuilder<VideoPlayerController>(
-      future: () async {
-        final ctrl = VideoPlayerController.networkUrl(Uri.parse(ApiService.getMediaUrl(url)));
-        await ctrl.initialize();
-        return ctrl;
-      }(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(12), child: AspectRatio(aspectRatio: snapshot.data!.value.aspectRatio, child: VideoPlayer(snapshot.data!))));
-        }
-        return const Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator());
-      },
+    final videoUrl = ApiService.getMediaUrl(url);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VideoPreviewPage(videoUrl: videoUrl))),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: 250,
+            height: 180,
+            color: Colors.black,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(Icons.play_circle_fill, size: 56, color: Colors.white70),
+                Positioned(bottom: 8, right: 8, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(8)), child: const Text('点击播放', style: TextStyle(color: Colors.white, fontSize: 11)))),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

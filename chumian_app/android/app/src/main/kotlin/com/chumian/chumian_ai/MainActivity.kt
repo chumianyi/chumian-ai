@@ -30,6 +30,19 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("INVALID_ARGS", "图片数据为空", null)
                 }
+            } else if (call.method == "saveVideo") {
+                val bytes = call.argument<ByteArray>("bytes")
+                val albumName = call.argument<String>("album") ?: "初眠AI"
+                if (bytes != null) {
+                    try {
+                        val saved = saveVideoToGallery(bytes, albumName)
+                        if (saved) result.success(true) else result.error("SAVE_FAILED", "保存失败", null)
+                    } catch (e: Exception) {
+                        result.error("SAVE_ERROR", e.message, null)
+                    }
+                } else {
+                    result.error("INVALID_ARGS", "视频数据为空", null)
+                }
             } else {
                 result.notImplemented()
             }
@@ -65,6 +78,33 @@ class MainActivity: FlutterActivity() {
             }
             @Suppress("DEPRECATION")
             android.media.MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), arrayOf("image/jpeg"), null)
+            true
+        }
+    }
+
+    private fun saveVideoToGallery(bytes: ByteArray, albumName: String): Boolean {
+        val fileName = "chumian_ai_${System.currentTimeMillis()}.mp4"
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, fileName)
+                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+                put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + File.separator + albumName)
+                put(MediaStore.Video.Media.IS_PENDING, 1)
+            }
+            val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values) ?: return false
+            contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
+            values.clear()
+            values.put(MediaStore.Video.Media.IS_PENDING, 0)
+            contentResolver.update(uri, values, null, null)
+            true
+        } else {
+            @Suppress("DEPRECATION")
+            val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), albumName)
+            if (!directory.exists()) directory.mkdirs()
+            val file = File(directory, fileName)
+            FileOutputStream(file).use { it.write(bytes) }
+            @Suppress("DEPRECATION")
+            android.media.MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), arrayOf("video/mp4"), null)
             true
         }
     }

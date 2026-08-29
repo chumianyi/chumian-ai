@@ -282,3 +282,72 @@ class ApiService {
     return '$baseUrl$path';
   }
 }
+
+  // ===== v2.0 New APIs =====
+  static Future<Map<String, dynamic>> checkin() async {
+    final resp = await _dio.post('/api/checkin');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> checkinStatus() async {
+    final resp = await _dio.get('/api/checkin/status');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> exchangePoints(int amount) async {
+    final resp = await _dio.post('/api/shop/exchange', data: {'amount': amount});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> buySvip(String plan) async {
+    final resp = await _dio.post('/api/shop/svip', data: {'plan': plan});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> guessActivity(int points, String choice) async {
+    final resp = await _dio.post('/api/activity/guess', data: {'points': points, 'choice': choice});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> guessStatus() async {
+    final resp = await _dio.get('/api/activity/guess/status');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<void> updateProfile({String? nickname, String? avatar, String? qq, String? birthday}) async {
+    final data = <String, dynamic>{};
+    if (nickname != null) data['nickname'] = nickname;
+    if (avatar != null) data['avatar'] = avatar;
+    if (qq != null) data['qq'] = qq;
+    if (birthday != null) data['birthday'] = birthday;
+    await _dio.put('/api/profile', data: data);
+  }
+
+  static Future<Map<String, dynamic>> getUserProfile(String userId) async {
+    final resp = await _dio.get('/api/users/$userId');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> followUser(String userId) async {
+    final resp = await _dio.post('/api/users/$userId/follow');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getFollowers(String userId) async {
+    final resp = await _dio.get('/api/users/$userId/followers');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getFollowing(String userId) async {
+    final resp = await _dio.get('/api/users/$userId/following');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> getNotifications() async {
+    final resp = await _dio.get('/api/notifications');
+    return List<dynamic>.from(resp.data);
+  }
+
+  static Future<void> readNotification(String nid) async {
+    await _dio.post('/api/notifications/$nid/read');
+  }

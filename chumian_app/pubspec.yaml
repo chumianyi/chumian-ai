@@ -1,7 +1,7 @@
 name: chumian_ai
 description: "初眠AI - 智能AI助手"
 publish_to: 'none'
-version: 1.5.0+5
+version: 2.0.0+6
 
 environment:
   sdk: ^3.5.0
@@ -24,6 +24,7 @@ dependencies:
   speech_to_text: ^6.6.2
   permission_handler: ^11.3.1
   photo_view: ^0.15.0
+  chewie: ^1.8.5
 
 dev_dependencies:
   flutter_test:

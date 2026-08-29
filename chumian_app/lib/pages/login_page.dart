@@ -3,7 +3,7 @@ import '../services/api_service.dart';
 import '../theme.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback onLoginSuccess;
+  final Function(String?) onLoginSuccess;
   const LoginPage({super.key, required this.onLoginSuccess});
 
   @override
@@ -57,8 +57,10 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _loading = true);
     try {
+      String? blessing;
       if (_isLogin) {
-        await ApiService.login(username, password);
+        final resp = await ApiService.login(username, password);
+        blessing = resp['birthday_blessing'];
       } else {
         await ApiService.register(
           username: username,
@@ -66,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
           nickname: _nicknameController.text.trim(),
         );
       }
-      widget.onLoginSuccess();
+      widget.onLoginSuccess(blessing);
     } catch (e) {
       String msg = e.toString();
       if (msg.contains('400')) msg = '信息有误，请检查';

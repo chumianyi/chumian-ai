@@ -176,6 +176,62 @@ async def init_db():
         """)
     except Exception:
         pass
+    # New tables for v2.0
+    new_tables = """
+        CREATE TABLE IF NOT EXISTS checkins (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            checkin_date TEXT NOT NULL,
+            premium_points INTEGER DEFAULT 0,
+            streak INTEGER DEFAULT 0,
+            created_at TEXT,
+            UNIQUE(user_id, checkin_date)
+        );
+        CREATE TABLE IF NOT EXISTS followings (
+            id TEXT PRIMARY KEY,
+            follower_id TEXT NOT NULL,
+            following_id TEXT NOT NULL,
+            created_at TEXT,
+            UNIQUE(follower_id, following_id)
+        );
+        CREATE TABLE IF NOT EXISTS notifications (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT,
+            related_id TEXT,
+            is_read INTEGER DEFAULT 0,
+            created_at TEXT
+        );
+        CREATE TABLE IF NOT EXISTS activity_guess (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            guess_date TEXT NOT NULL,
+            bet_points INTEGER NOT NULL,
+            choice TEXT NOT NULL,
+            result TEXT,
+            won INTEGER DEFAULT 0,
+            points_change INTEGER DEFAULT 0,
+            created_at TEXT,
+            UNIQUE(user_id, guess_date)
+        );
+    """
+    await db.executescript(new_tables)
+    # New user fields
+    user_migrations = [
+        "ALTER TABLE users ADD COLUMN premium_points INTEGER DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN svip_type TEXT DEFAULT 'none'",
+        "ALTER TABLE users ADD COLUMN svip_expire TEXT",
+        "ALTER TABLE users ADD COLUMN qq TEXT",
+        "ALTER TABLE users ADD COLUMN birthday TEXT",
+        "ALTER TABLE users ADD COLUMN likes_count INTEGER DEFAULT 0",
+    ]
+    for m in user_migrations:
+        try:
+            await db.execute(m)
+        except Exception:
+            pass
     await db.commit()
     await db.close()
 
@@ -384,13 +440,27 @@ async def login(req: LoginRequest):
     await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user["id"]))
     await db.commit()
     await db.close()
+    # Check birthday
+    birthday_blessing = None
+    today_str = datetime.now().strftime("%m-%d")
+    if user["birthday"]:
+        try:
+            bd = user["birthday"][5:]  # MM-DD
+            if bd == today_str:
+                birthday_blessing = f"生日快乐，{user['nickname']}！初眠AI祝你天天开心～"
+        except Exception:
+            pass
     response = JSONResponse({
         "success": True,
         "user_id": user["id"],
         "nickname": user["nickname"],
         "email": user["email"],
         "oobe_completed": bool(user["oobe_completed"]),
-        "token": token
+        "token": token,
+        "birthday_blessing": birthday_blessing,
+        "premium_points": user["premium_points"] or 0,
+        "svip_type": user["svip_type"] or "none",
+        "svip_expire": user["svip_expire"]
     })
     response.set_cookie("token", token, httponly=True, samesite="lax", max_age=30*24*3600)
     return response
@@ -418,6 +488,16 @@ async def complete_oobe(request: Request):
 @app.get("/api/user/info")
 async def user_info(request: Request):
     user = request.state.user
+    db = await get_db()
+    cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE following_id = ?", (user["id"],))
+    followers = (await cursor.fetchone())["c"]
+    cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE follower_id = ?", (user["id"],))
+    following = (await cursor.fetchone())["c"]
+    cursor = await db.execute("SELECT COUNT(*) as c FROM followings f1 WHERE f1.follower_id = ? AND EXISTS (SELECT 1 FROM followings f2 WHERE f2.follower_id = f1.following_id AND f2.following_id = f1.follower_id)", (user["id"],))
+    mutual = (await cursor.fetchone())["c"]
+    cursor = await db.execute("SELECT COUNT(*) as c FROM notifications WHERE user_id = ? AND is_read = 0", (user["id"],))
+    unread = (await cursor.fetchone())["c"]
+    await db.close()
     return {
         "id": user["id"],
         "email": user["email"],
@@ -427,7 +507,17 @@ async def user_info(request: Request):
         "is_banned": bool(user["is_banned"]),
         "ban_until": user["ban_until"],
         "avatar": user["avatar"],
-        "created_at": user["created_at"]
+        "created_at": user["created_at"],
+        "premium_points": user["premium_points"] or 0,
+        "svip_type": user["svip_type"] or "none",
+        "svip_expire": user["svip_expire"],
+        "qq": user["qq"],
+        "birthday": user["birthday"],
+        "likes_count": user["likes_count"] or 0,
+        "followers_count": followers,
+        "following_count": following,
+        "mutual_count": mutual,
+        "unread_notifications": unread
     }
 
 @app.get("/api/user/points-log")
@@ -954,3 +1044,287 @@ async def list_templates():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=24512)
+
+# ==================== v2.0 New APIs ====================
+
+class ProfileUpdateRequest(BaseModel):
+    nickname: Optional[str] = None
+    avatar: Optional[str] = None
+    qq: Optional[str] = None
+    birthday: Optional[str] = None
+
+class ExchangeRequest(BaseModel):
+    amount: int  # premium points to exchange
+
+class SvipRequest(BaseModel):
+    plan: str  # monthly / yearly / lifetime
+
+class GuessRequest(BaseModel):
+    points: int
+    choice: str  # big / small
+
+@app.put("/api/profile")
+async def update_profile(request: Request, req: ProfileUpdateRequest):
+    user = request.state.user
+    db = await get_db()
+    fields, values = [], []
+    if req.nickname: fields.append("nickname = ?"); values.append(req.nickname)
+    if req.avatar is not None: fields.append("avatar = ?"); values.append(req.avatar)
+    if req.qq is not None: fields.append("qq = ?"); values.append(req.qq)
+    if req.birthday is not None: fields.append("birthday = ?"); values.append(req.birthday)
+    if fields:
+        values.append(user["id"])
+        await db.execute(f"UPDATE users SET {', '.join(fields)} WHERE id = ?", values)
+        await db.commit()
+    await db.close()
+    return {"success": True}
+
+@app.get("/api/users/{user_id}")
+async def get_user_profile(request: Request, user_id: str):
+    db = await get_db()
+    cursor = await db.execute("SELECT id, email, nickname, avatar, qq, birthday, created_at, likes_count FROM users WHERE id = ?", (user_id,))
+    u = await cursor.fetchone()
+    if not u:
+        await db.close()
+        raise HTTPException(404, "用户不存在")
+    cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE following_id = ?", (user_id,))
+    followers = (await cursor.fetchone())["c"]
+    cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE follower_id = ?", (user_id,))
+    following = (await cursor.fetchone())["c"]
+    # Check if current user follows this user
+    is_following = False
+    is_mutual = False
+    if hasattr(request.state, 'user') and request.state.user:
+        cur_id = request.state.user["id"]
+        cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE follower_id = ? AND following_id = ?", (cur_id, user_id))
+        is_following = (await cursor.fetchone())["c"] > 0
+        if is_following:
+            cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE follower_id = ? AND following_id = ?", (user_id, cur_id))
+            is_mutual = (await cursor.fetchone())["c"] > 0
+    await db.close()
+    return {
+        "user_id": u["id"],
+        "nickname": u["nickname"],
+        "avatar": u["avatar"],
+        "qq": u["qq"],
+        "birthday": u["birthday"],
+        "created_at": u["created_at"],
+        "likes_count": u["likes_count"] or 0,
+        "followers_count": followers,
+        "following_count": following,
+        "is_following": is_following,
+        "is_mutual": is_mutual
+    }
+
+@app.post("/api/users/{user_id}/follow")
+async def follow_user(request: Request, user_id: str):
+    user = request.state.user
+    if user["id"] == user_id:
+        raise HTTPException(400, "不能关注自己")
+    db = await get_db()
+    cursor = await db.execute("SELECT id FROM users WHERE id = ?", (user_id,))
+    target = await cursor.fetchone()
+    if not target:
+        await db.close()
+        raise HTTPException(404, "用户不存在")
+    cursor = await db.execute("SELECT id FROM followings WHERE follower_id = ? AND following_id = ?", (user["id"], user_id))
+    existing = await cursor.fetchone()
+    if existing:
+        await db.execute("DELETE FROM followings WHERE id = ?", (existing["id"],))
+        is_following = False
+    else:
+        await db.execute("INSERT INTO followings (id, follower_id, following_id, created_at) VALUES (?, ?, ?, ?)",
+            (str(uuid.uuid4()), user["id"], user_id, datetime.now().isoformat()))
+        is_following = True
+        # Check mutual and create notification
+        cursor = await db.execute("SELECT COUNT(*) as c FROM followings WHERE follower_id = ? AND following_id = ?", (user_id, user["id"]))
+        if (await cursor.fetchone())["c"] > 0:
+            await db.execute("INSERT INTO notifications (id, user_id, type, title, content, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (str(uuid.uuid4()), user_id, "follow", "新的互相关注", f"{user['nickname']} 关注了你，你们已互相关注！", datetime.now().isoformat()))
+        else:
+            await db.execute("INSERT INTO notifications (id, user_id, type, title, content, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (str(uuid.uuid4()), user_id, "follow", "新粉丝", f"{user['nickname']} 关注了你", datetime.now().isoformat()))
+    await db.commit()
+    await db.close()
+    return {"success": True, "is_following": is_following}
+
+@app.get("/api/users/{user_id}/followers")
+async def get_followers(request: Request, user_id: str):
+    db = await get_db()
+    cursor = await db.execute("""
+        SELECT u.id, u.nickname, u.avatar FROM followings f
+        JOIN users u ON u.id = f.follower_id
+        WHERE f.following_id = ? ORDER BY f.created_at DESC
+    """, (user_id,))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/users/{user_id}/following")
+async def get_following(request: Request, user_id: str):
+    db = await get_db()
+    cursor = await db.execute("""
+        SELECT u.id, u.nickname, u.avatar FROM followings f
+        JOIN users u ON u.id = f.following_id
+        WHERE f.follower_id = ? ORDER BY f.created_at DESC
+    """, (user_id,))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/notifications")
+async def get_notifications(request: Request):
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50", (user["id"],))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
+
+@app.post("/api/notifications/{nid}/read")
+async def read_notification(request: Request, nid: str):
+    user = request.state.user
+    db = await get_db()
+    await db.execute("UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?", (nid, user["id"]))
+    await db.commit()
+    await db.close()
+    return {"success": True}
+
+@app.post("/api/checkin")
+async def checkin(request: Request):
+    user = request.state.user
+    today = datetime.now().strftime("%Y-%m-%d")
+    db = await get_db()
+    cursor = await db.execute("SELECT id FROM checkins WHERE user_id = ? AND checkin_date = ?", (user["id"], today))
+    if await cursor.fetchone():
+        await db.close()
+        raise HTTPException(400, "今日已签到")
+    # Calculate streak
+    cursor = await db.execute("SELECT checkin_date, streak FROM checkins WHERE user_id = ? ORDER BY checkin_date DESC LIMIT 1", (user["id"],))
+    last = await cursor.fetchone()
+    streak = 1
+    if last:
+        last_date = datetime.strptime(last["checkin_date"], "%Y-%m-%d")
+        if (datetime.now() - last_date).days == 1:
+            streak = last["streak"] + 1
+    # Random premium points 3-10, +bonus for 7-day streak
+    import random
+    points = random.randint(3, 10)
+    if streak > 0 and streak % 7 == 0:
+        points += 20  # weekly bonus
+    await db.execute("INSERT INTO checkins (id, user_id, checkin_date, premium_points, streak, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], today, points, streak, datetime.now().isoformat()))
+    await db.execute("UPDATE users SET premium_points = premium_points + ? WHERE id = ?", (points, user["id"]))
+    await db.execute("INSERT INTO points_log (id, user_id, points, reason, created_at) VALUES (?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], points, "每日签到", datetime.now().isoformat()))
+    await db.commit()
+    await db.close()
+    return {"success": True, "premium_points": points, "streak": streak, "total_premium": (user["premium_points"] or 0) + points}
+
+@app.get("/api/checkin/status")
+async def checkin_status(request: Request):
+    user = request.state.user
+    today = datetime.now().strftime("%Y-%m-%d")
+    db = await get_db()
+    cursor = await db.execute("SELECT id FROM checkins WHERE user_id = ? AND checkin_date = ?", (user["id"], today))
+    checked = await cursor.fetchone() is not None
+    cursor = await db.execute("SELECT checkin_date, premium_points, streak FROM checkins WHERE user_id = ? ORDER BY checkin_date DESC LIMIT 30", (user["id"],))
+    history = [dict(r) for r in await cursor.fetchall()]
+    cursor = await db.execute("SELECT streak FROM checkins WHERE user_id = ? ORDER BY checkin_date DESC LIMIT 1", (user["id"],))
+    last = await cursor.fetchone()
+    await db.close()
+    return {"checked_today": checked, "current_streak": last["streak"] if last else 0, "history": history}
+
+@app.post("/api/shop/exchange")
+async def exchange_points(request: Request, req: ExchangeRequest):
+    user = request.state.user
+    if req.amount <= 0:
+        raise HTTPException(400, "数量无效")
+    db = await get_db()
+    cursor = await db.execute("SELECT premium_points FROM users WHERE id = ?", (user["id"],))
+    current = (await cursor.fetchone())["premium_points"] or 0
+    if current < req.amount:
+        await db.close()
+        raise HTTPException(400, "高级积分不足")
+    normal_points = req.amount * 20000000  # 1 premium = 20M normal
+    await db.execute("UPDATE users SET premium_points = premium_points - ?, daily_points = daily_points + ? WHERE id = ?",
+        (req.amount, normal_points, user["id"]))
+    await db.execute("INSERT INTO points_log (id, user_id, points, reason, created_at) VALUES (?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], normal_points, f"积分兑换({req.amount}高级积分)", datetime.now().isoformat()))
+    await db.commit()
+    await db.close()
+    return {"success": True, "normal_points_added": normal_points, "premium_remaining": current - req.amount}
+
+@app.post("/api/shop/svip")
+async def buy_svip(request: Request, req: SvipRequest):
+    user = request.state.user
+    prices = {"monthly": 200, "yearly": 2000, "lifetime": 100000}
+    if req.plan not in prices:
+        raise HTTPException(400, "无效的套餐")
+    cost = prices[req.plan]
+    db = await get_db()
+    cursor = await db.execute("SELECT premium_points, svip_type, svip_expire FROM users WHERE id = ?", (user["id"],))
+    u = await cursor.fetchone()
+    if (u["premium_points"] or 0) < cost:
+        await db.close()
+        raise HTTPException(400, "高级积分不足")
+    # Calculate expire
+    now = datetime.now()
+    if req.plan == "lifetime":
+        expire = "2099-12-31"
+    elif req.plan == "yearly":
+        expire = (now + timedelta(days=365)).strftime("%Y-%m-%d")
+    else:
+        expire = (now + timedelta(days=30)).strftime("%Y-%m-%d")
+    await db.execute("UPDATE users SET premium_points = premium_points - ?, svip_type = ?, svip_expire = ? WHERE id = ?",
+        (cost, req.plan, expire, user["id"]))
+    await db.execute("INSERT INTO points_log (id, user_id, points, reason, created_at) VALUES (?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], -cost, f"购买SVIP({req.plan})", datetime.now().isoformat()))
+    await db.commit()
+    await db.close()
+    return {"success": True, "svip_type": req.plan, "svip_expire": expire}
+
+@app.post("/api/activity/guess")
+async def activity_guess(request: Request, req: GuessRequest):
+    user = request.state.user
+    today = datetime.now().strftime("%Y-%m-%d")
+    if req.choice not in ("big", "small"):
+        raise HTTPException(400, "选择无效")
+    if req.points <= 0:
+        raise HTTPException(400, "押注积分无效")
+    db = await get_db()
+    cursor = await db.execute("SELECT id FROM activity_guess WHERE user_id = ? AND guess_date = ?", (user["id"], today))
+    if await cursor.fetchone():
+        await db.close()
+        raise HTTPException(400, "今日已参与过猜大小")
+    cursor = await db.execute("SELECT daily_points FROM users WHERE id = ?", (user["id"],))
+    current_points = (await cursor.fetchone())["daily_points"]
+    if current_points < req.points:
+        await db.close()
+        raise HTTPException(400, "积分不足")
+    # Random result: big = 51-100, small = 1-50
+    import random
+    roll = random.randint(1, 100)
+    result = "big" if roll > 50 else "small"
+    won = result == req.choice
+    points_change = req.points if won else -req.points
+    await db.execute("UPDATE users SET daily_points = daily_points + ? WHERE id = ?", (points_change, user["id"]))
+    await db.execute("INSERT INTO activity_guess (id, user_id, guess_date, bet_points, choice, result, won, points_change, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], today, req.points, req.choice, result, 1 if won else 0, points_change, datetime.now().isoformat()))
+    await db.execute("INSERT INTO points_log (id, user_id, points, reason, created_at) VALUES (?, ?, ?, ?, ?)",
+        (str(uuid.uuid4()), user["id"], points_change, f"猜大小({'赢' if won else '输'})", datetime.now().isoformat()))
+    await db.commit()
+    await db.close()
+    return {"success": True, "roll": roll, "result": result, "won": won, "points_change": points_change, "remaining_points": current_points + points_change}
+
+@app.get("/api/activity/guess/status")
+async def guess_status(request: Request):
+    user = request.state.user
+    today = datetime.now().strftime("%Y-%m-%d")
+    db = await get_db()
+    cursor = await db.execute("SELECT * FROM activity_guess WHERE user_id = ? AND guess_date = ?", (user["id"], today))
+    today_record = await cursor.fetchone()
+    cursor = await db.execute("SELECT * FROM activity_guess WHERE user_id = ? ORDER BY guess_date DESC LIMIT 10", (user["id"],))
+    history = [dict(r) for r in await cursor.fetchall()]
+    await db.close()
+    return {"played_today": today_record is not None, "today_record": dict(today_record) if today_record else None, "history": history}
