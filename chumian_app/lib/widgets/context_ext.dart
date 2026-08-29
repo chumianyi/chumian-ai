@@ -83,7 +83,6 @@ extension ThemeContextX on BuildContext {
     }
     return Color.lerp(base, Colors.black, delta)?.withValues(alpha: 1) ?? base;
   }
-}
 
   /// 活力渐变（主色→第三色）
   LinearGradient get vibrantGradient => LinearGradient(
@@ -91,6 +90,7 @@ extension ThemeContextX on BuildContext {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
+}
 
 /// 圆角快捷常量（供组件复用）。
 class R {
