@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/api_service.dart';
@@ -53,8 +52,8 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
       if (mounted) {
         setState(() {
           final liked = result['liked'] == true;
-          final current = post['likes'] ?? 0;
-          post['likes'] = liked ? current + 1 : max(current - 1, 0);
+          final current = (post['likes'] ?? 0) as int;
+          post['likes'] = liked ? current + 1 : (current - 1 < 0 ? 0 : current - 1);
         });
       }
     } catch (_) {}
