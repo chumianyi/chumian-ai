@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:dio/dio.dart';
-import 'package:gal/gal.dart';
 import '../theme.dart';
 
 class ImagePreviewPage extends StatefulWidget {
@@ -16,6 +16,7 @@ class ImagePreviewPage extends StatefulWidget {
 
 class _ImagePreviewPageState extends State<ImagePreviewPage> {
   bool _downloading = false;
+  static const platform = MethodChannel('com.chumian.chumian_ai/gallery');
 
   Future<void> _downloadImage() async {
     if (_downloading) return;
@@ -23,7 +24,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     try {
       final response = await Dio().get(widget.imageUrl, options: Options(responseType: ResponseType.bytes));
       final bytes = Uint8List.fromList(response.data);
-      await Gal.putImage(bytes, album: '初眠AI');
+      await platform.invokeMethod('saveImage', {'bytes': bytes, 'album': '初眠AI'});
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('图片已保存到相册')));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: $e')));

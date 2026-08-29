@@ -7,7 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:gal/gal.dart';
+import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
 import 'image_preview_page.dart';
@@ -581,11 +581,13 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  static const _galleryChannel = MethodChannel('com.chumian.chumian_ai/gallery');
+
   Future<void> _saveImage(String url) async {
     try {
       final response = await Dio().get(url, options: Options(responseType: ResponseType.bytes));
       final bytes = Uint8List.fromList(response.data);
-      await Gal.putImage(bytes, album: '初眠AI');
+      await _galleryChannel.invokeMethod('saveImage', {'bytes': bytes, 'album': '初眠AI'});
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('图片已保存到相册')));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('保存失败: $e')));
