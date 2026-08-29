@@ -311,7 +311,7 @@ class AgentCreateRequest(BaseModel):
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/verify-app", "/media/", "/api/models", "/api/templates"]
+    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/verify-app", "/media/", "/api/models", "/api/templates", "/api/health"]
     public_get_paths = ["/api/agents", "/api/posts", "/api/explore"]
     path = request.url.path
     method = request.method
@@ -783,6 +783,24 @@ async def list_agents():
     await db.close()
     return agents
 
+@app.get("/api/health")
+async def health():
+    return {"status": "ok", "service": "chumian-ai"}
+
+@app.get("/api/agents/leaderboard")
+async def agent_leaderboard(limit: int = 50):
+    db = await get_db()
+    cursor = await db.execute("""
+        SELECT a.*, u.nickname as author_nickname
+        FROM agents a JOIN users u ON a.user_id = u.id
+        WHERE a.is_published = 1
+        ORDER BY a.likes DESC
+        LIMIT ?
+    """, (limit,))
+    rows = await cursor.fetchall()
+    await db.close()
+    return [dict(r) for r in rows]
+
 @app.get("/api/agents/{agent_id}")
 async def get_agent(agent_id: str):
     db = await get_db()
@@ -883,20 +901,6 @@ async def publish_agent(request: Request, agent_id: str):
     await db.commit()
     await db.close()
     return {"success": True}
-
-@app.get("/api/agents/leaderboard")
-async def agent_leaderboard(limit: int = 50):
-    db = await get_db()
-    cursor = await db.execute("""
-        SELECT a.*, u.nickname as author_nickname
-        FROM agents a JOIN users u ON a.user_id = u.id
-        WHERE a.is_published = 1
-        ORDER BY a.likes DESC
-        LIMIT ?
-    """, (limit,))
-    rows = await cursor.fetchall()
-    await db.close()
-    return [dict(r) for r in rows]
 
 @app.get("/api/explore")
 async def explore_list(type: str = "all", page: int = 1, page_size: int = 20):
