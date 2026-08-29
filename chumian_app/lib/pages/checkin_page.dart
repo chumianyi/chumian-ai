@@ -185,9 +185,8 @@ class _CheckinPageState extends State<CheckinPage> {
                       ? Icons.check_circle_rounded
                       : Icons.event_available_rounded,
                   loading: _submitting,
-                  enabled: !_checkedToday && !_submitting,
                   height: 52,
-                  onPressed: _checkin,
+                  onPressed: (!_checkedToday && !_submitting) ? _checkin : null,
                 ),
               ],
             ),

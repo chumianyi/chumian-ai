@@ -101,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Row(
                 children: [
                   IconCircle(
-                    icon: Icons.person_edit_outlined,
+                    icon: Icons.edit,
                     size: 40,
                     iconSize: 20,
                   ),
@@ -516,7 +516,7 @@ class _ProfilePageState extends State<ProfilePage> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          gradient: widget.themeProvider.vibrantGradient,
+          gradient: context.vibrantGradient,
           borderRadius: BorderRadius.circular(14),
         ),
         child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),

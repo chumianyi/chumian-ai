@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'context_ext.dart';
 import 'feedback.dart';
+import '../utils/animations.dart';
 
 /// 渐变填充按钮。
 class GradientButton extends StatefulWidget {

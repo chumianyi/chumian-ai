@@ -255,7 +255,7 @@ class StaggeredList extends StatefulWidget {
   State<StaggeredList> createState() => _StaggeredListState();
 }
 
-class _StaggeredListState extends State<StaggeredList> {
+class _StaggeredListState extends State<StaggeredList> with TickerProviderStateMixin {
   late final List<AnimationController> _controllers;
 
   @override

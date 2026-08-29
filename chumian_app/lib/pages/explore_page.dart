@@ -14,6 +14,7 @@ import '../utils/formatters.dart';
 import 'agent_leaderboard_page.dart';
 import 'image_preview_page.dart';
 import 'user_profile_page.dart';
+import '../utils/animations.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -76,7 +77,7 @@ class _ExplorePageState extends State<ExplorePage>
     setState(() {
       if (wasLiked) {
         _likedIds.remove(id);
-        post['likes'] = math.max(0, (post['likes'] ?? 0) - 1);
+        post['likes'] = math.max(0, ((post['likes'] ?? 0) as num) - 1);
       } else {
         _likedIds.add(id);
         post['likes'] = (post['likes'] ?? 0) + 1;
@@ -92,7 +93,7 @@ class _ExplorePageState extends State<ExplorePage>
           } else {
             _likedIds.remove(id);
           }
-          post['likes'] = math.max(0, (post['likes'] ?? 0));
+          post['likes'] = math.max(0, (post['likes'] ?? 0) as num);
         });
       }
     }

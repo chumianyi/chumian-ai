@@ -79,11 +79,18 @@ extension ThemeContextX on BuildContext {
     final base = surface;
     final isLight = Theme.of(this).brightness == Brightness.light;
     if (isLight) {
-      return Color.lerp(base, Colors.white, delta * 8)? .withValues(alpha: 1) ?? base;
+      return Color.lerp(base, Colors.white, delta * 8)?.withValues(alpha: 1) ?? base;
     }
-    return Color.lerp(base, Colors.black, delta)? .withValues(alpha: 1) ?? base;
+    return Color.lerp(base, Colors.black, delta)?.withValues(alpha: 1) ?? base;
   }
 }
+
+  /// 活力渐变（主色→第三色）
+  LinearGradient get vibrantGradient => LinearGradient(
+        colors: [primary, tertiary],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
 /// 圆角快捷常量（供组件复用）。
 class R {
