@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 
 class VideoPreviewPage extends StatefulWidget {
@@ -13,10 +12,10 @@ class VideoPreviewPage extends StatefulWidget {
 }
 
 class _VideoPreviewPageState extends State<VideoPreviewPage> {
-  late VideoPlayerController _videoController;
-  ChewieController? _chewieController;
+  late VideoPlayerController _controller;
   bool _initialized = false;
   bool _downloading = false;
+  bool _showControls = true;
   static const _galleryChannel = MethodChannel('com.chumian.chumian_ai/gallery');
 
   @override
@@ -26,16 +25,12 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   Future<void> _initPlayer() async {
-    _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-    await _videoController.initialize();
-    _chewieController = ChewieController(
-      videoPlayerController: _videoController,
-      autoPlay: true,
-      looping: false,
-      allowFullScreen: true,
-      allowPlaybackSpeedChanging: false,
-      placeholder: const Center(child: CircularProgressIndicator()),
-    );
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
+    await _controller.initialize();
+    await _controller.play();
     if (mounted) setState(() => _initialized = true);
   }
 
@@ -54,10 +49,14 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     }
   }
 
+  String _formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return '${twoDigits(d.inMinutes)}:${twoDigits(d.inSeconds.remainder(60))}';
+  }
+
   @override
   void dispose() {
-    _videoController.dispose();
-    _chewieController?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -80,8 +79,42 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
         ],
       ),
       body: Center(
-        child: _initialized && _chewieController != null
-            ? Chewie(controller: _chewieController!)
+        child: _initialized
+            ? GestureDetector(
+                onTap: () => setState(() => _showControls = !_showControls),
+                child: AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      VideoPlayer(_controller),
+                      if (_showControls) Container(
+                        color: Colors.black54,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(children: [
+                          IconButton(
+                            icon: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white),
+                            onPressed: () => _controller.value.isPlaying ? _controller.pause() : _controller.play(),
+                          ),
+                          Expanded(
+                            child: Slider(
+                              value: _controller.value.position.inSeconds.toDouble(),
+                              max: _controller.value.duration.inSeconds.toDouble(),
+                              onChanged: (v) => _controller.seekTo(Duration(seconds: v.toInt())),
+                              activeColor: Colors.white,
+                              inactiveColor: Colors.white30,
+                            ),
+                          ),
+                          Text('${_formatDuration(_controller.value.position)}/${_formatDuration(_controller.value.duration)}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          IconButton(icon: const Icon(Icons.fullscreen, color: Colors.white), onPressed: () {
+                            SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+                          }),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+              )
             : const CircularProgressIndicator(color: Colors.white),
       ),
     );
