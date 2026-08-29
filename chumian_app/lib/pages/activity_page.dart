@@ -82,12 +82,19 @@ class _ActivityPageState extends State<ActivityPage> {
             ]),
             const SizedBox(height: 20),
             if (_playedToday) ...[
-              Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Column(children: [
-                const Text('今日已参与', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('开出：${_todayRecord?['result'] == 'big' ? '大' : '小'} (${_todayRecord?['roll']})'),
-                Text('结果：${_todayRecord?['won'] == 1 ? '赢了 +${_todayRecord?['points_change']}' : '输了 ${_todayRecord?['points_change']}', style: TextStyle(color: _todayRecord?['won'] == 1 ? Colors.green : Colors.red)),
-              ])),
+              Builder(builder: (ctx) {
+                final rec = _todayRecord;
+                final resultText = rec?['result'] == 'big' ? '大' : '小';
+                final roll = rec?['roll'] ?? 0;
+                final won = rec?['won'] == 1;
+                final change = rec?['points_change'] ?? 0;
+                return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Column(children: [
+                  const Text('今日已参与', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text('开出：$resultText ($roll)'),
+                  Text('结果：${won ? '赢了 +$change' : '输了 $change'}', style: TextStyle(color: won ? Colors.green : Colors.red)),
+                ]));
+              }),
             ] else ...[
               TextField(controller: _pointsCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: '押注积分数量', hintText: '输入要押的积分')),
               const SizedBox(height: 16),

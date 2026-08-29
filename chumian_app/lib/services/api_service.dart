@@ -281,7 +281,6 @@ class ApiService {
     if (path.startsWith('http')) return path;
     return '$baseUrl$path';
   }
-}
 
   // ===== v2.0 New APIs =====
   static Future<Map<String, dynamic>> checkin() async {
