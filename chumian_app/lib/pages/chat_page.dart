@@ -8,6 +8,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../models/chat_message.dart';
 import '../widgets/context_ext.dart';
@@ -46,6 +47,7 @@ class _ChatPageState extends State<ChatPage> {
   final SpeechToText _speech = SpeechToText();
   bool _isListening = false;
   bool _speechInitialized = false;
+  bool _webSearch = false;
 
   static const _galleryChannel = MethodChannel('com.chumian.chumian_ai/gallery');
 
@@ -59,6 +61,18 @@ class _ChatPageState extends State<ChatPage> {
       _controller.text = widget.initialPrompt!;
       WidgetsBinding.instance.addPostFrameCallback((_) => _sendMessage());
     }
+    _loadWebSearch();
+  }
+
+  Future<void> _loadWebSearch() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) setState(() => _webSearch = prefs.getBool('web_search') ?? false);
+  }
+
+  Future<void> _toggleWebSearch() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() => _webSearch = !_webSearch);
+    await prefs.setBool('web_search', _webSearch);
   }
 
   @override
@@ -232,6 +246,7 @@ class _ChatPageState extends State<ChatPage> {
         conversationId: _currentConvId,
         message: text,
         model: _selectedModel,
+        webSearch: _webSearch,
       ).listen(
         (data) {
           if (!mounted) return;
@@ -240,6 +255,10 @@ class _ChatPageState extends State<ChatPage> {
             setState(() {
               aiMsg.thinkContent =
                   (aiMsg.thinkContent ?? '') + (data['content'] ?? '');
+            });
+          } else if (type == 'search_results') {
+            setState(() {
+              aiMsg.searchResults = List<dynamic>.from(data['results'] ?? []);
             });
           } else if (type == 'content') {
             aiMsg.isThinking = false;
@@ -870,6 +889,8 @@ class _ChatPageState extends State<ChatPage> {
             selectable: false,
           ),
         ),
+        if (msg.searchResults != null && msg.searchResults!.isNotEmpty)
+          _buildSearchResults(msg),
         if (msg.videoUrl != null) _buildVideoPlayer(msg.videoUrl!),
         const SizedBox(height: 8),
         Row(
@@ -931,6 +952,89 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _copyText(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (mounted) _showSnack('已复制到剪贴板');
+  }
+
+  Widget _buildSearchResults(ChatMessage msg) {
+    return StatefulBuilder(
+      builder: (context, setSt) {
+        final expanded = msg.isExpanded;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () => setSt(() => msg.isExpanded = !msg.isExpanded),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: context.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.public_rounded, size: 14, color: context.primary),
+                    const SizedBox(width: 5),
+                    Text('已联网搜索 ${msg.searchResults!.length} 条结果',
+                        style: TextStyle(fontSize: 12, color: context.primary)),
+                    const SizedBox(width: 4),
+                    Icon(expanded ? Icons.expand_less : Icons.expand_more,
+                        size: 16, color: context.primary),
+                  ],
+                ),
+              ),
+            ),
+            if (expanded) ...[
+              const SizedBox(height: 8),
+              ...msg.searchResults!.asMap().entries.map((entry) {
+                final i = entry.key;
+                final r = entry.value as Map<String, dynamic>;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GestureDetector(
+                    onTap: () async {
+                      final url = r['url'] ?? '';
+                      if (url.isNotEmpty) {
+                        await launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: context.surfaceSubtle,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('[${i + 1}] ${r['title'] ?? ''}',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.primary)),
+                          const SizedBox(height: 3),
+                          Text(r['snippet'] ?? '',
+                              style: TextStyle(
+                                  fontSize: 12, color: context.textSecondary),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 3),
+                          Text(r['source'] ?? '',
+                              style: TextStyle(
+                                  fontSize: 11, color: context.textTertiary)),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ],
+        );
+      },
+    );
   }
 
   MarkdownStyleSheet _markdownStyle(BuildContext context) {
@@ -1229,6 +1333,27 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
                 const SizedBox(width: 8),
+                // 联网搜索开关
+                GestureDetector(
+                  onTap: _toggleWebSearch,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: _webSearch
+                          ? context.primary
+                          : context.primary.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.public_rounded,
+                      color: _webSearch ? Colors.white : context.primary,
+                      size: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
                 // 语音按钮
                 GestureDetector(
                   onLongPressStart: (_) => _startListening(),

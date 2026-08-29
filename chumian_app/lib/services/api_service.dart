@@ -114,6 +114,7 @@ class ApiService {
     String model = 'glm-4-flash',
     String? imageUrl,
     String? agentId,
+    bool webSearch = false,
   }) {
     final controller = StreamController<Map<String, dynamic>>();
     final data = {
@@ -122,6 +123,7 @@ class ApiService {
       'model': model,
       if (imageUrl != null) 'image_url': imageUrl,
       if (agentId != null) 'agent_id': agentId,
+      'web_search': webSearch,
     };
 
     _dio.post(
@@ -275,6 +277,11 @@ class ApiService {
       'avatar': avatar,
     });
     return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<List<dynamic>> search(String query) async {
+    final resp = await _dio.get('/api/search', queryParameters: {'q': query});
+    return List<dynamic>.from(resp.data['results'] ?? []);
   }
 
   static String getMediaUrl(String path) {

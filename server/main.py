@@ -4,6 +4,7 @@ import time
 import uuid
 import hashlib
 import random
+import re
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
@@ -43,6 +44,47 @@ video_tasks = {}
 SYSTEM_PROMPT = """你是「初眠」，一个温柔、聪明、善解人意的AI助手。
 你会用Markdown格式回复用户，支持标题、加粗、斜体、列表、代码块等格式。
 请始终保持友好、有帮助的态度。"""
+
+async def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
+    """使用 DuckDuckGo HTML 版搜索，不存储结果，实时获取实时返回。"""
+    results = []
+    try:
+        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+            resp = await client.post(
+                "https://html.duckduckgo.com/html/",
+                data={"q": query},
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            )
+            if resp.status_code != 200:
+                return results
+            html = resp.text
+            # 解析搜索结果
+            blocks = re.findall(r'<div class="result results_links.*?">(.*?)</div>\s*</div>', html, re.DOTALL)
+            if not blocks:
+                blocks = re.findall(r'<div class="result">(.*?)</div>\s*</div>', html, re.DOTALL)
+            for block in blocks[:max_results]:
+                title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>', block, re.DOTALL)
+                snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', block, re.DOTALL)
+                if title_m:
+                    url = title_m.group(1).replace("&amp;", "&")
+                    # DuckDuckGo 跳转链接解码
+                    if "uddg=" in url:
+                        uddg = re.search(r"uddg=([^&]+)", url)
+                        if uddg:
+                            from urllib.parse import unquote
+                            url = unquote(uddg.group(1))
+                    title = re.sub(r"<[^>]+>", "", title_m.group(2)).strip()
+                    snippet = re.sub(r"<[^>]+>", "", snippet_m.group(1)).strip() if snippet_m else ""
+                    source = re.search(r"https?://([^/]+)", url)
+                    results.append({
+                        "title": title,
+                        "snippet": snippet,
+                        "url": url,
+                        "source": source.group(1) if source else ""
+                    })
+    except Exception:
+        pass
+    return results
 
 app = FastAPI()
 app.add_middleware(
@@ -343,6 +385,7 @@ class ChatRequest(BaseModel):
     model: Optional[str] = "glm-4-flash"
     image_url: Optional[str] = None
     agent_id: Optional[str] = None
+    web_search: Optional[bool] = False
 
 class GenerateImageRequest(BaseModel):
     prompt: str
@@ -536,6 +579,14 @@ async def verify_app(req: VerifyAppRequest):
         return {"valid": True, "message": "验证通过"}
     return {"valid": False, "message": "你使用的不是官方版"}
 
+@app.get("/api/search")
+async def search(request: Request, q: str):
+    """联网搜索，实时获取实时返回，不存储结果。"""
+    if not q or not q.strip():
+        raise HTTPException(400, "搜索关键词不能为空")
+    results = await web_search(q.strip(), max_results=10)
+    return {"query": q, "results": results, "count": len(results)}
+
 @app.post("/api/chat/stream")
 async def chat_stream(request: Request, req: ChatRequest):
     user = request.state.user
@@ -595,8 +646,20 @@ async def chat_stream(request: Request, req: ChatRequest):
             {"type": "text", "text": req.message},
             {"type": "image_url", "image_url": {"url": req.image_url}}
         ]
+    # 联网搜索：将搜索结果拼入系统提示词
+    search_results = []
+    if req.web_search and model in TEXT_MODELS:
+        search_results = await web_search(req.message, max_results=5)
+        if search_results:
+            search_context = "\n\n【联网搜索结果】\n" + "\n".join(
+                ["[%d] %s\n%s\n来源: %s" % (i+1, r["title"], r["snippet"], r["url"]) for i, r in enumerate(search_results)]
+            ) + "\n\n请结合以上搜索结果回答用户问题，回答中可引用来源编号。"
+            messages[0]["content"] = SYSTEM_PROMPT + search_context
     async def generate():
         try:
+            # 先发送搜索结果事件
+            if search_results:
+                yield "data: %s\n\n" % json.dumps({"type": "search_results", "results": search_results})
             async with httpx.AsyncClient(timeout=120.0) as client:
                 payload = {"model": model, "messages": messages, "stream": True}
                 headers = {"Authorization": "Bearer %s" % GLM_API_KEY, "Content-Type": "application/json"}

@@ -13,6 +13,7 @@ class ChatMessage {
   String? videoUrl;
   String? videoTaskId;
   bool videoLoading = false;
+  List<dynamic>? searchResults;
 
   ChatMessage({
     required this.id,
@@ -25,6 +26,7 @@ class ChatMessage {
     this.imageUrl,
     this.videoUrl,
     this.videoTaskId,
+    this.searchResults,
   });
 
   bool get isUser => role == 'user';
