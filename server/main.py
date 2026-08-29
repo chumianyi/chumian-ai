@@ -46,42 +46,39 @@ SYSTEM_PROMPT = """你是「初眠」，一个温柔、聪明、善解人意的A
 请始终保持友好、有帮助的态度。"""
 
 async def web_search(query: str, max_results: int = 5) -> List[Dict[str, str]]:
-    """使用 DuckDuckGo HTML 版搜索，不存储结果，实时获取实时返回。"""
+    """使用必应(cn.bing.com)搜索，不存储结果，实时获取实时返回。"""
     results = []
     try:
-        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
-            resp = await client.post(
-                "https://html.duckduckgo.com/html/",
-                data={"q": query},
-                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        async with httpx.AsyncClient(timeout=12.0, follow_redirects=True) as client:
+            resp = await client.get(
+                "https://cn.bing.com/search",
+                params={"q": query, "setlang": "zh-CN"},
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                }
             )
             if resp.status_code != 200:
                 return results
             html = resp.text
-            # 解析搜索结果
-            blocks = re.findall(r'<div class="result results_links.*?">(.*?)</div>\s*</div>', html, re.DOTALL)
-            if not blocks:
-                blocks = re.findall(r'<div class="result">(.*?)</div>\s*</div>', html, re.DOTALL)
-            for block in blocks[:max_results]:
-                title_m = re.search(r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>', block, re.DOTALL)
-                snippet_m = re.search(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', block, re.DOTALL)
-                if title_m:
-                    url = title_m.group(1).replace("&amp;", "&")
-                    # DuckDuckGo 跳转链接解码
-                    if "uddg=" in url:
-                        uddg = re.search(r"uddg=([^&]+)", url)
-                        if uddg:
-                            from urllib.parse import unquote
-                            url = unquote(uddg.group(1))
-                    title = re.sub(r"<[^>]+>", "", title_m.group(2)).strip()
-                    snippet = re.sub(r"<[^>]+>", "", snippet_m.group(1)).strip() if snippet_m else ""
-                    source = re.search(r"https?://([^/]+)", url)
-                    results.append({
-                        "title": title,
-                        "snippet": snippet,
-                        "url": url,
-                        "source": source.group(1) if source else ""
-                    })
+            blocks = re.findall(r'<li[^>]*class="b_algo"[^>]*>(.*?)</li>', html, re.DOTALL)
+            for block in blocks:
+                title_m = re.search(r'<h2[^>]*>\s*<a[^>]*href="([^"]*)"[^>]*>(.*?)</a>', block, re.DOTALL)
+                if not title_m:
+                    continue
+                if len(results) >= max_results:
+                    break
+                url = title_m.group(1).replace("&amp;", "&")
+                title = re.sub(r"<[^>]+>", "", title_m.group(2)).strip()
+                snippet_m = re.search(r'<p[^>]*>(.*?)</p>', block, re.DOTALL)
+                snippet = re.sub(r"<[^>]+>", "", snippet_m.group(1)).strip() if snippet_m else ""
+                source_m = re.search(r"https?://([^/]+)", url)
+                results.append({
+                    "title": title,
+                    "snippet": snippet,
+                    "url": url,
+                    "source": source_m.group(1) if source_m else ""
+                })
     except Exception:
         pass
     return results
