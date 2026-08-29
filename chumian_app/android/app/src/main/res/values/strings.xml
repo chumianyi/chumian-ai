@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">mj盒子</string>
+    <string name="accessibility_description">mj盒子无障碍服务，用于检测输入框中的 mj 关键词并触发全屏视频播放</string>
+</resources>

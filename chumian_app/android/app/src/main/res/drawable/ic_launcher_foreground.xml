@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- M字母 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,72L30,36L39,36L45,48L51,36L60,36L60,72L54,72L54,50L48,60L42,60L36,50L36,72Z"/>
+    <!-- J字母 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,36L78,36L78,54C78,60.6 72.6,66 66,66C59.4,66 54,60.6 54,54L60,54C60,57.3 62.7,60 66,60C69.3,60 72,57.3 72,54L72,36Z"/>
+</vector>

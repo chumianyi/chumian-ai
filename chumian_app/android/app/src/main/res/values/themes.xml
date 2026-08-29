@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mj_surface">#F7F5FA</color>
+    <color name="mj_primary">#6750A4</color>
+    <color name="mj_on_primary">#FFFFFF</color>
+    <color name="mj_primary_container">#E9DDFF</color>
+
+    <style name="Theme.MJBox" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/mj_surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/mj_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:colorPrimary">@color/mj_primary</item>
+        <item name="android:colorAccent">@color/mj_primary</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.Transparent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+</resources>

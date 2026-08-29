@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../widgets/context_ext.dart';
+import '../widgets/avatar.dart';
+import '../widgets/feedback.dart';
+import '../widgets/gradient_header.dart';
+import '../widgets/app_card.dart';
 
 class UserProfilePage extends StatefulWidget {
   final String userId;
@@ -11,6 +16,8 @@ class UserProfilePage extends StatefulWidget {
 class _UserProfilePageState extends State<UserProfilePage> {
   Map<String, dynamic>? _profile;
   bool _loading = true;
+  bool _loadFailed = false;
+  bool _followingBusy = false;
 
   @override
   void initState() {
@@ -19,21 +26,39 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future<void> _load() async {
+    setState(() {
+      _loading = _profile == null;
+      _loadFailed = false;
+    });
     try {
       final p = await ApiService.getUserProfile(widget.userId);
       if (!mounted) return;
-      setState(() { _profile = p; _loading = false; });
+      setState(() {
+        _profile = p;
+        _loading = false;
+      });
     } catch (e) {
-      if (mounted) setState(() => _loading = false);
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadFailed = true;
+      });
     }
   }
 
   Future<void> _toggleFollow() async {
+    if (_followingBusy) return;
+    setState(() => _followingBusy = true);
     try {
-      final result = await ApiService.followUser(widget.userId);
-      _load();
+      await ApiService.followUser(widget.userId);
+      await _load();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('操作失败: $e')));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('操作失败: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) setState(() => _followingBusy = false);
     }
   }
 
@@ -41,45 +66,116 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('用户主页')),
-      body: _loading ? const Center(child: CircularProgressIndicator()) : _profile == null ? const Center(child: Text('用户不存在')) : ListView(
-        padding: const EdgeInsets.all(16),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_loading) return const ListSkeleton(items: 2, showHeader: false);
+    if (_loadFailed) {
+      return ErrorRetry(message: '用户信息加载失败', onRetry: _load);
+    }
+    final p = _profile!;
+    final nickname = p['nickname'] ?? '';
+
+    return AppRefreshable(
+      onRefresh: _load,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Card(child: Padding(padding: const EdgeInsets.all(20), child: Column(children: [
-            CircleAvatar(radius: 40, backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2), child: Text(_profile!['nickname']?.toString().substring(0, 1) ?? '?', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold))),
-            const SizedBox(height: 12),
-            Text(_profile!['nickname'] ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            if (_profile!['qq'] != null) ...[
-              const SizedBox(height: 4),
-              Text('QQ: ${_profile!['qq']}', style: const TextStyle(color: Colors.grey, fontSize: 14)),
-            ],
-            if (_profile!['birthday'] != null) ...[
-              const SizedBox(height: 4),
-              Text('生日: ${_profile!['birthday']}', style: const TextStyle(color: Colors.grey, fontSize: 14)),
-            ],
-            const SizedBox(height: 16),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              _buildStat('${_profile!['followers_count'] ?? 0}', '粉丝'),
-              _buildStat('${_profile!['following_count'] ?? 0}', '关注'),
-              _buildStat('${_profile!['likes_count'] ?? 0}', '获赞'),
-            ]),
-            const SizedBox(height: 16),
-            if (_profile!['is_mutual'] == true) Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), decoration: BoxDecoration(color: Colors.green.withOpacity(0.15), borderRadius: BorderRadius.circular(12)), child: const Text('互相关注', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold))),
-            const SizedBox(height: 12),
-            SizedBox(width: double.infinity, child: ElevatedButton(
-              onPressed: _toggleFollow,
-              style: ElevatedButton.styleFrom(backgroundColor: _profile!['is_following'] == true ? Colors.grey : Theme.of(context).primaryColor),
-              child: Text(_profile!['is_following'] == true ? '取消关注' : '关注'),
-            )),
-          ]))),
+          AppCard(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    AppAvatar(
+                      imageUrl: p['avatar'] as String?,
+                      name: nickname,
+                      size: 80,
+                    ),
+                    if (p['is_mutual'] == true)
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: context.info,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: const Text(
+                            '互关',
+                            style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  nickname,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: context.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (p['qq'] != null) ...[
+                  _metaRow(context, Icons.qr_code_2_rounded, 'QQ: ${p['qq']}'),
+                  const SizedBox(height: 4),
+                ],
+                if (p['birthday'] != null) ...[
+                  _metaRow(context, Icons.cake_rounded, '生日: ${p['birthday']}'),
+                  const SizedBox(height: 4),
+                ],
+                if (p['signature'] != null && (p['signature'] ?? '').toString().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  _metaRow(context, Icons.format_quote_rounded, p['signature']),
+                  const SizedBox(height: 4),
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    StatTile(value: '${p['followers_count'] ?? 0}', label: '粉丝'),
+                    StatTile(value: '${p['following_count'] ?? 0}', label: '关注'),
+                    StatTile(value: '${p['likes_count'] ?? 0}', label: '获赞'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: _followingBusy
+                      ? const Center(child: CircularProgressIndicator())
+                      : FollowButton(
+                          isFollowing: p['is_following'] == true,
+                          onChanged: (_) => _toggleFollow(),
+                        ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStat(String value, String label) {
-    return Column(children: [
-      Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-    ]);
+  Widget _metaRow(BuildContext context, IconData icon, dynamic text) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 14, color: context.textTertiary),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            '$text',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: context.textSecondary),
+          ),
+        ),
+      ],
+    );
   }
 }
