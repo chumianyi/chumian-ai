@@ -21,7 +21,7 @@ from typing import Optional, List, Dict, Any
 GLM_API_KEY = "d0a99ebaa97e4bac9e99e236211b15f5.m8eJh0XSXMVu2I8P"
 
 # GitHub OAuth Config (可配置)
-GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "Iv23liXKq2Q8Zb1nL2cD")
+GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "Ov23liCRs3x3XxXY5P6w")
 GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
 GITHUB_REDIRECT_URI = "chumianai://auth/callback"
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"

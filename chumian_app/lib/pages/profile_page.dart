@@ -399,16 +399,39 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _bindGithub() async {
+    const clientId = 'Ov23liCRs3x3XxXY5P6w';
+    const redirectUri = 'https://chumianyi.github.io/chumian-ai-auth/callback';
     final authUrl = PkceUtil.buildAuthUrl(
-      clientId: 'Iv23liXKq2Q8Zb1nL2cD',
-      redirectUri: 'https://chumianyi.github.io/chumian-ai-auth/',
+      clientId: clientId,
+      redirectUri: redirectUri,
       scope: 'read:user user:email',
     );
+    final verifier = PkceUtil.storedVerifier;
     try {
-      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
-      _showSnack('请在浏览器中完成GitHub授权，授权后将自动绑定');
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => GithubAuthPage(authUrl: authUrl, callbackUrlPrefix: redirectUri)),
+      );
+      PkceUtil.clearStoredVerifier();
+      if (result == null || result['cancelled'] == true) return;
+      if (result['error'] != null) {
+        _showSnack('GitHub授权失败: ${result['error']}');
+        return;
+      }
+      final code = result['code'];
+      if (code == null) {
+        _showSnack('未获取到授权码');
+        return;
+      }
+      final resp = await ApiService.githubBind(code: code, codeVerifier: verifier);
+      if (resp['success'] == true || resp['github_id'] != null) {
+        _showSnack('GitHub 绑定成功');
+        _loadData();
+      } else {
+        _showSnack(resp['error'] ?? '绑定失败');
+      }
     } catch (e) {
-      _showSnack('无法打开浏览器: $e');
+      _showSnack('授权失败: $e');
     }
   }
 

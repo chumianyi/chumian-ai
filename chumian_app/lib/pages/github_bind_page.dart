@@ -23,7 +23,7 @@ class _GithubBindPageState extends State<GithubBindPage> {
   Future<void> _startGithubBind() async {
     if (_binding) return;
     setState(() => _binding = true);
-    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
+    const clientId = 'Ov23liCRs3x3XxXY5P6w';
     const redirectUri = 'https://chumianyi.github.io/chumian-ai-auth/callback';
     const scope = 'read:user user:email';
     final authUrl = PkceUtil.buildAuthUrl(
