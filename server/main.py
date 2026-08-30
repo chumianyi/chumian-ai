@@ -1430,8 +1430,8 @@ async def github_bind(request: Request):
                     access_token = token_data.get("access_token", "")
                     if not access_token:
                         gh_err = token_data.get("error", "unknown")
-                    gh_desc = token_data.get("error_description", "")
-                    return JSONResponse(status_code=400, content={"error": f"GitHub token交换失败: {gh_err}", "error_description": gh_desc, "github_response": token_data})
+                        gh_desc = token_data.get("error_description", "")
+                        return JSONResponse(status_code=400, content={"error": f"GitHub token交换失败: {gh_err}", "error_description": gh_desc, "github_response": token_data})
                 user_resp = await client.get(
                     "https://api.github.com/user",
                     headers={"Authorization": f"token {access_token}"},
