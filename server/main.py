@@ -23,7 +23,7 @@ GLM_API_KEY = "d0a99ebaa97e4bac9e99e236211b15f5.m8eJh0XSXMVu2I8P"
 # GitHub OAuth Config (可配置)
 GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "Ov23liCRs3x3XxXY5P6w")
 GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
-GITHUB_REDIRECT_URI = "chumianai://auth/callback"
+GITHUB_REDIRECT_URI = "https://chumianyi.github.io/chumian-ai-auth/callback"
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 SMTP_HOST = "smtp.qq.com"
 SMTP_PORT = 465
@@ -1337,7 +1337,7 @@ async def github_auth(request: Request):
             if not access_token and code:
                 if not GITHUB_CLIENT_SECRET and not code_verifier:
                     return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
-                token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
+                token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code, "redirect_uri": GITHUB_REDIRECT_URI}
                 if GITHUB_CLIENT_SECRET:
                     token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
                 if code_verifier:
@@ -1350,7 +1350,9 @@ async def github_auth(request: Request):
                 token_data = token_resp.json()
                 access_token = token_data.get("access_token", "")
                 if not access_token:
-                    return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+                    gh_err = token_data.get("error", "unknown")
+                    gh_desc = token_data.get("error_description", "")
+                    return JSONResponse(status_code=400, content={"error": f"GitHub token交换失败: {gh_err}", "error_description": gh_desc, "github_response": token_data})
             # 获取用户信息（api.github.com服务端可达）
             user_resp = await client.get(
                 "https://api.github.com/user",
@@ -1427,7 +1429,9 @@ async def github_bind(request: Request):
                     token_data = token_resp.json()
                     access_token = token_data.get("access_token", "")
                     if not access_token:
-                        return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+                        gh_err = token_data.get("error", "unknown")
+                    gh_desc = token_data.get("error_description", "")
+                    return JSONResponse(status_code=400, content={"error": f"GitHub token交换失败: {gh_err}", "error_description": gh_desc, "github_response": token_data})
                 user_resp = await client.get(
                     "https://api.github.com/user",
                     headers={"Authorization": f"token {access_token}"},
