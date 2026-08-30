@@ -13,43 +13,42 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.chumian.chumian_ai"
     compileSdk = 35
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
     defaultConfig {
         applicationId = "com.chumian.chumian_ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "3.0.0"
         ndk {
             abiFilters 'arm64-v8a'
         }
     }
-
     signingConfigs {
         release {
-            def ksFile = file('keystore.jks')
-            if (ksFile.exists()) {
-                keyAlias = 'chumian'
-                keyPassword = 'chumian123'
-                storeFile = ksFile
-                storePassword = 'chumian123'
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
+            } else {
+                // Fallback to debug signing if no release keystore configured
+                keyAlias = signingConfigs.debug.keyAlias
+                keyPassword = signingConfigs.debug.keyPassword
+                storeFile = signingConfigs.debug.storeFile
+                storePassword = signingConfigs.debug.storePassword
             }
         }
     }
-
     buildTypes {
         release {
-            // Use release keystore if available, otherwise fall back to debug signing
-            signingConfig = file('keystore.jks').exists() ? signingConfigs.release : signingConfigs.debug
+            signingConfig = signingConfigs.release
             minifyEnabled = false
             shrinkResources = false
         }

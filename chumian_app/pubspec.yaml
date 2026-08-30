@@ -29,6 +29,7 @@ dependencies:
   speech_to_text: ^6.6.2
   permission_handler: ^11.3.1
   photo_view: ^0.15.0
+  app_links: ^6.3.2
 
 dev_dependencies:
   flutter_test:

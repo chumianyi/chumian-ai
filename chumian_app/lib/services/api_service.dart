@@ -387,4 +387,40 @@ class ApiService {
     if (data is String) return data;
     return null;
   }
+
+  // ===== GitHub OAuth =====
+  static Future<Map<String, dynamic>> githubAuth(String code) async {
+    final resp = await _dio.post('/api/auth/github', data: {'code': code});
+    final data = Map<String, dynamic>.from(resp.data);
+    if (data['token'] != null) {
+      await setToken(data['token']);
+    }
+    return data;
+  }
+
+  static Future<Map<String, dynamic>> githubBind(String code) async {
+    final resp = await _dio.post('/api/auth/github/bind', data: {'code': code});
+    return Map<String, dynamic>.from(resp.data);
+  }
+
+  static Future<Map<String, dynamic>> githubRegisterBind({
+    required String githubId,
+    required String username,
+    required String password,
+    required String nickname,
+    String? avatar,
+  }) async {
+    final resp = await _dio.post('/api/auth/github/bind', data: {
+      'github_id': githubId,
+      'username': username,
+      'password': password,
+      'nickname': nickname,
+      'avatar': avatar ?? '',
+    });
+    final data = Map<String, dynamic>.from(resp.data);
+    if (data['token'] != null) {
+      await setToken(data['token']);
+    }
+    return data;
+  }
 }

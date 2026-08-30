@@ -11,7 +11,8 @@ import '../services/api_service.dart';
 
 class HomePage extends StatefulWidget {
   final ThemeProvider themeProvider;
-  const HomePage({super.key, required this.themeProvider});
+  final VoidCallback? onLogout;
+  const HomePage({super.key, required this.themeProvider, this.onLogout});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       const ExplorePage(),
       const ActivityPage(),
       const PointsPage(),
-      ProfilePage(themeProvider: widget.themeProvider),
+      ProfilePage(themeProvider: widget.themeProvider, onLogout: widget.onLogout),
     ];
     _loadUserInfo();
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_links/app_links.dart';
 import 'theme.dart';
 import 'services/api_service.dart';
 import 'pages/home_page.dart';
@@ -19,6 +20,7 @@ class ChumianApp extends StatefulWidget {
 
 class _ChumianAppState extends State<ChumianApp> {
   final ThemeProvider _themeProvider = ThemeProvider();
+
   @override
   void initState() {
     super.initState();
@@ -53,11 +55,147 @@ class _AppInitializerState extends State<AppInitializer> {
   bool _isLoggedIn = false;
   bool _oobeCompleted = false;
   String? _birthdayBlessing;
+  AppLinks? _appLinks;
+  bool _processingLink = false;
 
   @override
   void initState() {
     super.initState();
     _checkStatus();
+    _initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _appLinks = null;
+    super.dispose();
+  }
+
+  Future<void> _initDeepLinks() async {
+    try {
+      _appLinks = AppLinks();
+      // Handle link when app is already open
+      _appLinks!.uriLinkStream.listen((Uri? uri) {
+        if (uri != null) _handleDeepLink(uri);
+      });
+      // Check initial link (app was opened via link)
+      final initialUri = await _appLinks!.getInitialUri();
+      if (initialUri != null && mounted) {
+        _handleDeepLink(initialUri);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _handleDeepLink(Uri uri) async {
+    if (_processingLink) return;
+    if (uri.scheme != 'chumianai' || uri.host != 'auth') return;
+    final code = uri.queryParameters['code'];
+    if (code == null || code.isEmpty) return;
+
+    _processingLink = true;
+    try {
+      if (!_isLoggedIn) {
+        // GitHub login flow
+        final resp = await ApiService.githubAuth(code);
+        if (resp['token'] != null) {
+          await ApiService.setToken(resp['token']);
+          if (mounted) {
+            setState(() {
+              _isLoggedIn = true;
+              _oobeCompleted = false;
+            });
+          }
+        } else if (resp['need_register'] == true) {
+          // Need to register - store github info and show register dialog
+          if (mounted) {
+            _showGithubRegisterDialog(resp);
+          }
+        }
+      } else {
+        // GitHub bind flow
+        await ApiService.githubBind(code);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('GitHub 账号绑定成功')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('GitHub 授权失败: $e')),
+        );
+      }
+    } finally {
+      _processingLink = false;
+    }
+  }
+
+  void _showGithubRegisterDialog(Map<String, dynamic> ghInfo) {
+    final usernameCtrl = TextEditingController();
+    final passwordCtrl = TextEditingController();
+    final nicknameCtrl = TextEditingController(text: ghInfo['github_login'] ?? '');
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('设置账号密码'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('GitHub 授权成功，请设置账号密码完成注册'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: usernameCtrl,
+              decoration: const InputDecoration(labelText: '账号'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: '密码'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: nicknameCtrl,
+              decoration: const InputDecoration(labelText: '昵称'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              try {
+                await ApiService.githubRegisterBind(
+                  githubId: ghInfo['github_id'],
+                  username: usernameCtrl.text.trim(),
+                  password: passwordCtrl.text,
+                  nickname: nicknameCtrl.text.trim(),
+                  avatar: ghInfo['github_avatar'],
+                );
+                if (!ctx.mounted) return;
+                Navigator.pop(ctx);
+                if (mounted) {
+                  setState(() {
+                    _isLoggedIn = true;
+                    _oobeCompleted = false;
+                  });
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('注册失败: $e')),
+                );
+              }
+            },
+            child: const Text('完成注册'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _checkStatus() async {
@@ -84,6 +222,13 @@ class _AppInitializerState extends State<AppInitializer> {
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
+  }
+
+  void _handleLogout() {
+    setState(() {
+      _isLoggedIn = false;
+      _oobeCompleted = false;
+    });
   }
 
   @override
@@ -207,7 +352,7 @@ class _AppInitializerState extends State<AppInitializer> {
         _birthdayBlessing = null;
       }
     });
-    return HomePage(themeProvider: tp);
+    return HomePage(themeProvider: tp, onLogout: _handleLogout);
   }
 
   void _showBirthdayDialog(String blessing) {

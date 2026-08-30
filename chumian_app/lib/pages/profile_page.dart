@@ -22,7 +22,8 @@ import 'user_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final ThemeProvider themeProvider;
-  const ProfilePage({super.key, required this.themeProvider});
+  final VoidCallback? onLogout;
+  const ProfilePage({super.key, required this.themeProvider, this.onLogout});
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -272,14 +273,13 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(fontSize: 12, color: context.textSecondary),
             ),
             const SizedBox(height: 16),
-            Row(
+            Wrap(
+              spacing: 14,
+              runSpacing: 16,
               children: [
                 _themeOption('默认', AppThemeType.defaultTheme),
-                const SizedBox(width: 14),
                 _themeOption('绿色', AppThemeType.green),
-                const SizedBox(width: 14),
                 _themeOption('粉色', AppThemeType.pink),
-                const SizedBox(width: 14),
                 _themeOption('紫色', AppThemeType.purple),
                 _themeOption('橙色', AppThemeType.orange),
                 _themeOption('红色', AppThemeType.red),
@@ -313,7 +313,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final tp = widget.themeProvider;
     final selected = tp.themeType == type;
     final color = ThemeColorSet.all[type]!.primary;
-    return Expanded(
+    return SizedBox(
+      width: 72,
       child: GestureDetector(
         onTap: () {
           tp.setTheme(type);
@@ -384,18 +385,24 @@ class _ProfilePageState extends State<ProfilePage> {
               await ApiService.logout();
               if (!ctx.mounted) return;
               Navigator.pop(ctx);
-              if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const _LoginRedirect()),
-                  (route) => false,
-                );
-              }
+              widget.onLogout?.call();
             },
             child: const Text('退出'),
           ),
         ],
       ),
     );
+  }
+
+  void _bindGithub() async {
+    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
+    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
+    try {
+      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
+      _showSnack('请在浏览器中完成GitHub授权，授权后将自动绑定');
+    } catch (e) {
+      _showSnack('无法打开浏览器: $e');
+    }
   }
 
   @override
@@ -457,6 +464,27 @@ class _ProfilePageState extends State<ProfilePage> {
                 onChanged: (_) => widget.themeProvider.toggleDark(),
               ),
 
+            ],
+          ),
+          CardSection(
+            title: '账号',
+            padding: EdgeInsets.zero,
+            titlePadding: const EdgeInsets.fromLTRB(4, 24, 4, 10),
+            children: [
+              SettingsTile(
+                icon: Icons.link,
+                title: '绑定 GitHub',
+                subtitle: (_userInfo?['github_id'] != null && _userInfo!['github_id'].toString().isNotEmpty)
+                    ? '已绑定 GitHub 账号'
+                    : '未绑定，绑定后可使用全部功能',
+                trailing: (_userInfo?['github_id'] != null && _userInfo!['github_id'].toString().isNotEmpty)
+                    ? Icon(Icons.check_circle, color: context.success, size: 20)
+                    : null,
+                onTap: (_userInfo?['github_id'] != null && _userInfo!['github_id'].toString().isNotEmpty)
+                    ? null
+                    : _bindGithub,
+                showChevron: (_userInfo?['github_id'] == null || _userInfo!['github_id'].toString().isEmpty),
+              ),
             ],
           ),
           CardSection(
@@ -879,79 +907,6 @@ class _ProfilePageState extends State<ProfilePage> {
             valueColor: context.primary,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LoginRedirect extends StatelessWidget {
-  const _LoginRedirect();
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const _SplashExit()),
-      );
-    });
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: context.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '正在退出…',
-              style: TextStyle(fontSize: 13, color: context.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SplashExit extends StatelessWidget {
-  const _SplashExit();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: context.success.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.check_circle_rounded, color: context.success, size: 48),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '已退出登录',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: context.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '感谢使用，欢迎下次再来',
-              style: TextStyle(fontSize: 13, color: context.textSecondary),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -67,10 +67,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _githubLogin() async {
     const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
-    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&scope=user:email&redirect_uri=chumianai://auth/callback';
+    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
-      _showSnack('请在浏览器中完成GitHub授权');
+      _showSnack('请在浏览器中完成GitHub授权，授权后将自动登录');
     } catch (e) {
       _showSnack('无法打开浏览器: $e');
     }

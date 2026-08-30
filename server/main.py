@@ -451,7 +451,7 @@ class AgentCreateRequest(BaseModel):
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/verify-app", "/media/", "/api/models", "/api/templates", "/api/health"]
+    public_paths = ["/api/auth/send-code", "/api/auth/register", "/api/auth/login", "/api/auth/github", "/api/auth/github/bind", "/api/verify-app", "/media/", "/api/models", "/api/templates", "/api/health"]
     public_get_paths = ["/api/agents", "/api/posts", "/api/explore"]
     path = request.url.path
     method = request.method
@@ -612,7 +612,8 @@ async def user_info(request: Request):
         "following_count": following,
         "mutual_count": mutual,
         "unread_notifications": unread,
-        "agent_status": agent_status
+        "agent_status": agent_status,
+        "github_id": user["github_id"]
     }
 
 @app.get("/api/user/points-log")
@@ -1313,39 +1314,45 @@ async def github_auth(request: Request):
     code = body.get("code", "")
     if not code:
         return JSONResponse(status_code=400, content={"error": "缺少code"})
+    if not GITHUB_CLIENT_SECRET:
+        return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
     try:
-        # 用code换access_token
-        token_resp = await client.post(
-            "https://github.com/login/oauth/access_token",
-            data={"client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET, "code": code},
-            headers={"Accept": "application/json"},
-        )
-        token_data = token_resp.json()
-        access_token = token_data.get("access_token", "")
-        if not access_token:
-            return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
-        # 获取用户信息
-        user_resp = await client.get(
-            "https://api.github.com/user",
-            headers={"Authorization": f"token {access_token}"},
-        )
-        gh_user = user_resp.json()
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            # 用code换access_token
+            token_resp = await client.post(
+                "https://github.com/login/oauth/access_token",
+                data={"client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET, "code": code},
+                headers={"Accept": "application/json"},
+            )
+            token_data = token_resp.json()
+            access_token = token_data.get("access_token", "")
+            if not access_token:
+                return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+            # 获取用户信息
+            user_resp = await client.get(
+                "https://api.github.com/user",
+                headers={"Authorization": f"token {access_token}"},
+            )
+            gh_user = user_resp.json()
         gh_id = str(gh_user.get("id", ""))
         gh_login = gh_user.get("login", "")
         gh_avatar = gh_user.get("avatar_url", "")
         if not gh_id:
             return JSONResponse(status_code=400, content={"error": "获取GitHub用户信息失败"})
         # 查找已绑定的账号
-        async with db_lock:
-            row = await db.execute_fetchone("SELECT id, username, nickname, avatar FROM users WHERE github_id = ?", (gh_id,))
+        db = await get_db()
+        cursor = await db.execute("SELECT id, email, nickname, avatar FROM users WHERE github_id = ?", (gh_id,))
+        row = await cursor.fetchone()
         if row:
             # 已绑定，直接登录
             user_id = row["id"]
             token = str(uuid.uuid4())
-            async with db_lock:
-                await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user_id))
+            await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user_id))
+            await db.commit()
+            await db.close()
             return {"token": token, "user_id": user_id, "nickname": row["nickname"], "avatar": row["avatar"], "is_new": False}
         else:
+            await db.close()
             # 未绑定，返回GitHub信息让客户端设置用户名密码
             return {"need_register": True, "github_id": gh_id, "github_login": gh_login, "github_avatar": gh_avatar}
     except Exception as e:
@@ -1354,35 +1361,89 @@ async def github_auth(request: Request):
 
 @app.post("/api/auth/github/bind")
 async def github_bind(request: Request):
-    """绑定GitHub到已有账号或创建新账号"""
+    """绑定GitHub到已有账号或创建新账号。支持两种模式：
+    1. 未登录：传 github_id + username + password + nickname 创建账号并绑定
+    2. 已登录：传 code 直接绑定当前用户
+    """
     body = await request.json()
+    code = body.get("code", "")
     github_id = body.get("github_id", "")
     username = body.get("username", "").strip()
     password = body.get("password", "")
     nickname = body.get("nickname", "") or username
     avatar = body.get("avatar", "")
+
+    # 模式2：已登录用户用code绑定
+    if code and not github_id:
+        token = request.headers.get("Authorization", "")
+        if token.startswith("Bearer "):
+            token = token[7:]
+        else:
+            token = request.cookies.get("token", "")
+        user = await get_user_by_token(token)
+        if not user:
+            return JSONResponse(status_code=401, content={"error": "未登录"})
+        if not GITHUB_CLIENT_SECRET:
+            return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                token_resp = await client.post(
+                    "https://github.com/login/oauth/access_token",
+                    data={"client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET, "code": code},
+                    headers={"Accept": "application/json"},
+                )
+                token_data = token_resp.json()
+                access_token = token_data.get("access_token", "")
+                if not access_token:
+                    return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+                user_resp = await client.get(
+                    "https://api.github.com/user",
+                    headers={"Authorization": f"token {access_token}"},
+                )
+                gh_user = user_resp.json()
+            gh_id = str(gh_user.get("id", ""))
+            gh_avatar = gh_user.get("avatar_url", "")
+            if not gh_id:
+                return JSONResponse(status_code=400, content={"error": "获取GitHub用户信息失败"})
+            db = await get_db()
+            await db.execute(
+                "UPDATE users SET github_id = ?, avatar = COALESCE(NULLIF(?, ''), avatar) WHERE id = ?",
+                (gh_id, gh_avatar, user["id"]),
+            )
+            await db.commit()
+            await db.close()
+            return {"success": True, "github_id": gh_id, "message": "绑定成功"}
+        except Exception as e:
+            return JSONResponse(status_code=500, content={"error": str(e)})
+
+    # 模式1：未登录，用github_id + 账号密码注册并绑定
     if not github_id or not username or not password:
         return JSONResponse(status_code=400, content={"error": "参数不完整"})
-    async with db_lock:
-        # 检查用户名是否存在
-        existing = await db.execute_fetchone("SELECT id FROM users WHERE username = ?", (username,))
-        if existing:
-            # 绑定到已有账号（需要验证密码？简化处理，直接绑定）
-            user_id = existing["id"]
-            await db.execute("UPDATE users SET github_id = ?, avatar = COALESCE(NULLIF(?, ''), avatar) WHERE id = ?", (github_id, avatar, user_id))
-        else:
-            # 创建新账号
-            user_id = str(uuid.uuid4())
-            hashed_pw = password  # 简化，实际应bcrypt
-            token = str(uuid.uuid4())
-            await db.execute(
-                "INSERT INTO users (id, username, password, nickname, avatar, github_id, token, points, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 90000000, ?)",
-                (user_id, username, hashed_pw, nickname, avatar, github_id, token, datetime.now().isoformat()),
-            )
-            # 确保有github_id列（如果没有则忽略错误）
+
+    db = await get_db()
+    # 检查账号是否存在（用email列）
+    cursor = await db.execute("SELECT id FROM users WHERE email = ?", (username,))
+    existing = await cursor.fetchone()
+    if existing:
+        # 绑定到已有账号
+        user_id = existing["id"]
+        await db.execute(
+            "UPDATE users SET github_id = ?, avatar = COALESCE(NULLIF(?, ''), avatar) WHERE id = ?",
+            (github_id, avatar, user_id),
+        )
+    else:
+        # 创建新账号
+        user_id = str(uuid.uuid4())
+        token = str(uuid.uuid4())
+        await db.execute(
+            "INSERT INTO users (id, email, password_hash, nickname, avatar, github_id, token, last_reset, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user_id, username, hash_password(password), nickname, avatar, github_id, token, datetime.now().strftime("%Y-%m-%d"), datetime.now().isoformat()),
+        )
+    await db.commit()
     # 重新获取token
-    async with db_lock:
-        row = await db.execute_fetchone("SELECT id, token, nickname, avatar FROM users WHERE id = ?", (user_id,))
+    cursor = await db.execute("SELECT id, token, nickname, avatar FROM users WHERE id = ?", (user_id,))
+    row = await cursor.fetchone()
+    await db.close()
     return {"token": row["token"], "user_id": row["id"], "nickname": row["nickname"], "avatar": row["avatar"], "is_new": not existing}
 
 

@@ -47,6 +47,8 @@ class ChatPageState extends State<ChatPage> {
   bool _streamDone = false;
   ChatMessage? _currentAiMsg;
   bool _webSearch = false;
+  bool _githubBound = true;
+  bool _checkingBinding = true;
 
   static const _galleryChannel = MethodChannel('com.chumian.chumian_ai/gallery');
 
@@ -62,6 +64,68 @@ class ChatPageState extends State<ChatPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _sendMessage());
     }
     _loadWebSearch();
+    if (!widget.guestMode) _checkGithubBinding();
+  }
+
+  Future<void> _checkGithubBinding() async {
+    try {
+      final info = await ApiService.getUserInfo();
+      if (!mounted) return;
+      final ghId = info['github_id'];
+      setState(() {
+        _githubBound = ghId != null && ghId.toString().isNotEmpty;
+        _checkingBinding = false;
+      });
+      if (!_githubBound) {
+        _showBindingDialog();
+      }
+    } catch (_) {
+      if (mounted) setState(() => _checkingBinding = false);
+    }
+  }
+
+  void _showBindingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        icon: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.link_off, color: Colors.orange, size: 28),
+        ),
+        title: const Text('需要绑定 GitHub'),
+        content: const Text('您的账号暂时无法使用，请先绑定 GitHub 账号后再使用对话功能。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('稍后'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _bindGithub();
+            },
+            child: const Text('去绑定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _bindGithub() async {
+    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
+    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
+    try {
+      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
+      _showSnack('请在浏览器中完成GitHub授权，授权后将自动绑定');
+    } catch (e) {
+      _showSnack('无法打开浏览器: $e');
+    }
   }
 
   Future<void> _loadWebSearch() async {
@@ -172,6 +236,11 @@ class ChatPageState extends State<ChatPage> {
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
+    if (!widget.guestMode && !_githubBound) {
+      _showSnack('请先绑定 GitHub 账号');
+      _showBindingDialog();
+      return;
+    }
     if (widget.guestMode && _guestRemaining <= 0) {
       _showSnack('游客次数已用完，请注册登录');
       return;
@@ -688,7 +757,49 @@ class ChatPageState extends State<ChatPage> {
                         _buildMessage(_messages[index]),
                   ),
           ),
+          if (!widget.guestMode && !_githubBound && !_checkingBinding)
+            _buildBindingWarning(),
           _buildInputBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBindingWarning() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.08),
+        border: Border(
+          top: BorderSide(color: Colors.orange.withValues(alpha: 0.3), width: 0.5),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded, size: 18, color: Colors.orange[700]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '您的账号暂时无法使用，请先绑定 GitHub 账号',
+              style: TextStyle(fontSize: 12, color: Colors.orange[800], fontWeight: FontWeight.w500),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: _bindGithub,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Text(
+                '去绑定',
+                style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1290,6 +1401,7 @@ class ChatPageState extends State<ChatPage> {
                       focusNode: _focusNode,
                       minLines: 1,
                       maxLines: 5,
+                      enabled: widget.guestMode || _githubBound,
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                       style: TextStyle(
@@ -1298,7 +1410,7 @@ class ChatPageState extends State<ChatPage> {
                         height: 1.4,
                       ),
                       decoration: InputDecoration(
-                        hintText: '输入消息…',
+                        hintText: (widget.guestMode || _githubBound) ? '输入消息…' : '请先绑定 GitHub 账号',
                         hintStyle: TextStyle(
                           fontSize: 16,
                           color: context.textTertiary,
@@ -1317,14 +1429,20 @@ class ChatPageState extends State<ChatPage> {
                 const SizedBox(width: 10),
                 // 发送 / 停止
                 GestureDetector(
-                  onTap: _isSending ? _stopGeneration : _sendMessage,
+                  onTap: (!widget.guestMode && !_githubBound)
+                      ? () => _showSnack('请先绑定 GitHub 账号')
+                      : (_isSending ? _stopGeneration : _sendMessage),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: _isSending ? null : context.vibrantGradient,
-                      color: _isSending ? context.danger : null,
+                      gradient: (!widget.guestMode && !_githubBound)
+                          ? null
+                          : (_isSending ? null : context.vibrantGradient),
+                      color: (!widget.guestMode && !_githubBound)
+                          ? Colors.grey[400]
+                          : (_isSending ? context.danger : null),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
