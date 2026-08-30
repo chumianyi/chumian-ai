@@ -389,11 +389,11 @@ class ApiService {
   }
 
   // ===== GitHub OAuth =====
-  static Future<Map<String, dynamic>> githubAuth(String code, {String? codeVerifier}) async {
-    final body = <String, dynamic>{'code': code};
-    if (codeVerifier != null && codeVerifier.isNotEmpty) {
-      body['code_verifier'] = codeVerifier;
-    }
+  static Future<Map<String, dynamic>> githubAuth({String? code, String? accessToken, String? codeVerifier}) async {
+    final body = <String, dynamic>{};
+    if (code != null && code.isNotEmpty) body['code'] = code;
+    if (accessToken != null && accessToken.isNotEmpty) body['access_token'] = accessToken;
+    if (codeVerifier != null && codeVerifier.isNotEmpty) body['code_verifier'] = codeVerifier;
     final resp = await _dio.post('/api/auth/github', data: body);
     final data = Map<String, dynamic>.from(resp.data);
     if (data['token'] != null) {
@@ -402,11 +402,33 @@ class ApiService {
     return data;
   }
 
-  static Future<Map<String, dynamic>> githubBind(String code, {String? codeVerifier}) async {
-    final body = <String, dynamic>{'code': code};
-    if (codeVerifier != null && codeVerifier.isNotEmpty) {
-      body['code_verifier'] = codeVerifier;
+  /// 客户端本地交换 code→access_token（服务端可能无法访问 github.com）
+  static Future<String?> exchangeCodeForToken(String code, {String? codeVerifier}) async {
+    try {
+      final data = <String, dynamic>{
+        'client_id': 'Iv23liXKq2Q8Zb1nL2cD',
+        'code': code,
+      };
+      if (codeVerifier != null && codeVerifier.isNotEmpty) {
+        data['code_verifier'] = codeVerifier;
+      }
+      final resp = await _dio.post(
+        'https://github.com/login/oauth/access_token',
+        data: data,
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+      final result = Map<String, dynamic>.from(resp.data);
+      return result['access_token'] as String?;
+    } catch (e) {
+      return null;
     }
+  }
+
+  static Future<Map<String, dynamic>> githubBind({String? code, String? accessToken, String? codeVerifier}) async {
+    final body = <String, dynamic>{};
+    if (code != null && code.isNotEmpty) body['code'] = code;
+    if (accessToken != null && accessToken.isNotEmpty) body['access_token'] = accessToken;
+    if (codeVerifier != null && codeVerifier.isNotEmpty) body['code_verifier'] = codeVerifier;
     final resp = await _dio.post('/api/auth/github/bind', data: body);
     return Map<String, dynamic>.from(resp.data);
   }

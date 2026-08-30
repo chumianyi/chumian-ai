@@ -98,10 +98,20 @@ class _AppInitializerState extends State<AppInitializer> {
     _processingLink = true;
     try {
       final verifier = PkceUtil.storedVerifier;
+      // 客户端本地交换 code→access_token（服务端可能无法访问 github.com）
+      final accessToken = await ApiService.exchangeCodeForToken(code, codeVerifier: verifier);
+      PkceUtil.clearStoredVerifier();
+      if (accessToken == null || accessToken.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('GitHub 授权失败：无法获取访问令牌')),
+          );
+        }
+        return;
+      }
       if (!_isLoggedIn) {
-        // GitHub login flow
-        final resp = await ApiService.githubAuth(code, codeVerifier: verifier);
-        PkceUtil.clearStoredVerifier();
+        // GitHub login flow - send access_token to server
+        final resp = await ApiService.githubAuth(accessToken: accessToken);
         if (resp['token'] != null) {
           await ApiService.setToken(resp['token']);
           if (mounted) {
@@ -112,17 +122,14 @@ class _AppInitializerState extends State<AppInitializer> {
             });
           }
         } else if (resp['need_register'] == true) {
-          // Need to register - store github info and show register dialog
           if (mounted) {
             _showGithubRegisterDialog(resp);
           }
         }
       } else {
-        // GitHub bind flow
-        await ApiService.githubBind(code, codeVerifier: verifier);
-        PkceUtil.clearStoredVerifier();
+        // GitHub bind flow - send access_token to server
+        await ApiService.githubBind(accessToken: accessToken);
         if (mounted) {
-          // Refresh user info to confirm binding
           try {
             final info = await ApiService.getUserInfo();
             if (info['github_id'] != null && info['github_id'].toString().isNotEmpty) {

@@ -1320,32 +1320,38 @@ async def version_check():
 
 @app.post("/api/auth/github")
 async def github_auth(request: Request):
-    """用GitHub code换token并获取用户信息，返回或创建账号"""
+    """用GitHub access_token获取用户信息，返回或创建账号。
+    支持两种模式：
+    1. access_token模式（推荐）：客户端已完成code→token交换，直接传access_token
+    2. code模式（兼容）：服务端尝试交换code（需服务端能访问github.com）
+    """
     body = await request.json()
     code = body.get("code", "")
+    access_token = body.get("access_token", "")
     code_verifier = body.get("code_verifier", "")
-    if not code:
-        return JSONResponse(status_code=400, content={"error": "缺少code"})
-    if not GITHUB_CLIENT_SECRET and not code_verifier:
-        return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
+    if not code and not access_token:
+        return JSONResponse(status_code=400, content={"error": "缺少code或access_token"})
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
-            # 用code换access_token (支持PKCE)
-            token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
-            if GITHUB_CLIENT_SECRET:
-                token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
-            if code_verifier:
-                token_data_dict["code_verifier"] = code_verifier
-            token_resp = await client.post(
-                "https://github.com/login/oauth/access_token",
-                data=token_data_dict,
-                headers={"Accept": "application/json"},
-            )
-            token_data = token_resp.json()
-            access_token = token_data.get("access_token", "")
-            if not access_token:
-                return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
-            # 获取用户信息
+            # 如果只有code，尝试服务端交换（可能因网络不可达而失败）
+            if not access_token and code:
+                if not GITHUB_CLIENT_SECRET and not code_verifier:
+                    return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
+                token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
+                if GITHUB_CLIENT_SECRET:
+                    token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
+                if code_verifier:
+                    token_data_dict["code_verifier"] = code_verifier
+                token_resp = await client.post(
+                    "https://github.com/login/oauth/access_token",
+                    data=token_data_dict,
+                    headers={"Accept": "application/json"},
+                )
+                token_data = token_resp.json()
+                access_token = token_data.get("access_token", "")
+                if not access_token:
+                    return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+            # 获取用户信息（api.github.com服务端可达）
             user_resp = await client.get(
                 "https://api.github.com/user",
                 headers={"Authorization": f"token {access_token}"},
@@ -1390,8 +1396,9 @@ async def github_bind(request: Request):
     nickname = body.get("nickname", "") or username
     avatar = body.get("avatar", "")
 
-    # 模式2：已登录用户用code绑定
-    if code and not github_id:
+    # 模式2：已登录用户用code或access_token绑定
+    access_token = body.get("access_token", "")
+    if (code or access_token) and not github_id:
         token = request.headers.get("Authorization", "")
         if token.startswith("Bearer "):
             token = token[7:]
@@ -1401,24 +1408,26 @@ async def github_bind(request: Request):
         if not user:
             return JSONResponse(status_code=401, content={"error": "未登录"})
         code_verifier = body.get("code_verifier", "")
-        if not GITHUB_CLIENT_SECRET and not code_verifier:
-            return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
         try:
             async with httpx.AsyncClient(timeout=15.0) as client:
-                token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
-                if GITHUB_CLIENT_SECRET:
-                    token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
-                if code_verifier:
-                    token_data_dict["code_verifier"] = code_verifier
-                token_resp = await client.post(
-                    "https://github.com/login/oauth/access_token",
-                    data=token_data_dict,
-                    headers={"Accept": "application/json"},
-                )
-                token_data = token_resp.json()
-                access_token = token_data.get("access_token", "")
-                if not access_token:
-                    return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+                # 如果只有code，尝试服务端交换
+                if not access_token and code:
+                    if not GITHUB_CLIENT_SECRET and not code_verifier:
+                        return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
+                    token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
+                    if GITHUB_CLIENT_SECRET:
+                        token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
+                    if code_verifier:
+                        token_data_dict["code_verifier"] = code_verifier
+                    token_resp = await client.post(
+                        "https://github.com/login/oauth/access_token",
+                        data=token_data_dict,
+                        headers={"Accept": "application/json"},
+                    )
+                    token_data = token_resp.json()
+                    access_token = token_data.get("access_token", "")
+                    if not access_token:
+                        return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
                 user_resp = await client.get(
                     "https://api.github.com/user",
                     headers={"Authorization": f"token {access_token}"},
