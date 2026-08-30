@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
       if (resp['token'] != null) {
         await ApiService.setToken(resp['token']);
         if (mounted) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+          widget.onLoginSuccess(null, githubBound: true);
         }
       } else if (resp['need_register'] == true) {
         if (mounted) _showGithubRegisterDialog(resp);
@@ -158,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (!ctx.mounted) return;
                 Navigator.pop(ctx);
                 if (mounted) {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+                  widget.onLoginSuccess(null, githubBound: true);
                 }
               } catch (e) {
                 ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('注册失败: $e')));
