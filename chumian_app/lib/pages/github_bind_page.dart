@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:chumian_app/pages/github_auth_page.dart';
-import 'package:chumian_app/services/api_service.dart';
-import 'package:chumian_app/utils/pkce.dart';
+import 'package:chumian_ai/pages/github_auth_page.dart';
+import 'package:chumian_ai/services/api_service.dart';
+import 'package:chumian_ai/utils/pkce.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../utils/pkce.dart';

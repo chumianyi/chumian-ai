@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:chumian_app/pages/github_auth_page.dart';
+import 'package:chumian_ai/pages/github_auth_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
@@ -107,6 +107,68 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       _showSnack('授权失败: $e');
     }
+  }
+
+  void _showGithubRegisterDialog(Map<String, dynamic> ghInfo) {
+    final usernameCtrl = TextEditingController();
+    final passwordCtrl = TextEditingController();
+    final nicknameCtrl = TextEditingController(text: ghInfo['github_login'] ?? '');
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('设置账号密码'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('GitHub 授权成功，请设置账号密码完成注册'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: usernameCtrl,
+              decoration: const InputDecoration(labelText: '账号'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: '密码'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: nicknameCtrl,
+              decoration: const InputDecoration(labelText: '昵称'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              try {
+                await ApiService.githubRegisterBind(
+                  githubId: ghInfo['github_id'],
+                  username: usernameCtrl.text.trim(),
+                  password: passwordCtrl.text,
+                  nickname: nicknameCtrl.text.trim(),
+                  avatar: ghInfo['github_avatar'],
+                );
+                if (!ctx.mounted) return;
+                Navigator.pop(ctx);
+                if (mounted) {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('注册失败: $e')));
+              }
+            },
+            child: const Text('完成注册'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _guestLogin() async {
