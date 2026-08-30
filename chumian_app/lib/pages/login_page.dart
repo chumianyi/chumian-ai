@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: clientId,
       redirectUri: 'chumianai://auth/callback',
-      scope: 'read:user%20user:email',
+      scope: 'read:user user:email',
     );
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);

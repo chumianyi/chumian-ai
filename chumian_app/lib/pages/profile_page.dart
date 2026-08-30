@@ -399,7 +399,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: 'Iv23liXKq2Q8Zb1nL2cD',
       redirectUri: 'chumianai://auth/callback',
-      scope: 'read:user%20user:email',
+      scope: 'read:user user:email',
     );
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);

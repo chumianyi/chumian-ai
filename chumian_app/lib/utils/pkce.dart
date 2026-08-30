@@ -31,10 +31,14 @@ class PkceUtil {
   }) {
     final verifier = generateCodeVerifier();
     final challenge = generateCodeChallenge(verifier);
-    return 'https://github.com/login/oauth/authorize?client_id=$clientId'
-        '&redirect_uri=$redirectUri'
-        '&scope=$scope'
-        '&code_challenge=$challenge'
-        '&code_challenge_method=S256';
+    // 使用 Uri.https 自动正确编码所有查询参数（特别是 redirect_uri 中的 ://）
+    final uri = Uri.https('github.com', '/login/oauth/authorize', {
+      'client_id': clientId,
+      'redirect_uri': redirectUri,
+      'scope': scope,
+      'code_challenge': challenge,
+      'code_challenge_method': 'S256',
+    });
+    return uri.toString();
   }
 }
