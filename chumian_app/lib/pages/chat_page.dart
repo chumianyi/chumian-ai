@@ -16,6 +16,7 @@ import '../widgets/chat_bubble.dart';
 import '../widgets/buttons.dart';
 import '../widgets/tiles.dart';
 import '../utils/constants.dart';
+import '../utils/pkce.dart';
 import '../utils/formatters.dart';
 import 'image_preview_page.dart';
 import 'video_preview_page.dart';
@@ -118,8 +119,11 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void _bindGithub() async {
-    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
-    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
+    final authUrl = PkceUtil.buildAuthUrl(
+      clientId: 'Iv23liXKq2Q8Zb1nL2cD',
+      redirectUri: 'chumianai://auth/callback',
+      scope: 'read:user%20user:email',
+    );
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
       _showSnack('请在浏览器中完成GitHub授权，授权后将自动绑定');

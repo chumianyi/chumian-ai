@@ -389,8 +389,12 @@ class ApiService {
   }
 
   // ===== GitHub OAuth =====
-  static Future<Map<String, dynamic>> githubAuth(String code) async {
-    final resp = await _dio.post('/api/auth/github', data: {'code': code});
+  static Future<Map<String, dynamic>> githubAuth(String code, {String? codeVerifier}) async {
+    final body = <String, dynamic>{'code': code};
+    if (codeVerifier != null && codeVerifier.isNotEmpty) {
+      body['code_verifier'] = codeVerifier;
+    }
+    final resp = await _dio.post('/api/auth/github', data: body);
     final data = Map<String, dynamic>.from(resp.data);
     if (data['token'] != null) {
       await setToken(data['token']);
@@ -398,8 +402,12 @@ class ApiService {
     return data;
   }
 
-  static Future<Map<String, dynamic>> githubBind(String code) async {
-    final resp = await _dio.post('/api/auth/github/bind', data: {'code': code});
+  static Future<Map<String, dynamic>> githubBind(String code, {String? codeVerifier}) async {
+    final body = <String, dynamic>{'code': code};
+    if (codeVerifier != null && codeVerifier.isNotEmpty) {
+      body['code_verifier'] = codeVerifier;
+    }
+    final resp = await _dio.post('/api/auth/github/bind', data: body);
     return Map<String, dynamic>.from(resp.data);
   }
 

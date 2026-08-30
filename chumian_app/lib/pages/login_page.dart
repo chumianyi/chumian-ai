@@ -8,9 +8,10 @@ import 'chat_page.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/buttons.dart';
 import '../utils/constants.dart';
+import '../utils/pkce.dart';
 
 class LoginPage extends StatefulWidget {
-  final Function(String?) onLoginSuccess;
+  final Function(String?, {bool githubBound}) onLoginSuccess;
   const LoginPage({super.key, required this.onLoginSuccess});
 
   @override
@@ -67,7 +68,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _githubLogin() async {
     const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
-    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
+    final authUrl = PkceUtil.buildAuthUrl(
+      clientId: clientId,
+      redirectUri: 'chumianai://auth/callback',
+      scope: 'read:user%20user:email',
+    );
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
       _showSnack('请在浏览器中完成GitHub授权，授权后将自动登录');
@@ -121,9 +126,11 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
     try {
       String? blessing;
+      bool githubBound = false;
       if (_isLogin) {
         final resp = await ApiService.login(username, password);
         blessing = resp['birthday_blessing'];
+        githubBound = resp['github_bound'] == true;
       } else {
         await ApiService.register(
           username: username,
@@ -131,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
           nickname: _nicknameController.text.trim(),
         );
       }
-      widget.onLoginSuccess(blessing);
+      widget.onLoginSuccess(blessing, githubBound: githubBound);
     } catch (e) {
       _showSnack(ErrorMessages.of(e));
     } finally {

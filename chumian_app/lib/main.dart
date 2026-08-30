@@ -5,6 +5,8 @@ import 'services/api_service.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/oobe_page.dart';
+import 'pages/github_bind_page.dart';
+import 'utils/pkce.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +56,7 @@ class _AppInitializerState extends State<AppInitializer> {
   bool _isValid = true;
   bool _isLoggedIn = false;
   bool _oobeCompleted = false;
+  bool _githubBound = false;
   String? _birthdayBlessing;
   AppLinks? _appLinks;
   bool _processingLink = false;
@@ -94,15 +97,18 @@ class _AppInitializerState extends State<AppInitializer> {
 
     _processingLink = true;
     try {
+      final verifier = PkceUtil.storedVerifier;
       if (!_isLoggedIn) {
         // GitHub login flow
-        final resp = await ApiService.githubAuth(code);
+        final resp = await ApiService.githubAuth(code, codeVerifier: verifier);
+        PkceUtil.clearStoredVerifier();
         if (resp['token'] != null) {
           await ApiService.setToken(resp['token']);
           if (mounted) {
             setState(() {
               _isLoggedIn = true;
               _oobeCompleted = false;
+              _githubBound = true;
             });
           }
         } else if (resp['need_register'] == true) {
@@ -113,8 +119,16 @@ class _AppInitializerState extends State<AppInitializer> {
         }
       } else {
         // GitHub bind flow
-        await ApiService.githubBind(code);
+        await ApiService.githubBind(code, codeVerifier: verifier);
+        PkceUtil.clearStoredVerifier();
         if (mounted) {
+          // Refresh user info to confirm binding
+          try {
+            final info = await ApiService.getUserInfo();
+            if (info['github_id'] != null && info['github_id'].toString().isNotEmpty) {
+              setState(() => _githubBound = true);
+            }
+          } catch (_) {}
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('GitHub 账号绑定成功')),
           );
@@ -215,6 +229,7 @@ class _AppInitializerState extends State<AppInitializer> {
           final info = await ApiService.getUserInfo();
           _isLoggedIn = true;
           _oobeCompleted = info['oobe_completed'] == true;
+          _githubBound = info['github_id'] != null && info['github_id'].toString().isNotEmpty;
         } catch (_) {
           await ApiService.setToken(null);
           _isLoggedIn = false;
@@ -228,6 +243,7 @@ class _AppInitializerState extends State<AppInitializer> {
     setState(() {
       _isLoggedIn = false;
       _oobeCompleted = false;
+      _githubBound = false;
     });
   }
 
@@ -334,13 +350,20 @@ class _AppInitializerState extends State<AppInitializer> {
     }
     if (!_isLoggedIn) {
       return LoginPage(
-        onLoginSuccess: (blessing) {
+        onLoginSuccess: (blessing, {bool githubBound = false}) {
           setState(() {
             _isLoggedIn = true;
             _oobeCompleted = false;
+            _githubBound = githubBound;
             _birthdayBlessing = blessing;
           });
         },
+      );
+    }
+    if (!_githubBound) {
+      return GithubBindPage(
+        themeProvider: tp,
+        onBindSuccess: () => setState(() => _githubBound = true),
       );
     }
     if (!_oobeCompleted) {

@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:convert';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../utils/pkce.dart';
 import 'custom_models_page.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/avatar.dart';
@@ -395,8 +396,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _bindGithub() async {
-    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
-    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=chumianai://auth/callback&scope=read:user%20user:email';
+    final authUrl = PkceUtil.buildAuthUrl(
+      clientId: 'Iv23liXKq2Q8Zb1nL2cD',
+      redirectUri: 'chumianai://auth/callback',
+      scope: 'read:user%20user:email',
+    );
     try {
       await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
       _showSnack('请在浏览器中完成GitHub授权，授权后将自动绑定');
