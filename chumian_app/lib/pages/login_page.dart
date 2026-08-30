@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: clientId,
-      redirectUri: 'chumianai://auth/callback',
+      redirectUri: 'https://chumianyi.github.io/chumian-ai-auth/',
       scope: 'read:user user:email',
     );
     try {

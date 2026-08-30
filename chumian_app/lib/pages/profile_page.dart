@@ -398,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _bindGithub() async {
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: 'Iv23liXKq2Q8Zb1nL2cD',
-      redirectUri: 'chumianai://auth/callback',
+      redirectUri: 'https://chumianyi.github.io/chumian-ai-auth/',
       scope: 'read:user user:email',
     );
     try {
