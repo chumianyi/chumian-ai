@@ -79,7 +79,7 @@ class _AppInitializerState extends State<AppInitializer> {
         if (uri != null) _handleDeepLink(uri);
       });
       // Check initial link (app was opened via link)
-      final initialUri = await _appLinks!.getInitialUri();
+      final initialUri = await _appLinks!.getInitialLink();
       if (initialUri != null && mounted) {
         _handleDeepLink(initialUri);
       }
