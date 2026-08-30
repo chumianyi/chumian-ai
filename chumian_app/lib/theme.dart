@@ -108,7 +108,7 @@ class AppTextStyles {
 /// 枚举：主题色板
 /// ============================================================
 
-enum AppThemeType { defaultTheme, green, pink, purple }
+enum AppThemeType { defaultTheme, green, pink, purple, orange, red, cyan, yellow, darkBlue }
 
 class ThemeColorSet {
   final Color primary;
@@ -200,11 +200,9 @@ class ThemeColorSet {
 class ThemeProvider extends ChangeNotifier {
   AppThemeType _themeType = AppThemeType.defaultTheme;
   bool _isDark = false;
-  bool _fullscreenLayout = false;
 
   AppThemeType get themeType => _themeType;
   bool get isDark => _isDark;
-  bool get fullscreenLayout => _fullscreenLayout;
 
   ThemeColorSet get _set => ThemeColorSet.all[_themeType]!;
 
@@ -271,7 +269,6 @@ class ThemeProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _themeType = AppThemeType.values[prefs.getInt('theme_type') ?? 0];
     _isDark = prefs.getBool('is_dark') ?? false;
-    _fullscreenLayout = prefs.getBool('fullscreen_layout') ?? false;
     notifyListeners();
   }
 

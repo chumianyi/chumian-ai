@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
+import '../widgets/svg_icons.dart';
+import 'version_upgrade_page.dart';
+import 'chat_page.dart';
 import '../services/api_service.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/buttons.dart';
@@ -103,6 +109,41 @@ class _LoginPageState extends State<LoginPage> {
               _buildBrandHeader(),
               const SizedBox(height: 36),
               _buildForm(),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey[300])),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('或', style: TextStyle(color: Colors.grey[400], fontSize: 13)),
+                  ),
+                  Expanded(child: Divider(color: Colors.grey[300])),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton.icon(
+                  onPressed: _githubLogin,
+                  icon: SvgIcons.github(size: 20, color: Colors.black),
+                  label: const Text('GitHub 授权登录', style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500)),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.grey[300]!),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: TextButton.icon(
+                  onPressed: _guestLogin,
+                  icon: const Icon(Icons.person_outline, color: Colors.grey),
+                  label: const Text('游客登录（限20次，仅glm-4-flash）', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                ),
+              ),
             ],
           ),
         ),

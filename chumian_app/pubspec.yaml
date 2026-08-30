@@ -1,7 +1,7 @@
 name: chumian_ai
 description: "初眠AI - 智能AI助手"
 publish_to: 'none'
-version: 2.0.0+6
+version: 3.0.0+3
 
 environment:
   sdk: ^3.5.0
@@ -22,6 +22,8 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   mobile_scanner: ^5.1.1
   timezone: ^0.9.4
+  open_filex: ^4.4.0
+  path_provider: ^2.1.4
   markdown: ^7.2.2
   video_player: ^2.9.2
   path_provider: ^2.1.4

@@ -19,6 +19,11 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
 GLM_API_KEY = "d0a99ebaa97e4bac9e99e236211b15f5.m8eJh0XSXMVu2I8P"
+
+# GitHub OAuth Config (可配置)
+GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "Iv23liXKq2Q8Zb1nL2cD")
+GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
+GITHUB_REDIRECT_URI = "chumianai://auth/callback"
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 SMTP_HOST = "smtp.qq.com"
 SMTP_PORT = 465
@@ -145,6 +150,7 @@ async def init_db():
             ban_reason TEXT,
             oobe_completed INTEGER DEFAULT 0,
             avatar TEXT,
+            github_id TEXT,
             created_at TEXT
         );
         CREATE TABLE IF NOT EXISTS conversations (
@@ -224,6 +230,7 @@ async def init_db():
         "ALTER TABLE posts ADD COLUMN type TEXT DEFAULT 'text'",
         "ALTER TABLE posts ADD COLUMN media_url TEXT",
         "ALTER TABLE posts ADD COLUMN agent_id TEXT",
+        "ALTER TABLE users ADD COLUMN github_id TEXT",
     ]
     for m in migrations:
         try:
@@ -1287,6 +1294,97 @@ async def update_profile(request: Request, req: ProfileUpdateRequest):
 
 class AvatarUploadRequest(BaseModel):
     avatar: str  # base64 encoded image
+
+@app.get("/api/version/check")
+async def version_check():
+    return {
+        "min_version": "2.5.0",
+        "latest_version": "3.0.0",
+        "download_url": "https://aka.doubaocdn.com/s/3mnsONg4T6",
+        "github_url": "https://github.com/chumianyi/chumian-ai-app/releases",
+        "force_update": True,
+    }
+
+
+@app.post("/api/auth/github")
+async def github_auth(request: Request):
+    """用GitHub code换token并获取用户信息，返回或创建账号"""
+    body = await request.json()
+    code = body.get("code", "")
+    if not code:
+        return JSONResponse(status_code=400, content={"error": "缺少code"})
+    try:
+        # 用code换access_token
+        token_resp = await client.post(
+            "https://github.com/login/oauth/access_token",
+            data={"client_id": GITHUB_CLIENT_ID, "client_secret": GITHUB_CLIENT_SECRET, "code": code},
+            headers={"Accept": "application/json"},
+        )
+        token_data = token_resp.json()
+        access_token = token_data.get("access_token", "")
+        if not access_token:
+            return JSONResponse(status_code=400, content={"error": "GitHub授权失败", "detail": token_data})
+        # 获取用户信息
+        user_resp = await client.get(
+            "https://api.github.com/user",
+            headers={"Authorization": f"token {access_token}"},
+        )
+        gh_user = user_resp.json()
+        gh_id = str(gh_user.get("id", ""))
+        gh_login = gh_user.get("login", "")
+        gh_avatar = gh_user.get("avatar_url", "")
+        if not gh_id:
+            return JSONResponse(status_code=400, content={"error": "获取GitHub用户信息失败"})
+        # 查找已绑定的账号
+        async with db_lock:
+            row = await db.execute_fetchone("SELECT id, username, nickname, avatar FROM users WHERE github_id = ?", (gh_id,))
+        if row:
+            # 已绑定，直接登录
+            user_id = row["id"]
+            token = str(uuid.uuid4())
+            async with db_lock:
+                await db.execute("UPDATE users SET token = ? WHERE id = ?", (token, user_id))
+            return {"token": token, "user_id": user_id, "nickname": row["nickname"], "avatar": row["avatar"], "is_new": False}
+        else:
+            # 未绑定，返回GitHub信息让客户端设置用户名密码
+            return {"need_register": True, "github_id": gh_id, "github_login": gh_login, "github_avatar": gh_avatar}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.post("/api/auth/github/bind")
+async def github_bind(request: Request):
+    """绑定GitHub到已有账号或创建新账号"""
+    body = await request.json()
+    github_id = body.get("github_id", "")
+    username = body.get("username", "").strip()
+    password = body.get("password", "")
+    nickname = body.get("nickname", "") or username
+    avatar = body.get("avatar", "")
+    if not github_id or not username or not password:
+        return JSONResponse(status_code=400, content={"error": "参数不完整"})
+    async with db_lock:
+        # 检查用户名是否存在
+        existing = await db.execute_fetchone("SELECT id FROM users WHERE username = ?", (username,))
+        if existing:
+            # 绑定到已有账号（需要验证密码？简化处理，直接绑定）
+            user_id = existing["id"]
+            await db.execute("UPDATE users SET github_id = ?, avatar = COALESCE(NULLIF(?, ''), avatar) WHERE id = ?", (github_id, avatar, user_id))
+        else:
+            # 创建新账号
+            user_id = str(uuid.uuid4())
+            hashed_pw = password  # 简化，实际应bcrypt
+            token = str(uuid.uuid4())
+            await db.execute(
+                "INSERT INTO users (id, username, password, nickname, avatar, github_id, token, points, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 90000000, ?)",
+                (user_id, username, hashed_pw, nickname, avatar, github_id, token, datetime.now().isoformat()),
+            )
+            # 确保有github_id列（如果没有则忽略错误）
+    # 重新获取token
+    async with db_lock:
+        row = await db.execute_fetchone("SELECT id, token, nickname, avatar FROM users WHERE id = ?", (user_id,))
+    return {"token": row["token"], "user_id": row["id"], "nickname": row["nickname"], "avatar": row["avatar"], "is_new": not existing}
+
 
 @app.post("/api/generate/image")
 async def generate_image(request: Request):

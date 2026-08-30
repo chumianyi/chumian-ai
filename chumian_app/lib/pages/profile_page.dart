@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:convert';
 import '../services/api_service.dart';
 import '../theme.dart';
+import 'custom_models_page.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/avatar.dart';
 import '../widgets/default_avatar.dart';
@@ -280,6 +281,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 _themeOption('粉色', AppThemeType.pink),
                 const SizedBox(width: 14),
                 _themeOption('紫色', AppThemeType.purple),
+                _themeOption('橙色', AppThemeType.orange),
+                _themeOption('红色', AppThemeType.red),
+                _themeOption('青色', AppThemeType.cyan),
+                _themeOption('黄色', AppThemeType.yellow),
+                _themeOption('深蓝', AppThemeType.darkBlue),
               ],
             ),
             const SizedBox(height: 20),
@@ -433,6 +439,11 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               SettingsTile(
                 icon: Icons.palette_outlined,
+                title: '模型管理',
+                leading: const Icon(Icons.memory),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomModelsPage())),
+              ),
+              ListTile(
                 title: '主题设置',
                 subtitle: '配色方案与深色模式',
                 onTap: _showThemePicker,

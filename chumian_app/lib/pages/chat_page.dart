@@ -24,7 +24,8 @@ import '../widgets/gradient_header.dart';
 class ChatPage extends StatefulWidget {
   final String? initialPrompt;
   final String? initialModel;
-  const ChatPage({super.key, this.initialPrompt, this.initialModel});
+  final bool guestMode;
+  const ChatPage({super.key, this.initialPrompt, this.initialModel, this.guestMode = false});
 
   @override
   State<ChatPage> createState() => ChatPageState();
@@ -38,6 +39,7 @@ class ChatPageState extends State<ChatPage> {
   bool _isSending = false;
   String _selectedModel = 'glm-4-flash';
   String? _currentConvId;
+  int _guestRemaining = 20;
   StreamSubscription? _streamSub;
   VideoPlayerController? _videoController;
   String _pendingChars = '';
@@ -53,6 +55,7 @@ class ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.guestMode) _loadGuestCount();
     if (widget.initialModel != null) _selectedModel = widget.initialModel!;
     if (widget.initialPrompt != null) {
       _controller.text = widget.initialPrompt!;
@@ -64,6 +67,12 @@ class ChatPageState extends State<ChatPage> {
   Future<void> _loadWebSearch() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) setState(() => _webSearch = prefs.getBool('web_search') ?? false);
+  }
+
+  Future<void> _loadGuestCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    _guestRemaining = prefs.getInt('guest_remaining') ?? 20;
+    if (mounted) setState(() {});
   }
 
   Future<void> _toggleWebSearch() async {
@@ -163,9 +172,18 @@ class ChatPageState extends State<ChatPage> {
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
+    if (widget.guestMode && _guestRemaining <= 0) {
+      _showSnack('游客次数已用完，请注册登录');
+      return;
+    }
     _controller.clear();
     _focusNode.unfocus();
 
+    if (widget.guestMode) {
+      _guestRemaining--;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('guest_remaining', _guestRemaining);
+    }
     setState(() {
       _messages.add(ChatMessage(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -638,6 +656,7 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: widget.guestMode ? Text('游客模式（剩余$_guestRemaining次）', style: const TextStyle(fontSize: 14)) : null,
         leading: IconAction(
           icon: Icons.history_rounded,
           tooltip: '历史对话',
@@ -1185,7 +1204,8 @@ class ChatPageState extends State<ChatPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ===== 横条：联网搜索 + 更换模型 =====
+            // ===== 横条：联网搜索 + 更换模型（游客模式隐藏） =====
+            if (!widget.guestMode)
             Row(
               children: [
                 // 联网搜索按钮

@@ -375,6 +375,11 @@ class ApiService {
   }
 
 
+  static Future<Map<String, dynamic>> checkVersion() async {
+    final resp = await _dio.get('/api/version/check');
+    return Map<String, dynamic>.from(resp.data);
+  }
+
   static Future<String?> generateImage(String prompt, {String size = '1:1'}) async {
     final resp = await _dio.post('/api/generate/image', data: {'prompt': prompt, 'size': size});
     final data = resp.data;
