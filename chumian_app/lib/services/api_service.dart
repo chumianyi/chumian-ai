@@ -374,4 +374,12 @@ class ApiService {
     await _dio.post('/api/notifications/$nid/read');
   }
 
+
+  static Future<String?> generateImage(String prompt, {String size = '1:1'}) async {
+    final resp = await _dio.post('/api/generate/image', data: {'prompt': prompt, 'size': size});
+    final data = resp.data;
+    if (data is Map && data['url'] != null) return data['url'];
+    if (data is String) return data;
+    return null;
+  }
 }

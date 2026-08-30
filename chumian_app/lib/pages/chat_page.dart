@@ -27,7 +27,7 @@ class ChatPage extends StatefulWidget {
   const ChatPage({super.key, this.initialPrompt, this.initialModel});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => ChatPageState();
 }
 
 class ChatPageState extends State<ChatPage> {
@@ -538,7 +538,7 @@ class ChatPageState extends State<ChatPage> {
                         child: InkWell(
                           onTap: () async {
                             Navigator.pop(ctx);
-                            await _openConversation(c);
+                            await openConversation(c);
                           },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
