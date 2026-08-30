@@ -200,9 +200,11 @@ class ThemeColorSet {
 class ThemeProvider extends ChangeNotifier {
   AppThemeType _themeType = AppThemeType.defaultTheme;
   bool _isDark = false;
+  bool _fullscreenLayout = false;
 
   AppThemeType get themeType => _themeType;
   bool get isDark => _isDark;
+  bool get fullscreenLayout => _fullscreenLayout;
 
   ThemeColorSet get _set => ThemeColorSet.all[_themeType]!;
 
@@ -269,6 +271,7 @@ class ThemeProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _themeType = AppThemeType.values[prefs.getInt('theme_type') ?? 0];
     _isDark = prefs.getBool('is_dark') ?? false;
+    _fullscreenLayout = prefs.getBool('fullscreen_layout') ?? false;
     notifyListeners();
   }
 
@@ -283,6 +286,13 @@ class ThemeProvider extends ChangeNotifier {
     _isDark = !_isDark;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_dark', _isDark);
+    notifyListeners();
+  }
+
+  Future<void> setFullscreenLayout(bool value) async {
+    _fullscreenLayout = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('fullscreen_layout', value);
     notifyListeners();
   }
 

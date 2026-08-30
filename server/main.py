@@ -1285,6 +1285,35 @@ async def update_profile(request: Request, req: ProfileUpdateRequest):
     await db.close()
     return {"success": True}
 
+class AvatarUploadRequest(BaseModel):
+    avatar: str  # base64 encoded image
+
+@app.post("/api/user/avatar")
+async def upload_avatar(request: Request, req: AvatarUploadRequest):
+    user = request.state.user
+    import base64
+    try:
+        img_data = base64.b64decode(req.avatar)
+    except Exception:
+        raise HTTPException(400, "无效的图片数据")
+    if len(img_data) > 200 * 1024:
+        raise HTTPException(400, "图片过大")
+    # Detect format
+    ext = "png"
+    if img_data[:3] == b'\xff\xd8\xff':
+        ext = "jpg"
+    elif img_data[:8] == b'\x89PNG\r\n\x1a\n':
+        ext = "png"
+    filename = f"avatar_{user['id']}_{int(time.time())}.{ext}"
+    filepath = MEDIA_DIR / filename
+    filepath.write_bytes(img_data)
+    avatar_url = f"/media/{filename}"
+    db = await get_db()
+    await db.execute("UPDATE users SET avatar = ? WHERE id = ?", (avatar_url, user["id"]))
+    await db.commit()
+    await db.close()
+    return {"success": True, "avatar_url": avatar_url}
+
 @app.get("/api/users/{user_id}")
 async def get_user_profile(request: Request, user_id: str):
     db = await get_db()

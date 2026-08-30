@@ -11,7 +11,6 @@ import '../widgets/gradient_header.dart';
 import '../widgets/buttons.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
-import 'agent_leaderboard_page.dart';
 import 'image_preview_page.dart';
 import 'user_profile_page.dart';
 import '../utils/animations.dart';
@@ -247,14 +246,6 @@ class _ExplorePageState extends State<ExplorePage>
       appBar: AppBar(
         title: const Text('探索'),
         actions: [
-          IconAction(
-            icon: Icons.emoji_events_outlined,
-            tooltip: '智能体选',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AgentLeaderboardPage()),
-            ),
-          ),
           IconAction(
             icon: Icons.add_circle_outline_rounded,
             tooltip: '发布内容',

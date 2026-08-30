@@ -339,6 +339,11 @@ class ApiService {
     await _dio.put('/api/profile', data: data);
   }
 
+  static Future<String> uploadAvatar(String base64Image) async {
+    final resp = await _dio.post('/api/user/avatar', data: {'avatar': base64Image});
+    return resp.data['avatar_url'] ?? '';
+  }
+
   static Future<Map<String, dynamic>> getUserProfile(String userId) async {
     final resp = await _dio.get('/api/users/$userId');
     return Map<String, dynamic>.from(resp.data);

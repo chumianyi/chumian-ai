@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:convert';
 import '../services/api_service.dart';
 import '../theme.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/avatar.dart';
+import '../widgets/default_avatar.dart';
 import '../widgets/feedback.dart';
 import '../widgets/gradient_header.dart';
 import '../widgets/tiles.dart';
@@ -441,6 +446,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 value: widget.themeProvider.isDark,
                 onChanged: (_) => widget.themeProvider.toggleDark(),
               ),
+              const ThinDivider(),
+              SwitchTile(
+                icon: Icons.aspect_ratio_outlined,
+                title: '全屏主题',
+                subtitle: '侧边栏导航，无底部导航栏',
+                value: widget.themeProvider.fullscreenLayout,
+                onChanged: (v) => widget.themeProvider.setFullscreenLayout(v),
+              ),
             ],
           ),
           CardSection(
@@ -476,6 +489,21 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
+          const SizedBox(height: 24),
+          CardSection(
+            title: '支持',
+            padding: EdgeInsets.zero,
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+            children: [
+              SettingsTile(
+                icon: Icons.local_cafe_outlined,
+                title: '请我喝杯奶茶',
+                subtitle: '支持初眠AI持续开发',
+                onTap: _showDonation,
+                showChevron: true,
+              ),
+            ],
+          ),
           const SizedBox(height: 28),
           AppCard(
             padding: const EdgeInsets.symmetric(vertical: 4),
@@ -503,6 +531,94 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _pickAvatar() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    if (bytes.length > 100 * 1024) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('图片过大（${(bytes.length / 1024).toStringAsFixed(0)}KB），请选择小于100KB的图片')),
+        );
+      }
+      return;
+    }
+    final base64 = base64Encode(bytes);
+    try {
+      final url = await ApiService.uploadAvatar(base64);
+      setState(() {
+        _userInfo?['avatar'] = url;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('头像更新成功')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('头像上传失败: $e')));
+      }
+    }
+  }
+
+  void _showDonation() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: widget.themeProvider.surfaceColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            const Text('请我喝杯奶茶 ☕', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('感谢您的支持，初眠AI会持续更新！', style: TextStyle(color: widget.themeProvider.textSecondary, fontSize: 14)),
+            const SizedBox(height: 24),
+            ListTile(
+              leading: Container(width: 44, height: 44, decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.favorite, color: Color(0xFF4CAF50))),
+              title: const Text('爱发电', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('ifdian.net/a/chumian'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                Navigator.pop(context);
+                await launchUrl(Uri.parse('https://www.ifdian.net/a/chumian'), mode: LaunchMode.externalApplication);
+              },
+            ),
+            const ThinDivider(),
+            ListTile(
+              leading: Container(width: 44, height: 44, decoration: BoxDecoration(color: const Color(0xFFE3F2FD), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.account_balance_wallet, color: Color(0xFF1976D2))),
+              title: const Text('支付宝', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('暂不支持'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('暂不支持支付宝')));
+              },
+            ),
+            const ThinDivider(),
+            ListTile(
+              leading: Container(width: 44, height: 44, decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.chat, color: Color(0xFF07C160))),
+              title: const Text('微信', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('暂不支持'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('暂不支持微信')));
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -544,25 +660,41 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Row(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.24),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 2,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  Formatters.initialOf(nickname),
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+              GestureDetector(
+                onTap: _pickAvatar,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.24),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          width: 2,
+                        ),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: (_userInfo?['avatar'] != null && _userInfo!['avatar'].toString().isNotEmpty)
+                          ? Image.network(_userInfo!['avatar'].toString(), fit: BoxFit.cover, width: 64, height: 64)
+                          : DefaultAvatar(size: 64, color: Colors.white.withValues(alpha: 0.9)),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: tp.primaryColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.camera_alt, size: 12, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 14),
