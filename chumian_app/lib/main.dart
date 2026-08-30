@@ -98,20 +98,11 @@ class _AppInitializerState extends State<AppInitializer> {
     _processingLink = true;
     try {
       final verifier = PkceUtil.storedVerifier;
-      // 客户端本地交换 code→access_token（服务端可能无法访问 github.com）
-      final accessToken = await ApiService.exchangeCodeForToken(code, codeVerifier: verifier);
       PkceUtil.clearStoredVerifier();
-      if (accessToken == null || accessToken.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('GitHub 授权失败：无法获取访问令牌')),
-          );
-        }
-        return;
-      }
+      // 标准流程：客户端只发 code+code_verifier 给服务端，由服务端完成 token 交换
       if (!_isLoggedIn) {
-        // GitHub login flow - send access_token to server
-        final resp = await ApiService.githubAuth(accessToken: accessToken);
+        // GitHub login flow
+        final resp = await ApiService.githubAuth(code: code, codeVerifier: verifier);
         if (resp['token'] != null) {
           await ApiService.setToken(resp['token']);
           if (mounted) {
@@ -127,8 +118,8 @@ class _AppInitializerState extends State<AppInitializer> {
           }
         }
       } else {
-        // GitHub bind flow - send access_token to server
-        await ApiService.githubBind(accessToken: accessToken);
+        // GitHub bind flow
+        await ApiService.githubBind(code: code, codeVerifier: verifier);
         if (mounted) {
           try {
             final info = await ApiService.getUserInfo();

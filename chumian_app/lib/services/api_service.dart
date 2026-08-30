@@ -402,27 +402,6 @@ class ApiService {
     return data;
   }
 
-  /// 客户端本地交换 code→access_token（服务端可能无法访问 github.com）
-  static Future<String?> exchangeCodeForToken(String code, {String? codeVerifier}) async {
-    try {
-      final data = <String, dynamic>{
-        'client_id': 'Iv23liXKq2Q8Zb1nL2cD',
-        'code': code,
-      };
-      if (codeVerifier != null && codeVerifier.isNotEmpty) {
-        data['code_verifier'] = codeVerifier;
-      }
-      final resp = await _dio.post(
-        'https://github.com/login/oauth/access_token',
-        data: data,
-        options: Options(headers: {'Accept': 'application/json'}),
-      );
-      final result = Map<String, dynamic>.from(resp.data);
-      return result['access_token'] as String?;
-    } catch (e) {
-      return null;
-    }
-  }
 
   static Future<Map<String, dynamic>> githubBind({String? code, String? accessToken, String? codeVerifier}) async {
     final body = <String, dynamic>{};

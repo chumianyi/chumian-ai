@@ -1320,7 +1320,7 @@ async def version_check():
 
 @app.post("/api/auth/github")
 async def github_auth(request: Request):
-    """用GitHub access_token获取用户信息，返回或创建账号。
+    """用GitHub code换token并获取用户信息（服务端完成交换，PKCE模式），返回或创建账号。
     支持两种模式：
     1. access_token模式（推荐）：客户端已完成code→token交换，直接传access_token
     2. code模式（兼容）：服务端尝试交换code（需服务端能访问github.com）
@@ -1332,8 +1332,8 @@ async def github_auth(request: Request):
     if not code and not access_token:
         return JSONResponse(status_code=400, content={"error": "缺少code或access_token"})
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            # 如果只有code，尝试服务端交换（可能因网络不可达而失败）
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # 服务端用code+code_verifier(PKCE)交换access_token
             if not access_token and code:
                 if not GITHUB_CLIENT_SECRET and not code_verifier:
                     return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
@@ -1409,8 +1409,8 @@ async def github_bind(request: Request):
             return JSONResponse(status_code=401, content={"error": "未登录"})
         code_verifier = body.get("code_verifier", "")
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                # 如果只有code，尝试服务端交换
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                # 服务端用code+code_verifier(PKCE)交换access_token
                 if not access_token and code:
                     if not GITHUB_CLIENT_SECRET and not code_verifier:
                         return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
