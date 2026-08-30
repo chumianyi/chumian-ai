@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:chumian_app/pages/github_auth_page.dart';
+import 'package:chumian_app/services/api_service.dart';
+import 'package:chumian_app/utils/pkce.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../utils/pkce.dart';
@@ -21,26 +24,41 @@ class _GithubBindPageState extends State<GithubBindPage> {
     if (_binding) return;
     setState(() => _binding = true);
     const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
-    const redirectUri = 'https://chumianyi.github.io/chumian-ai-auth/';
+    const redirectUri = 'https://chumianyi.github.io/chumian-ai-auth/callback';
     const scope = 'read:user user:email';
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: clientId,
       redirectUri: redirectUri,
       scope: scope,
     );
+    final verifier = PkceUtil.storedVerifier;
     try {
-      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('请在浏览器中完成 GitHub 授权，授权后将自动绑定')),
-        );
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => GithubAuthPage(authUrl: authUrl, callbackUrlPrefix: redirectUri)),
+      );
+      PkceUtil.clearStoredVerifier();
+      if (result == null || result['cancelled'] == true) return;
+      if (result['error'] != null) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('GitHub授权失败: ${result['error']}')));
+        return;
+      }
+      final code = result['code'];
+      if (code == null) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('未获取到授权码')));
+        return;
+      }
+      final resp = await ApiService.githubBind(code: code, codeVerifier: verifier);
+      if (resp['success'] == true || resp['github_id'] != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('GitHub 绑定成功')));
+          Navigator.pop(context, true);
+        }
+      } else {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(resp['error'] ?? '绑定失败')));
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('无法打开浏览器: $e')),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('授权失败: $e')));
     } finally {
       if (mounted) setState(() => _binding = false);
     }

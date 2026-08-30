@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:chumian_app/pages/github_auth_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
@@ -68,16 +69,43 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _githubLogin() async {
     const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
+    const redirectUri = 'https://chumianyi.github.io/chumian-ai-auth/callback';
     final authUrl = PkceUtil.buildAuthUrl(
       clientId: clientId,
-      redirectUri: 'https://chumianyi.github.io/chumian-ai-auth/',
+      redirectUri: redirectUri,
       scope: 'read:user user:email',
     );
+    final verifier = PkceUtil.storedVerifier;
     try {
-      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
-      _showSnack('请在浏览器中完成GitHub授权，授权后将自动登录');
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => GithubAuthPage(authUrl: authUrl, callbackUrlPrefix: redirectUri)),
+      );
+      PkceUtil.clearStoredVerifier();
+      if (result == null || result['cancelled'] == true) return;
+      if (result['error'] != null) {
+        _showSnack('GitHub授权失败: ${result['error']}');
+        return;
+      }
+      final code = result['code'];
+      if (code == null) {
+        _showSnack('未获取到授权码');
+        return;
+      }
+      // 发送 code 给服务端，由服务端完成 token 交换
+      final resp = await ApiService.githubAuth(code: code, codeVerifier: verifier);
+      if (resp['token'] != null) {
+        await ApiService.setToken(resp['token']);
+        if (mounted) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+        }
+      } else if (resp['need_register'] == true) {
+        if (mounted) _showGithubRegisterDialog(resp);
+      } else {
+        _showSnack(resp['error'] ?? '登录失败');
+      }
     } catch (e) {
-      _showSnack('无法打开浏览器: $e');
+      _showSnack('授权失败: $e');
     }
   }
 
