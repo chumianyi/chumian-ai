@@ -389,6 +389,28 @@ class ApiService {
   }
 
   // ===== GitHub OAuth =====
+  static const String githubClientId = 'Ov23liCRs3x3XxXY5P6w';
+  static const String githubRedirectUri = 'https://chumianyi.github.io/chumian-ai-auth/callback';
+
+  static Future<Map<String, dynamic>> githubExchangeToken({required String code, required String codeVerifier}) async {
+    final resp = await _dio.post(
+      'https://github.com/login/oauth/access_token',
+      data: {
+        'client_id': githubClientId,
+        'code': code,
+        'code_verifier': codeVerifier,
+        'redirect_uri': githubRedirectUri,
+      },
+      options: Options(
+        headers: {'Accept': 'application/json'},
+        contentType: Headers.formUrlEncodedContentType,
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+    return Map<String, dynamic>.from(resp.data);
+  }
+
   static Future<Map<String, dynamic>> githubAuth({String? code, String? accessToken, String? codeVerifier}) async {
     final body = <String, dynamic>{};
     if (code != null && code.isNotEmpty) body['code'] = code;

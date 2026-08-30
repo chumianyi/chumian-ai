@@ -48,7 +48,14 @@ class _GithubBindPageState extends State<GithubBindPage> {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('未获取到授权码')));
         return;
       }
-      final resp = await ApiService.githubBind(code: code, codeVerifier: verifier);
+      // 客户端直接用PKCE交换token（无需client_secret），再发给服务端
+      final tokenData = await ApiService.githubExchangeToken(code: code, codeVerifier: verifier!);
+      final accessToken = tokenData['access_token'];
+      if (accessToken == null || accessToken.toString().isEmpty) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('GitHub token交换失败: ${tokenData['error'] ?? tokenData['error_description'] ?? '未知错误'}')));
+        return;
+      }
+      final resp = await ApiService.githubBind(accessToken: accessToken);
       if (resp['success'] == true || resp['github_id'] != null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('GitHub 绑定成功')));

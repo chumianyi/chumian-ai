@@ -1347,7 +1347,10 @@ async def github_auth(request: Request):
                     data=token_data_dict,
                     headers={"Accept": "application/json"},
                 )
-                token_data = token_resp.json()
+                try:
+                    token_data = token_resp.json()
+                except Exception:
+                    return JSONResponse(status_code=502, content={"error": "GitHub返回非JSON响应", "status": token_resp.status_code, "body": token_resp.text[:500]})
                 access_token = token_data.get("access_token", "")
                 if not access_token:
                     gh_err = token_data.get("error", "unknown")
@@ -1381,7 +1384,10 @@ async def github_auth(request: Request):
             # 未绑定，返回GitHub信息让客户端设置用户名密码
             return {"need_register": True, "github_id": gh_id, "github_login": gh_login, "github_avatar": gh_avatar}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        import traceback
+        tb = traceback.format_exc()
+        print(f"[github_auth ERROR] {e}\n{tb}", flush=True)
+        return JSONResponse(status_code=500, content={"error": str(e), "exception_type": type(e).__name__, "traceback": tb[-500:]})
 
 
 @app.post("/api/auth/github/bind")
@@ -1416,7 +1422,7 @@ async def github_bind(request: Request):
                 if not access_token and code:
                     if not GITHUB_CLIENT_SECRET and not code_verifier:
                         return JSONResponse(status_code=500, content={"error": "服务端未配置GitHub Client Secret"})
-                    token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code}
+                    token_data_dict = {"client_id": GITHUB_CLIENT_ID, "code": code, "redirect_uri": GITHUB_REDIRECT_URI}
                     if GITHUB_CLIENT_SECRET:
                         token_data_dict["client_secret"] = GITHUB_CLIENT_SECRET
                     if code_verifier:
@@ -1426,7 +1432,10 @@ async def github_bind(request: Request):
                         data=token_data_dict,
                         headers={"Accept": "application/json"},
                     )
-                    token_data = token_resp.json()
+                    try:
+                        token_data = token_resp.json()
+                    except Exception:
+                        return JSONResponse(status_code=502, content={"error": "GitHub返回非JSON响应", "status": token_resp.status_code, "body": token_resp.text[:500]})
                     access_token = token_data.get("access_token", "")
                     if not access_token:
                         gh_err = token_data.get("error", "unknown")
@@ -1450,7 +1459,10 @@ async def github_bind(request: Request):
             await db.close()
             return {"success": True, "github_id": gh_id, "message": "绑定成功"}
         except Exception as e:
-            return JSONResponse(status_code=500, content={"error": str(e)})
+            import traceback
+            tb = traceback.format_exc()
+            print(f"[github_bind ERROR] {e}\n{tb}", flush=True)
+            return JSONResponse(status_code=500, content={"error": str(e), "exception_type": type(e).__name__, "traceback": tb[-500:]})
 
     # 模式1：未登录，用github_id + 账号密码注册并绑定
     if not github_id or not username or not password:
