@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../widgets/svg_icons.dart';
 import '../widgets/default_avatar.dart';
+import '../pages/scheduled_tasks_page.dart';
+import '../pages/skills_page.dart';
+import '../pages/ai_create_page.dart';
+import '../pages/camera_page.dart';
+import '../pages/scan_page.dart';
 
 /// 豆包风格侧边栏：纯白底、搜索框、功能列表、置顶/最近分区、底部交互栏
 class ChumianDrawer extends StatefulWidget {
@@ -35,7 +40,7 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
   List<dynamic> _conversations = [];
   List<dynamic> _filteredConversations = [];
   bool _loading = true;
-  final Set<String> _pinnedIds = {}; // 本地管理置顶
+  final Set<String> _pinnedIds = {};
   static const List<Color> _convColors = [
     Color(0xFF6366F1), Color(0xFFEC4899), Color(0xFF14B8A6),
     Color(0xFFF59E0B), Color(0xFF8B5CF6), Color(0xFFEF4444),
@@ -83,11 +88,6 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
   Color _colorForConv(String id) {
     final hash = id.hashCode.abs();
     return _convColors[hash % _convColors.length];
-  }
-
-  String _initialOf(String text) {
-    if (text.isEmpty) return '?';
-    return text.characters.first;
   }
 
   @override
@@ -168,30 +168,40 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
                   children: [
                     const SizedBox(height: 4),
 
-                    // ===== 固定功能快捷入口 =====
+                    // ===== 固定功能快捷入口（4项） =====
                     _buildFunctionItem(
                       icon: _buildAvatarMini(nickname),
                       label: nickname,
                       isAvatar: true,
-                      onTap: () => widget.onNavigate(5), // 我的页面
+                      onTap: () => widget.onNavigate(5),
                     ),
                     _buildFunctionItem(
                       icon: SvgIcons.clock(size: 22, color: const Color(0xFF555555)),
                       label: '定时任务',
-                      onTap: () => _showPlaceholderPage('定时任务'),
+                      onTap: () {
+                        widget.onClose();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ScheduledTasksPage()));
+                      },
                     ),
                     _buildFunctionItem(
                       icon: SvgIcons.connector(size: 22, color: const Color(0xFF555555)),
                       label: '技能·连接器',
-                      onTap: () => widget.onNavigate(1), // 创意/智能体
+                      onTap: () {
+                        widget.onClose();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SkillsPage()));
+                      },
                     ),
                     _buildFunctionItem(
                       icon: SvgIcons.aiCreate(size: 22, color: const Color(0xFF555555)),
                       label: 'AI创作',
-                      onTap: () => widget.onNavigate(1), // 创意页面
+                      onTap: () {
+                        widget.onClose();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const AICreatePage()));
+                      },
                     ),
 
-                    const SizedBox(height: 16),
+                    // ===== 功能区和会话区分割线 =====
+                    const SizedBox(height: 12),
                     const Divider(height: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 12),
 
@@ -200,7 +210,7 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
                     if (_loading)
                       const Padding(padding: EdgeInsets.all(16), child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
                     else if (_pinnedIds.isEmpty)
-                      _buildEmptyHint('暂无置顶会话')
+                      _buildEmptyHint('暂无置顶会话，长按会话可置顶')
                     else
                       ..._pinnedIds.map((id) {
                         final conv = _conversations.firstWhere(
@@ -219,13 +229,13 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
                     else if (_filteredConversations.isEmpty)
                       _buildEmptyHint('暂无会话')
                     else
-                      ..._filteredConversations.take(8).map((conv) => _buildConversationItem(conv, showAlert: false)),
+                      ..._filteredConversations.take(10).map((conv) => _buildConversationItem(conv, showAlert: false)),
                   ],
                 ),
               ),
             ),
 
-            // ===== 底部交互栏 =====
+            // ===== 底部交互栏（6项） =====
             Container(
               height: 56,
               decoration: const BoxDecoration(
@@ -235,13 +245,11 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
               child: Row(
                 children: [
                   const SizedBox(width: 14),
-                  // 头像
                   GestureDetector(
                     onTap: () => widget.onNavigate(5),
                     child: _buildBottomAvatar(nickname),
                   ),
                   const SizedBox(width: 8),
-                  // 昵称
                   Expanded(
                     child: Text(
                       nickname,
@@ -250,17 +258,15 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // 扫码
                   _buildBottomIcon(SvgIcons.qrScan(size: 20, color: const Color(0xFF666666)), '扫码', () {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('扫码功能开发中'), duration: Duration(seconds: 1)));
+                    widget.onClose();
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ScanPage()));
                   }),
-                  // 铃铛
                   _buildBottomIcon(SvgIcons.bell(size: 20, color: const Color(0xFF666666)), '通知', widget.onOpenNotifications),
-                  // 齿轮
                   _buildBottomIcon(SvgIcons.settings(size: 20, color: const Color(0xFF666666)), '设置', widget.onOpenSettings),
-                  // 相机
-                  _buildBottomIcon(SvgIcons.camera(size: 20, color: const Color(0xFF666666)), '相机', () {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('相机功能开发中'), duration: Duration(seconds: 1)));
+                  _buildBottomIcon(SvgIcons.camera(size: 20, color: const Color(0xFF666666)), '拍照', () {
+                    widget.onClose();
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CameraPage()));
                   }),
                   const SizedBox(width: 8),
                 ],
@@ -350,12 +356,13 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
+            // 信息图标（不再用首字）
             Container(
               width: 36,
               height: 36,
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.12), shape: BoxShape.circle),
               alignment: Alignment.center,
-              child: Text(_initialOf(title), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: color)),
+              child: SvgIcons.chatBubble(size: 18, color: color),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -409,17 +416,5 @@ class _ChumianDrawerState extends State<ChumianDrawer> {
       );
     }
     return const DefaultAvatar(size: 32);
-  }
-
-  void _showPlaceholderPage(String title) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(title), backgroundColor: Colors.white, foregroundColor: Colors.black, elevation: 0),
-          body: Center(child: Text('$title页面', style: const TextStyle(color: Color(0xFF999999)))),
-        ),
-      ),
-    );
   }
 }

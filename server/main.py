@@ -1288,6 +1288,22 @@ async def update_profile(request: Request, req: ProfileUpdateRequest):
 class AvatarUploadRequest(BaseModel):
     avatar: str  # base64 encoded image
 
+@app.post("/api/generate/image")
+async def generate_image(request: Request):
+    user_id = await _auth_user(request)
+    if not user_id:
+        return JSONResponse(status_code=401, content={"error": "未登录"})
+    body = await request.json()
+    prompt = body.get("prompt", "").strip()
+    if not prompt:
+        return JSONResponse(status_code=400, content={"error": "请输入提示词"})
+    try:
+        result = await _handle_image_generation(user_id, prompt)
+        return {"url": result}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
 @app.post("/api/user/avatar")
 async def upload_avatar(request: Request, req: AvatarUploadRequest):
     user = request.state.user

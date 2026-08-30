@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  final GlobalKey<ChatPageState> _chatKey = GlobalKey<ChatPageState>();
   int _currentIndex = 0;
   String? _nickname;
   String? _avatar;
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     super.initState();
     _drawerCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _pages = [
-      const ChatPage(),
+      ChatPage(key: _chatKey),
       const CreativePage(),
       const ExplorePage(),
       const ActivityPage(),
@@ -91,8 +92,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _openConversation(String convId, String title) {
-    // 切换到对话页面，对话页面会加载历史
     setState(() => _currentIndex = 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _chatKey.currentState?.openConversationById(convId, title);
+    });
   }
 
   @override

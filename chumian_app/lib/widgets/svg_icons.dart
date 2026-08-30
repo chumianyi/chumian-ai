@@ -63,6 +63,11 @@ class SvgIcons {
         size, color,
       );
 
+  static Widget chatBubble({double size = 18, Color? color}) => _svg(
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        size, color,
+      );
+
   static Widget chevronRight({double size = 16, Color? color}) => _svg(
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
         size, color,

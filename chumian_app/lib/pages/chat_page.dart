@@ -30,7 +30,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> {
   final List<ChatMessage> _messages = [];
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -610,7 +610,11 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<void> _openConversation(dynamic c) async {
+  Future<void> openConversationById(String convId, String title) async {
+    await openConversation({'id': convId, 'title': title});
+  }
+
+  Future<void> openConversation(dynamic c) async {
     final msgs = await ApiService.getConversationMessages(c['id']);
     if (!mounted) return;
     setState(() {
