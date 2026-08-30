@@ -438,16 +438,15 @@ class _ProfilePageState extends State<ProfilePage> {
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
             children: [
               SettingsTile(
-                icon: Icons.palette_outlined,
+                icon: Icons.memory,
                 title: '模型管理',
-                leading: const Icon(Icons.memory),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomModelsPage())),
               ),
-              ListTile(
+              const ThinDivider(),
+              SettingsTile(
+                icon: Icons.palette_outlined,
                 title: '主题设置',
-                subtitle: '配色方案与深色模式',
                 onTap: _showThemePicker,
-                showChevron: true,
               ),
               const ThinDivider(),
               SwitchTile(
@@ -457,14 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 value: widget.themeProvider.isDark,
                 onChanged: (_) => widget.themeProvider.toggleDark(),
               ),
-              const ThinDivider(),
-              SwitchTile(
-                icon: Icons.aspect_ratio_outlined,
-                title: '全屏主题',
-                subtitle: '侧边栏导航，无底部导航栏',
-                value: widget.themeProvider.fullscreenLayout,
-                onChanged: (v) => widget.themeProvider.setFullscreenLayout(v),
-              ),
+
             ],
           ),
           CardSection(

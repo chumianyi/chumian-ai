@@ -656,13 +656,12 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.guestMode ? Text('游客模式（剩余$_guestRemaining次）', style: const TextStyle(fontSize: 14)) : null,
+        title: widget.guestMode ? Text('游客模式（剩余$_guestRemaining次）', style: const TextStyle(fontSize: 14)) : const Text('初眠AI'),
         leading: IconAction(
           icon: Icons.history_rounded,
           tooltip: '历史对话',
           onPressed: _showConversationList,
         ),
-        title: const Text('初眠AI'),
         actions: [
           IconAction(
             icon: Icons.add_rounded,

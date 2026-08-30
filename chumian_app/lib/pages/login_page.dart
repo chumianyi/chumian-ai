@@ -5,7 +5,6 @@ import '../services/api_service.dart';
 import '../widgets/svg_icons.dart';
 import 'version_upgrade_page.dart';
 import 'chat_page.dart';
-import '../services/api_service.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/buttons.dart';
 import '../utils/constants.dart';
@@ -36,6 +35,54 @@ class _LoginPageState extends State<LoginPage> {
     _confirmPasswordController.dispose();
     _nicknameController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkVersion();
+  }
+
+  Future<void> _checkVersion() async {
+    try {
+      final info = await ApiService.checkVersion();
+      final minVer = info['min_version'] ?? '1.0.0';
+      final currentParts = '3.0.0'.split('.').map(int.parse).toList();
+      final minParts = minVer.split('.').map(int.parse).toList();
+      bool needUpdate = false;
+      for (int i = 0; i < 3; i++) {
+        if (currentParts[i] < minParts[i]) { needUpdate = true; break; }
+        if (currentParts[i] > minParts[i]) break;
+      }
+      if (needUpdate && mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => VersionUpgradePage(
+          downloadUrl: info['download_url'] ?? '',
+          githubUrl: info['github_url'] ?? '',
+          latestVersion: info['latest_version'] ?? '3.0.0',
+          forceUpdate: info['force_update'] ?? true,
+        )));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _githubLogin() async {
+    const clientId = 'Iv23liXKq2Q8Zb1nL2cD';
+    final authUrl = 'https://github.com/login/oauth/authorize?client_id=$clientId&scope=user:email&redirect_uri=chumianai://auth/callback';
+    try {
+      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication);
+      _showSnack('请在浏览器中完成GitHub授权');
+    } catch (e) {
+      _showSnack('无法打开浏览器: $e');
+    }
+  }
+
+  Future<void> _guestLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_guest', true);
+    await prefs.setInt('guest_remaining', 20);
+    if (mounted) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ChatPage(guestMode: true)));
+    }
   }
 
   void _showSnack(String msg) {

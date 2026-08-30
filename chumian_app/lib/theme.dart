@@ -285,15 +285,7 @@ class ThemeProvider extends ChangeNotifier {
     await prefs.setBool('is_dark', _isDark);
     notifyListeners();
   }
-
-  Future<void> setFullscreenLayout(bool value) async {
-    _fullscreenLayout = value;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('fullscreen_layout', value);
-    notifyListeners();
-  }
-
-  // ---- 完整 Material3 ThemeData ----
+// ---- 完整 Material3 ThemeData ----
   ThemeData get theme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
