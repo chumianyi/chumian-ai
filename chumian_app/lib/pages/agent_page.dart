@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/api_service.dart';
 import '../widgets/context_ext.dart';
+import '../services/api_service.dart';
+import '../widgets/context_ext.dart';
 
 class AgentPage extends StatefulWidget {
   const AgentPage({super.key});
@@ -24,6 +26,12 @@ class _AgentPageState extends State<AgentPage> with SingleTickerProviderStateMix
   bool _highRiskConfirm = true;
   String? _screenshotPath;
   List<FileSystemEntity> _files = [];
+  String? _agentStatus;
+  String? _applyReason;
+  String? _reviewResult;
+  bool _loadingStatus = true;
+  bool _submitting = false;
+  final TextEditingController _applyCtrl = TextEditingController();
   static const _agentChannel = MethodChannel('com.chumian.chumian_ai/agent');
 
   @override
@@ -32,6 +40,7 @@ class _AgentPageState extends State<AgentPage> with SingleTickerProviderStateMix
     _tabController = TabController(length: 4, vsync: this);
     _loadFiles();
     _checkAccessibility();
+    _loadAgentStatus();
     _chatMessages.add({
       'role': 'assistant',
       'content': '你好！我是本地AGENT助手。我可以帮你：\n\n• 写代码并保存到工作目录\n• 读取屏幕内容并分析\n• 模拟点击、滑动、输入操作\n• 自动化完成手机操作任务\n\n请告诉我你想做什么？',
@@ -56,6 +65,51 @@ class _AgentPageState extends State<AgentPage> with SingleTickerProviderStateMix
     try {
       await _agentChannel.invokeMethod('openAccessibilitySettings');
     } catch (_) {}
+  }
+
+  Future<void> _loadAgentStatus() async {
+    try {
+      final data = await ApiService.agentApplyStatus();
+      setState(() {
+        _agentStatus = data['status'];
+        _applyReason = data['reason'];
+        _reviewResult = data['review_result'];
+        _loadingStatus = false;
+      });
+    } catch (_) {
+      setState(() => _loadingStatus = false);
+    }
+  }
+
+  Future<void> _submitApplication() async {
+    final reason = _applyCtrl.text.trim();
+    if (reason.length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('申请理由至少10个字')),
+      );
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      await ApiService.agentApply(reason);
+      setState(() {
+        _agentStatus = 'pending';
+        _applyReason = reason;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('申请已提交，审核中（预计3-4个工作日）')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('提交失败: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   Future<void> _takeScreenshot() async {
@@ -275,6 +329,12 @@ $nodeTree
 
   @override
   Widget build(BuildContext context) {
+    if (_loadingStatus) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_agentStatus != 'approved') {
+      return _buildStatusPage();
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('AGENT'),
@@ -313,6 +373,207 @@ $nodeTree
       body: TabBarView(
         controller: _tabController,
         children: [_buildChatTab(), _buildFileTab(), _buildScreenTab(), _buildLogsTab()],
+      ),
+    );
+  }
+
+  Widget _buildStatusPage() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('AGENT')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildStatusHeader(),
+            const SizedBox(height: 24),
+            if (_agentStatus == 'none' || _agentStatus == null) _buildApplyForm(),
+            if (_agentStatus == 'pending') _buildPendingCard(),
+            if (_agentStatus == 'rejected') _buildRejectedCard(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusHeader() {
+    IconData icon;
+    String title;
+    String subtitle;
+    Color color;
+    if (_agentStatus == 'pending') {
+      icon = Icons.hourglass_empty_rounded;
+      title = '审核中';
+      subtitle = '您的申请正在审核中，预计3~4个工作日出结果';
+      color = Colors.orange;
+    } else if (_agentStatus == 'rejected') {
+      icon = Icons.cancel_rounded;
+      title = '申请未通过';
+      subtitle = '您可以修改理由后重新申请';
+      color = Colors.red;
+    } else {
+      icon = Icons.smart_toy_rounded;
+      title = '本地AGENT功能';
+      subtitle = '让AI操控你的手机，写代码、自动化操作、屏幕识别';
+      color = Colors.purple;
+    }
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [color.withValues(alpha: 0.9), color.withValues(alpha: 0.6)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.white, size: 44),
+          const SizedBox(height: 16),
+          Text(title, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplyForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('申请理由', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _applyCtrl,
+          maxLines: 4,
+          decoration: InputDecoration(
+            hintText: '请描述您使用本地AGENT的用途和场景（至少10字）',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildRiskNotice(),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _submitting ? null : _submitApplication,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+            ),
+            child: _submitting
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Text('提交申请', style: TextStyle(fontSize: 16)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPendingCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text('审核中', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('预计3~4个工作日出结果，请耐心等待',
+                style: TextStyle(color: context.textSecondary, fontSize: 14)),
+            const SizedBox(height: 16),
+            if (_applyReason != null)
+              Text('申请理由: $_applyReason',
+                  style: TextStyle(color: context.textTertiary, fontSize: 13)),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: _loadAgentStatus,
+              child: const Text('刷新状态'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRejectedCard() {
+    return Column(
+      children: [
+        Card(
+          color: Colors.red.withValues(alpha: 0.05),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Icon(Icons.cancel_rounded, color: Colors.red, size: 48),
+                const SizedBox(height: 12),
+                const Text('申请未通过', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+                const SizedBox(height: 8),
+                Text('拒绝原因: ${_reviewResult ?? "未提供"}', textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        const Text('重新申请', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _applyCtrl,
+          maxLines: 4,
+          decoration: InputDecoration(
+            hintText: '请修改申请理由后重新提交（至少10字）',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _submitting ? null : _submitApplication,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+            ),
+            child: _submitting
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Text('重新提交', style: TextStyle(fontSize: 16)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRiskNotice() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 18),
+            SizedBox(width: 6),
+            Text('功能风险提示', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+          ]),
+          SizedBox(height: 8),
+          Text('• 需要开启无障碍服务权限，AGENT可读取屏幕内容并模拟点击操作', style: TextStyle(fontSize: 12)),
+          Text('• 需要屏幕截图权限，用于AI视觉分析当前界面', style: TextStyle(fontSize: 12)),
+          Text('• 高危操作（安装/卸载应用、删除文件、支付等）需要手动确认', style: TextStyle(fontSize: 12)),
+          Text('• 请勿在涉及支付、隐私的场景下使用自动操控', style: TextStyle(fontSize: 12)),
+        ],
       ),
     );
   }
