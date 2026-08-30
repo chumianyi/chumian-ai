@@ -5,8 +5,11 @@ import 'explore_page.dart';
 import 'activity_page.dart';
 import 'points_page.dart';
 import 'profile_page.dart';
+import 'notifications_page.dart';
 import '../theme.dart';
 import '../widgets/nav_bar.dart';
+import '../widgets/chumian_drawer.dart';
+import '../services/api_service.dart';
 
 class HomePage extends StatefulWidget {
   final ThemeProvider themeProvider;
@@ -16,8 +19,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+  String? _nickname;
+  String? _avatar;
+
+  // Drawer animation
+  late final AnimationController _drawerCtrl;
+  bool _drawerOpen = false;
+  static const double _drawerWidth = 280;
+  double _dragStartX = 0;
+  double _dragCurrentX = 0;
+  bool _dragging = false;
 
   static const List<NavItemSpec> _navItems = [
     NavItemSpec(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '对话'),
@@ -33,6 +46,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _drawerCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _pages = [
       const ChatPage(),
       const CreativePage(),
@@ -41,6 +55,44 @@ class _HomePageState extends State<HomePage> {
       const PointsPage(),
       ProfilePage(themeProvider: widget.themeProvider),
     ];
+    _loadUserInfo();
+  }
+
+  @override
+  void dispose() {
+    _drawerCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final info = await ApiService.getUserInfo();
+      setState(() {
+        _nickname = info['nickname'];
+        _avatar = info['avatar'];
+      });
+    } catch (_) {}
+  }
+
+  void _openDrawer() {
+    setState(() => _drawerOpen = true);
+    _drawerCtrl.forward();
+  }
+
+  void _closeDrawer() {
+    _drawerCtrl.reverse().then((_) {
+      if (mounted) setState(() => _drawerOpen = false);
+    });
+  }
+
+  void _navigateTo(int index) {
+    setState(() => _currentIndex = index);
+    _closeDrawer();
+  }
+
+  void _openConversation(String convId, String title) {
+    // 切换到对话页面，对话页面会加载历史
+    setState(() => _currentIndex = 0);
   }
 
   @override
@@ -58,133 +110,118 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDefaultLayout() {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: AppNavBar(
         items: _navItems,
         currentIndex: _currentIndex,
-        onChanged: (index) {
-          setState(() => _currentIndex = index);
-        },
+        onChanged: (index) => setState(() => _currentIndex = index),
       ),
     );
   }
 
   Widget _buildFullscreenLayout() {
-    final drawerItems = [
-      _DrawerItem(icon: Icons.chat_bubble_outline, label: '对话', index: 0),
-      _DrawerItem(icon: Icons.auto_awesome_outlined, label: '创意', index: 1),
-      _DrawerItem(icon: Icons.explore_outlined, label: '探索', index: 2),
-      _DrawerItem(icon: Icons.local_activity_outlined, label: '活动', index: 3),
-      _DrawerItem(icon: Icons.stars_outlined, label: '积分', index: 4),
-    ];
-
+    final anim = _drawerCtrl.view;
     return Scaffold(
-      drawer: Drawer(
-        width: 240,
-        child: Container(
-          decoration: BoxDecoration(
-            color: widget.themeProvider.surfaceColor,
-            borderRadius: const BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+      body: GestureDetector(
+        onHorizontalDragStart: (details) {
+          if (details.globalPosition.dx < 30) {
+            _dragging = true;
+            _dragStartX = details.globalPosition.dx;
+            _dragCurrentX = 0;
+          }
+        },
+        onHorizontalDragUpdate: (details) {
+          if (!_dragging) return;
+          _dragCurrentX = details.globalPosition.dx - _dragStartX;
+          if (_dragCurrentX < 0) _dragCurrentX = 0;
+          if (_dragCurrentX > _drawerWidth) _dragCurrentX = _drawerWidth;
+          _drawerCtrl.value = _dragCurrentX / _drawerWidth;
+          if (!_drawerOpen && _dragCurrentX > 5) {
+            setState(() => _drawerOpen = true);
+          }
+        },
+        onHorizontalDragEnd: (details) {
+          if (!_dragging) return;
+          _dragging = false;
+          if (_drawerCtrl.value > 0.5) {
+            _openDrawer();
+          } else {
+            _closeDrawer();
+          }
+        },
+        child: Stack(
+          children: [
+            // 内容区
+            IndexedStack(index: _currentIndex, children: _pages),
+
+            // 左上角菜单按钮（全屏模式）
+            Positioned(
+              left: 0,
+              top: MediaQuery.of(context).padding.top + 8,
+              child: GestureDetector(
+                onTap: _openDrawer,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.only(left: 8),
                   decoration: BoxDecoration(
-                    gradient: widget.themeProvider.primaryGradient,
-                    borderRadius: const BorderRadius.only(bottomRight: Radius.circular(20)),
+                    color: Colors.white.withValues(alpha: 0.9),
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2))],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 56, height: 56,
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.25), shape: BoxShape.circle),
-                        child: const Icon(Icons.smart_toy, color: Colors.white, size: 32),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text('初眠AI', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      Text('全屏主题模式', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: drawerItems.length,
-                    itemBuilder: (_, i) {
-                      final item = drawerItems[i];
-                      final selected = _currentIndex == item.index;
-                      return ListTile(
-                        leading: Icon(item.icon, color: selected ? widget.themeProvider.primaryColor : widget.themeProvider.textSecondary),
-                        title: Text(item.label, style: TextStyle(color: selected ? widget.themeProvider.primaryColor : widget.themeProvider.textPrimary, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
-                        selected: selected,
-                        selectedTileColor: widget.themeProvider.primaryColor.withValues(alpha: 0.08),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        onTap: () {
-                          setState(() => _currentIndex = item.index);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  ),
-                ),
-                const Divider(),
-                ListTile(
-                  leading: Icon(Icons.person_outline, color: widget.themeProvider.textSecondary),
-                  title: Text('我的', style: TextStyle(color: widget.themeProvider.textPrimary)),
-                  onTap: () {
-                    setState(() => _currentIndex = 5);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          IndexedStack(index: _currentIndex, children: _pages),
-          // FAB for 我的
-          Positioned(
-            right: 16,
-            bottom: 20,
-            child: GestureDetector(
-              onTap: () => setState(() => _currentIndex = 5),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  gradient: widget.themeProvider.primaryVibrantGradient,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [BoxShadow(color: widget.themeProvider.primaryColor.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 4))],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(_currentIndex == 5 ? Icons.person : Icons.person_outline, color: Colors.white, size: 20),
-                    const SizedBox(width: 6),
-                    const Text('我的', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-                  ],
+                  child: const Icon(Icons.menu, size: 22, color: Color(0xFF333333)),
                 ),
               ),
             ),
-          ),
-        ],
+
+            // 遮罩
+            if (_drawerOpen)
+              AnimatedBuilder(
+                animation: _drawerCtrl,
+                builder: (context, _) {
+                  return Positioned.fill(
+                    child: GestureDetector(
+                      onTap: _closeDrawer,
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.4 * _drawerCtrl.value),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+            // 侧边栏
+            if (_drawerOpen)
+              AnimatedBuilder(
+                animation: _drawerCtrl,
+                builder: (context, _) {
+                  return Positioned(
+                    left: -_drawerWidth + (_drawerWidth * _drawerCtrl.value),
+                    top: 0,
+                    bottom: 0,
+                    width: _drawerWidth,
+                    child: ChumianDrawer(
+                      nickname: _nickname,
+                      avatar: _avatar,
+                      currentPageIndex: _currentIndex,
+                      onNavigate: _navigateTo,
+                      onOpenConversation: _openConversation,
+                      onClose: _closeDrawer,
+                      onOpenSettings: () {
+                        _closeDrawer();
+                        _navigateTo(5);
+                      },
+                      onOpenNotifications: () {
+                        _closeDrawer();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsPage()));
+                      },
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
-}
-
-class _DrawerItem {
-  final IconData icon;
-  final String label;
-  final int index;
-  const _DrawerItem({required this.icon, required this.label, required this.index});
 }
