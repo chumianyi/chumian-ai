@@ -1,38 +1,18 @@
 package com.chumian.chumian_ai
 
 import android.content.ContentValues
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.PixelFormat
-import android.hardware.display.DisplayManager
-import android.hardware.display.VirtualDisplay
-import android.media.ImageReader
-import android.media.projection.MediaProjection
-import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
-import android.provider.Settings
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.chumian.chumian_ai/gallery"
-    private val AGENT_CHANNEL = "com.chumian.chumian_ai/agent"
-    private var mediaProjection: MediaProjection? = null
-    private var virtualDisplay: VirtualDisplay? = null
-    private var imageReader: ImageReader? = null
-    private var pendingScreenshotResult: MethodChannel.Result? = null
-    private val SCREENSHOT_REQ = 1001
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -67,129 +47,6 @@ class MainActivity: FlutterActivity() {
                 result.notImplemented()
             }
         }
-
-        // AGENT channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AGENT_CHANNEL).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "isAccessibilityEnabled" -> {
-                    result.success(AgentAccessibilityService.instance != null)
-                }
-                "openAccessibilitySettings" -> {
-                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                    result.success(true)
-                }
-                "takeScreenshot" -> {
-                    pendingScreenshotResult = result
-                    startScreenshot()
-                }
-                "getNodeTree" -> {
-                    val svc = AgentAccessibilityService.instance
-                    if (svc != null) {
-                        result.success(svc.getNodeTree())
-                    } else {
-                        result.error("NO_SERVICE", "无障碍服务未开启", null)
-                    }
-                }
-                "clickByText" -> {
-                    val text = call.argument<String>("text") ?: ""
-                    val svc = AgentAccessibilityService.instance
-                    if (svc != null) {
-                        result.success(svc.clickByText(text))
-                    } else {
-                        result.error("NO_SERVICE", "无障碍服务未开启", null)
-                    }
-                }
-                "inputText" -> {
-                    val text = call.argument<String>("text") ?: ""
-                    val svc = AgentAccessibilityService.instance
-                    if (svc != null) {
-                        result.success(svc.inputText(text))
-                    } else {
-                        result.error("NO_SERVICE", "无障碍服务未开启", null)
-                    }
-                }
-                "performGlobalAction" -> {
-                    val action = call.argument<String>("action") ?: "back"
-                    val svc = AgentAccessibilityService.instance
-                    if (svc != null) {
-                        result.success(svc.performGlobalAction(action))
-                    } else {
-                        result.error("NO_SERVICE", "无障碍服务未开启", null)
-                    }
-                }
-                else -> result.notImplemented()
-            }
-        }
-    }
-
-    private fun startScreenshot() {
-        val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        startActivityForResult(mpm.createScreenCaptureIntent(), SCREENSHOT_REQ)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SCREENSHOT_REQ && resultCode == RESULT_OK && data != null) {
-            val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-            mediaProjection = mpm.getMediaProjection(resultCode, data)
-            captureScreen()
-        } else {
-            pendingScreenshotResult?.error("CANCELLED", "截图被取消", null)
-            pendingScreenshotResult = null
-        }
-    }
-
-    private fun captureScreen() {
-        val metrics = DisplayMetrics()
-        @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getRealMetrics(metrics)
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        val density = metrics.densityDpi
-
-        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-        virtualDisplay = mediaProjection?.createVirtualDisplay(
-            "screenshot", width, height, density,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            imageReader?.surface, null, Handler(Looper.getMainLooper())
-        )
-
-        imageReader?.setOnImageAvailableListener({ reader ->
-            try {
-                val image = reader.acquireLatestImage()
-                if (image != null) {
-                    val planes = image.planes
-                    val buffer: ByteBuffer = planes[0].buffer
-                    val pixelStride = planes[0].pixelStride
-                    val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * width
-                    val bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888)
-                    bitmap.copyPixelsFromBuffer(buffer)
-                    image.close()
-
-                    // Save to file
-                    val dir = File(getExternalFilesDir(null), "screenshots")
-                    if (!dir.exists()) dir.mkdirs()
-                    val file = File(dir, "agent_screenshot_${System.currentTimeMillis()}.png")
-                    FileOutputStream(file).use { out ->
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                    }
-                    pendingScreenshotResult?.success(file.absolutePath)
-                    pendingScreenshotResult = null
-
-                    // Cleanup
-                    virtualDisplay?.release()
-                    virtualDisplay = null
-                    imageReader = null
-                    mediaProjection?.stop()
-                    mediaProjection = null
-                }
-            } catch (e: Exception) {
-                pendingScreenshotResult?.error("CAPTURE_ERROR", e.message, null)
-                pendingScreenshotResult = null
-            }
-        }, Handler(Looper.getMainLooper()))
     }
 
     private fun saveImageToGallery(bytes: ByteArray, albumName: String): Boolean {
