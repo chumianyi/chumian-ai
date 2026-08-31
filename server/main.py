@@ -25,6 +25,8 @@ GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "Ov23liCRs3x3XxXY5P6w")
 GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
 GITHUB_REDIRECT_URI = "https://chumianyi.github.io/chumian-ai-auth/callback"
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
+MOONSHOT_API_KEY = os.environ.get("MOONSHOT_API_KEY", "")
+MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1"
 SMTP_HOST = "smtp.qq.com"
 SMTP_PORT = 465
 SMTP_USER = "3930535663@qq.com"
@@ -35,7 +37,7 @@ DB_PATH = os.environ.get("CHUMIAN_DB_PATH", str(Path(__file__).parent / "data" /
 MEDIA_DIR = Path(os.environ.get("CHUMIAN_MEDIA_DIR", str(Path(__file__).parent / "media")))
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
-TEXT_MODELS = ["glm-4-flash", "glm-4-flash-250414", "glm-4.7-flash", "glm-z1-flash"]
+TEXT_MODELS = ["glm-4-flash", "glm-4-flash-250414", "glm-4.7-flash", "glm-z1-flash", "kimi-k2.5"]
 VISION_MODELS = ["glm-4v-flash", "glm-4.6v-flash", "glm-4.1v-thinking-flash"]
 IMAGE_MODEL = "cogview-3-flash"
 VIDEO_MODEL = "cogvideox-flash"
@@ -823,12 +825,15 @@ async def chat_stream(request: Request, req: ChatRequest):
             if search_results:
                 yield "data: %s\n\n" % json.dumps({"type": "search_results", "results": search_results, "keyword": search_keyword})
             async with httpx.AsyncClient(timeout=120.0) as client:
+                is_moonshot = model.startswith("kimi-") or model.startswith("moonshot-")
+                api_base = MOONSHOT_BASE_URL if is_moonshot else GLM_BASE_URL
+                api_key = MOONSHOT_API_KEY if is_moonshot else GLM_API_KEY
                 payload = {"model": model, "messages": messages, "stream": True}
-                headers = {"Authorization": "Bearer %s" % GLM_API_KEY, "Content-Type": "application/json"}
+                headers = {"Authorization": "Bearer %s" % api_key, "Content-Type": "application/json"}
                 full_content = ""
                 think_content = ""
                 tokens_used = 0
-                async with client.stream("POST", "%s/chat/completions" % GLM_BASE_URL, json=payload, headers=headers) as resp:
+                async with client.stream("POST", "%s/chat/completions" % api_base, json=payload, headers=headers) as resp:
                     async for line in resp.aiter_lines():
                         if line.startswith("data: "):
                             data_str = line[6:]
