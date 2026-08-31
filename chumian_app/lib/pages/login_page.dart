@@ -92,14 +92,7 @@ class _LoginPageState extends State<LoginPage> {
         _showSnack('未获取到授权码');
         return;
       }
-      // 客户端直接用PKCE交换token（无需client_secret），再发给服务端
-      final tokenData = await ApiService.githubExchangeToken(code: code, codeVerifier: verifier!);
-      final accessToken = tokenData['access_token'];
-      if (accessToken == null || accessToken.toString().isEmpty) {
-        _showSnack('GitHub token交换失败: ${tokenData['error'] ?? tokenData['error_description'] ?? '未知错误'}');
-        return;
-      }
-      final resp = await ApiService.githubAuth(accessToken: accessToken);
+      final resp = await ApiService.githubAuth(code: code, codeVerifier: verifier);
       if (resp['token'] != null) {
         await ApiService.setToken(resp['token']);
         if (mounted) {

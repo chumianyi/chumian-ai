@@ -423,14 +423,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _showSnack('未获取到授权码');
         return;
       }
-      // 客户端直接用PKCE交换token（无需client_secret），再发给服务端
-      final tokenData = await ApiService.githubExchangeToken(code: code, codeVerifier: verifier!);
-      final accessToken = tokenData['access_token'];
-      if (accessToken == null || accessToken.toString().isEmpty) {
-        _showSnack('GitHub token交换失败: ${tokenData['error'] ?? tokenData['error_description'] ?? '未知错误'}');
-        return;
-      }
-      final resp = await ApiService.githubBind(accessToken: accessToken);
+      final resp = await ApiService.githubBind(code: code, codeVerifier: verifier);
       if (resp['success'] == true || resp['github_id'] != null) {
         _showSnack('GitHub 绑定成功');
         _loadData();

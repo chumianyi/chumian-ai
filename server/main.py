@@ -1332,7 +1332,7 @@ async def github_auth(request: Request):
     if not code and not access_token:
         return JSONResponse(status_code=400, content={"error": "缺少code或access_token"})
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             # 服务端用code+code_verifier(PKCE)交换access_token
             if not access_token and code:
                 if not GITHUB_CLIENT_SECRET and not code_verifier:
@@ -1417,7 +1417,7 @@ async def github_bind(request: Request):
             return JSONResponse(status_code=401, content={"error": "未登录"})
         code_verifier = body.get("code_verifier", "")
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 # 服务端用code+code_verifier(PKCE)交换access_token
                 if not access_token and code:
                     if not GITHUB_CLIENT_SECRET and not code_verifier:
