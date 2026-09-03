@@ -375,12 +375,14 @@ class ThemeProvider extends ChangeNotifier {
         backgroundColor: backgroundColor,
         foregroundColor: textPrimary,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         scrolledUnderElevation: 0,
-        titleTextStyle: base.textTheme.titleLarge?.copyWith(
+        titleTextStyle: base.textTheme.headlineSmall?.copyWith(
           fontWeight: FontWeight.w700,
+          fontSize: 22,
           color: textPrimary,
         ),
+        titleSpacing: 20,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: _isDark ? Brightness.light : Brightness.dark,
@@ -389,9 +391,9 @@ class ThemeProvider extends ChangeNotifier {
       ),
       cardTheme: CardTheme(
         color: surfaceColor,
-        elevation: 1,
+        elevation: 0,
         margin: EdgeInsets.zero,
-        shadowColor: Color(0x1A000000),
+        shadowColor: Color(0x0A000000),
         shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -401,7 +403,7 @@ class ThemeProvider extends ChangeNotifier {
           elevation: 0,
           minimumSize: const Size(64, 48),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -410,7 +412,7 @@ class ThemeProvider extends ChangeNotifier {
           backgroundColor: primaryColor,
           foregroundColor: textOnPrimary,
           minimumSize: const Size(64, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -419,7 +421,7 @@ class ThemeProvider extends ChangeNotifier {
           foregroundColor: primaryColor,
           side: BorderSide(color: primaryColor.withOpacity(0.4)),
           minimumSize: const Size(64, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -432,23 +434,23 @@ class ThemeProvider extends ChangeNotifier {
         hintStyle: TextStyle(color: textTertiary, fontSize: 15),
         labelStyle: TextStyle(color: textSecondary, fontSize: 15),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.allLg,
+          borderRadius: AppRadius.allXl,
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allLg,
+          borderRadius: AppRadius.allXl,
           borderSide: BorderSide(color: primaryColor.withOpacity(0.18)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allLg,
+          borderRadius: AppRadius.allXl,
           borderSide: BorderSide(color: primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allLg,
+          borderRadius: AppRadius.allXl,
           borderSide: const BorderSide(color: Color(0xFFE8445C)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allLg,
+          borderRadius: AppRadius.allXl,
           borderSide: const BorderSide(color: Color(0xFFE8445C), width: 2),
         ),
         contentPadding:
@@ -487,7 +489,7 @@ class ThemeProvider extends ChangeNotifier {
       listTileTheme: ListTileThemeData(
         iconColor: textSecondary,
         textColor: textPrimary,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
       tabBarTheme: TabBarTheme(
         labelColor: primaryColor,
@@ -505,7 +507,7 @@ class ThemeProvider extends ChangeNotifier {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: textOnPrimary,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allPill),
       ),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(

@@ -1,4 +1,4 @@
-/// 底部导航栏（默认样式：图标+文字，选中粉色高亮，毛玻璃背景，点击波纹特效）。
+/// 底部导航栏（One UI 风格：固定底部，图标+文字，选中粉色高亮，柔和阴影）。
 library;
 
 import 'dart:math';
@@ -47,7 +47,7 @@ class _AppNavBarState extends State<AppNavBar> with TickerProviderStateMixin {
     super.initState();
     _rippleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 400),
     )..addListener(() {
         for (final r in _ripples) {
           r.progress = _rippleController.value;
@@ -84,101 +84,87 @@ class _AppNavBarState extends State<AppNavBar> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        color: context.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
           ),
         ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: const ColorFilter.matrix([
-            1, 0, 0, 0, 0,
-            0, 1, 0, 0, 0,
-            0, 0, 1, 0, 0,
-            0, 0, 0, 0.8, 0,
-          ]),
-          child: Container(
-            decoration: BoxDecoration(
-              color: context.surface.withValues(alpha: 0.85),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: context.divider.withValues(alpha: 0.4),
-                width: 0.5,
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            child: SafeArea(
-              top: false,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  if (_ripples.isNotEmpty)
-                    CustomPaint(
-                      size: Size.infinite,
-                      painter: _RipplePainter(ripples: _ripples),
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(widget.items.length, (index) {
-                      final item = widget.items[index];
-                      final isSelected = widget.currentIndex == index;
-                      return Expanded(
-                        child: GestureDetector(
-                          key: _itemKeys[index],
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => _handleTap(index),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeOutCubic,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? const Color(0xFFFF6B9D).withValues(alpha: 0.12)
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    isSelected ? item.activeIcon : item.icon,
-                                    color: isSelected
-                                        ? const Color(0xFFFF6B9D)
-                                        : context.textSecondary,
-                                    size: 22,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  item.label,
-                                  style: TextStyle(
-                                    fontSize: 10.5,
-                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSelected
-                                        ? const Color(0xFFFF6B9D)
-                                        : context.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
+        border: Border(
+          top: BorderSide(
+            color: context.divider.withValues(alpha: 0.3),
+            width: 0.5,
           ),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            if (_ripples.isNotEmpty)
+              CustomPaint(
+                size: Size.infinite,
+                painter: _RipplePainter(ripples: _ripples),
+              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(widget.items.length, (index) {
+                  final item = widget.items[index];
+                  final isSelected = widget.currentIndex == index;
+                  return Expanded(
+                    child: GestureDetector(
+                      key: _itemKeys[index],
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _handleTap(index),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOutCubic,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFFFF6B9D).withValues(alpha: 0.1)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Icon(
+                                isSelected ? item.activeIcon : item.icon,
+                                color: isSelected
+                                    ? const Color(0xFFFF6B9D)
+                                    : context.textSecondary,
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              item.label,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                color: isSelected
+                                    ? const Color(0xFFFF6B9D)
+                                    : context.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -195,14 +181,10 @@ class _RipplePainter extends CustomPainter {
       final t = ripple.progress;
       final ease = 1 - pow(1 - t, 3).toDouble();
       final paint = Paint()
-        ..color = const Color(0xFFFF6B9D).withValues(alpha: 0.2 * (1 - t))
+        ..color = const Color(0xFFFF6B9D).withValues(alpha: 0.15 * (1 - t))
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5;
-      canvas.drawCircle(ripple.center, 8 + ease * 50, paint);
-      final fillPaint = Paint()
-        ..color = const Color(0xFFFFB3C6).withValues(alpha: 0.1 * (1 - t))
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(ripple.center, 4 + ease * 30, fillPaint);
+        ..strokeWidth = 1.0;
+      canvas.drawCircle(ripple.center, 6.0 + ease * 45.0, paint);
     }
   }
 
@@ -210,7 +192,7 @@ class _RipplePainter extends CustomPainter {
   bool shouldRepaint(covariant _RipplePainter oldDelegate) => true;
 }
 
-/// 胶囊分段控制器（TDesign 风格）。
+/// 胶囊分段控制器（One UI 风格）。
 class PillSegment extends StatelessWidget {
   final List<String> options;
   final int index;
@@ -228,7 +210,7 @@ class PillSegment extends StatelessWidget {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: context.surfaceSubtle,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: List.generate(options.length, (i) {
@@ -242,11 +224,11 @@ class PillSegment extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: selected ? context.surface : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
                   boxShadow: selected
                       ? [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 4,
                             offset: const Offset(0, 1),
                           ),
