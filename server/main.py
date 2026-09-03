@@ -37,7 +37,7 @@ DB_PATH = os.environ.get("CHUMIAN_DB_PATH", str(Path(__file__).parent / "data" /
 MEDIA_DIR = Path(os.environ.get("CHUMIAN_MEDIA_DIR", str(Path(__file__).parent / "media")))
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
-TEXT_MODELS = ["glm-4-flash", "glm-4-flash-250414", "glm-4.7-flash", "glm-z1-flash", "kimi-k2.5"]
+TEXT_MODELS = ["glm-4-flash", "glm-4-flash-250414", "glm-4.7-flash", "glm-z1-flash", "kimi-k2.5", "kimi-k2.6"]
 VISION_MODELS = ["glm-4v-flash", "glm-4.6v-flash", "glm-4.1v-thinking-flash"]
 IMAGE_MODEL = "cogview-3-flash"
 VIDEO_MODEL = "cogvideox-flash"

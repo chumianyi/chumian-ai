@@ -263,8 +263,8 @@ class ThemeColorSet {
 /// ============================================================
 
 class ThemeProvider extends ChangeNotifier {
-  AppThemeType _themeType = AppThemeType.defaultTheme;
-  bool _isDark = false;
+  AppThemeType _themeType = AppThemeType.pink;
+  bool _isDark = true;
 
   AppThemeType get themeType => _themeType;
   bool get isDark => _isDark;
@@ -283,19 +283,19 @@ class ThemeProvider extends ChangeNotifier {
   Color get gradientEnd => _set.gradientEnd;
 
   Color get backgroundColor =>
-      _isDark ? const Color(0xFF14141E) : _set.background;
-  Color get surfaceColor => _isDark ? const Color(0xFF1E1E2A) : _set.surface;
+      _isDark ? const Color(0xFF0D0D0D) : _set.background;
+  Color get surfaceColor => _isDark ? const Color(0xFF1A1A22) : _set.surface;
   Color get surfaceElevated =>
-      _isDark ? const Color(0xFF262633) : const Color(0xFFFFFFFF);
+      _isDark ? const Color(0xFF24242E) : const Color(0xFFFFFFFF);
   Color get surfaceSubtle =>
-      _isDark ? const Color(0xFF191925) : const Color(0xFFF7F2F8);
+      _isDark ? const Color(0xFF15151C) : const Color(0xFFF7F2F8);
 
   Color get textPrimary => _isDark ? const Color(0xFFECECF4) : const Color(0xFF2A2A38);
   Color get textSecondary => _isDark ? const Color(0xFFA2A2B4) : const Color(0xFF6C6C80);
   Color get textTertiary => _isDark ? const Color(0xFF70707E) : const Color(0xFFA0A0B0);
-  Color get textOnPrimary => _isDark ? const Color(0xFF14141E) : const Color(0xFFFFFFFF);
+  Color get textOnPrimary => _isDark ? const Color(0xFF0D0D0D) : const Color(0xFFFFFFFF);
 
-  Color get dividerColor => _isDark ? const Color(0xFF2E2E3C) : const Color(0xFFEDE6EF);
+  Color get dividerColor => _isDark ? const Color(0xFF2A2A35) : const Color(0xFFEDE6EF);
   Color get shadowColor => _isDark ? Colors.black : const Color(0xFF2A2A38);
 
   // ---- 状态色（随深色微调） ----
@@ -332,8 +332,8 @@ class ThemeProvider extends ChangeNotifier {
   // ---- 偏好持久化 ----
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _themeType = AppThemeType.values[prefs.getInt('theme_type') ?? 0];
-    _isDark = prefs.getBool('is_dark') ?? false;
+    _themeType = AppThemeType.values[prefs.getInt('theme_type') ?? 2];
+    _isDark = prefs.getBool('is_dark') ?? true;
     notifyListeners();
   }
 
@@ -363,7 +363,7 @@ class ThemeProvider extends ChangeNotifier {
     );
 
     final base = ThemeData(
-      useMaterial3: true,
+      useMaterial3: false,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: backgroundColor,
       splashFactory: InkRipple.splashFactory,

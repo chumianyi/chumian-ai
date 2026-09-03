@@ -4,7 +4,6 @@ import 'theme.dart';
 import 'services/api_service.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
-import 'pages/oobe_page.dart';
 import 'pages/github_bind_page.dart';
 import 'utils/pkce.dart';
 
@@ -363,9 +362,6 @@ class _AppInitializerState extends State<AppInitializer> {
         themeProvider: tp,
         onBindSuccess: () => setState(() => _githubBound = true),
       );
-    }
-    if (!_oobeCompleted) {
-      return OobePage(onComplete: () => setState(() => _oobeCompleted = true));
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_birthdayBlessing != null) {
