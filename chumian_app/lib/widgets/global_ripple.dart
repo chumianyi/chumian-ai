@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class _RippleData {
   final Offset position;
-  final double startTime;
+  final int startTime;
   _RippleData({required this.position, required this.startTime});
 }
 
