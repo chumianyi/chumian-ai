@@ -16,6 +16,7 @@ class ImagePreviewPage extends StatefulWidget {
 
 class _ImagePreviewPageState extends State<ImagePreviewPage> {
   bool _downloading = false;
+  final _scaleController = PhotoViewScaleStateController();
   static const platform = MethodChannel('com.chumian.chumian_ai/gallery');
 
   Future<void> _downloadImage() async {
@@ -31,6 +32,20 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     } finally {
       if (mounted) setState(() => _downloading = false);
     }
+  }
+
+  void _resetScale() {
+    Future.delayed(const Duration(milliseconds: 80), () {
+      if (mounted && _scaleController.scaleState != PhotoViewScaleState.initial) {
+        _scaleController.scaleState = PhotoViewScaleState.initial;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,24 +66,28 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
           ),
         ],
       ),
-      body: Center(
-        child: PhotoView(
-          imageProvider: NetworkImage(widget.imageUrl),
-          minScale: PhotoViewComputedScale.contained * 0.5,
-          maxScale: PhotoViewComputedScale.covered * 5,
-          initialScale: PhotoViewComputedScale.contained,
-          backgroundDecoration: const BoxDecoration(color: Colors.black),
-          loadingBuilder: (context, event) => Center(
-            child: CircularProgressIndicator(
-              value: event == null ? 0 : (event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1)),
-              color: AppTheme.primaryColor,
+      body: Listener(
+        onPointerUp: (_) => _resetScale(),
+        child: Center(
+          child: PhotoView(
+            imageProvider: NetworkImage(widget.imageUrl),
+            minScale: PhotoViewComputedScale.contained * 0.5,
+            maxScale: PhotoViewComputedScale.covered * 5,
+            initialScale: PhotoViewComputedScale.contained,
+            scaleStateController: _scaleController,
+            backgroundDecoration: const BoxDecoration(color: Colors.black),
+            loadingBuilder: (context, event) => Center(
+              child: CircularProgressIndicator(
+                value: event == null ? 0 : (event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1)),
+                color: AppTheme.primaryColor,
+              ),
             ),
+            errorBuilder: (context, error, stackTrace) => const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(Icons.broken_image, color: Colors.white54, size: 48),
+              SizedBox(height: 12),
+              Text('图片加载失败', style: TextStyle(color: Colors.white54)),
+            ]),
           ),
-          errorBuilder: (context, error, stackTrace) => const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(Icons.broken_image, color: Colors.white54, size: 48),
-            SizedBox(height: 12),
-            Text('图片加载失败', style: TextStyle(color: Colors.white54)),
-          ]),
         ),
       ),
     );

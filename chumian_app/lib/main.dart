@@ -6,6 +6,7 @@ import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/github_bind_page.dart';
 import 'utils/pkce.dart';
+import 'widgets/global_ripple.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +33,13 @@ class _ChumianAppState extends State<ChumianApp> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _themeProvider,
-      builder: (context, _) => MaterialApp(
-        title: '初眠AI',
-        debugShowCheckedModeBanner: false,
-        theme: _themeProvider.theme,
-        home: AppInitializer(themeProvider: _themeProvider),
+      builder: (context, child) => GlobalRipple(
+        child: MaterialApp(
+          title: '初眠AI',
+          debugShowCheckedModeBanner: false,
+          theme: _themeProvider.theme,
+          home: AppInitializer(themeProvider: _themeProvider),
+        ),
       ),
     );
   }

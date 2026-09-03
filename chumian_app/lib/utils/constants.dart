@@ -62,6 +62,20 @@ class AppModels {
       color: Color(0xFFB39DDB),
     ),
     ModelOption(
+      id: 'kimi-k2.5',
+      name: 'Kimi K2.5',
+      tag: '月之暗面',
+      description: '月之暗面最新模型，262K长上下文，深度推理',
+      color: Color(0xFF6C5CE7),
+    ),
+    ModelOption(
+      id: 'kimi-k2.6',
+      name: 'Kimi K2.6',
+      tag: '最新',
+      description: '月之暗面旗舰模型，更强推理与多模态理解',
+      color: Color(0xFF00B894),
+    ),
+    ModelOption(
       id: 'cogview-3-flash',
       name: 'CogView-3-Flash',
       tag: '绘图',

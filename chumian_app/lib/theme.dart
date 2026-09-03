@@ -168,8 +168,8 @@ class ThemeColorSet {
       primary: Color(0xFFFF6B9D),
       secondary: Color(0xFFFFB3C6),
       tertiary: Color(0xFFF48FB1),
-      background: Color(0xFFFFF5F8),
-      surface: Color(0xFFFFFAFC),
+      background: Color(0xFFF8F8FA),
+      surface: Color(0xFFFFFFFF),
       accent: Color(0xFFFF4081),
       primaryContainer: Color(0xFFFFDCE6),
       onPrimaryContainer: Color(0xFF6E1232),
@@ -264,7 +264,7 @@ class ThemeColorSet {
 
 class ThemeProvider extends ChangeNotifier {
   AppThemeType _themeType = AppThemeType.pink;
-  bool _isDark = true;
+  bool _isDark = false;
 
   AppThemeType get themeType => _themeType;
   bool get isDark => _isDark;
@@ -333,7 +333,7 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _themeType = AppThemeType.values[prefs.getInt('theme_type') ?? 2];
-    _isDark = prefs.getBool('is_dark') ?? true;
+    _isDark = prefs.getBool('is_dark') ?? false;
     notifyListeners();
   }
 
@@ -389,9 +389,10 @@ class ThemeProvider extends ChangeNotifier {
       ),
       cardTheme: CardTheme(
         color: surfaceColor,
-        elevation: 0,
+        elevation: 1,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+        shadowColor: Color(0x1A000000),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -400,7 +401,7 @@ class ThemeProvider extends ChangeNotifier {
           elevation: 0,
           minimumSize: const Size(64, 48),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -409,7 +410,7 @@ class ThemeProvider extends ChangeNotifier {
           backgroundColor: primaryColor,
           foregroundColor: textOnPrimary,
           minimumSize: const Size(64, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -418,7 +419,7 @@ class ThemeProvider extends ChangeNotifier {
           foregroundColor: primaryColor,
           side: BorderSide(color: primaryColor.withOpacity(0.4)),
           minimumSize: const Size(64, 48),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -431,23 +432,23 @@ class ThemeProvider extends ChangeNotifier {
         hintStyle: TextStyle(color: textTertiary, fontSize: 15),
         labelStyle: TextStyle(color: textSecondary, fontSize: 15),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.allXxl,
+          borderRadius: AppRadius.allLg,
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allXxl,
+          borderRadius: AppRadius.allLg,
           borderSide: BorderSide(color: primaryColor.withOpacity(0.18)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allXxl,
+          borderRadius: AppRadius.allLg,
           borderSide: BorderSide(color: primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allXxl,
+          borderRadius: AppRadius.allLg,
           borderSide: const BorderSide(color: Color(0xFFE8445C)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.allXxl,
+          borderRadius: AppRadius.allLg,
           borderSide: const BorderSide(color: Color(0xFFE8445C), width: 2),
         ),
         contentPadding:
@@ -469,7 +470,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
         backgroundColor: _isDark ? const Color(0xFF30303E) : const Color(0xFF2A2A38),
       ),
       dialogTheme: DialogTheme(
@@ -486,7 +487,7 @@ class ThemeProvider extends ChangeNotifier {
       listTileTheme: ListTileThemeData(
         iconColor: textSecondary,
         textColor: textPrimary,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allMd),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
       ),
       tabBarTheme: TabBarTheme(
         labelColor: primaryColor,
@@ -504,7 +505,7 @@ class ThemeProvider extends ChangeNotifier {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: textOnPrimary,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.allLg),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(

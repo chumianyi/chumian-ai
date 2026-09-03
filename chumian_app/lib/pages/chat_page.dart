@@ -472,9 +472,11 @@ class ChatPageState extends State<ChatPage> {
             ),
             const SizedBox(height: 14),
             Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _allModels.length,
+              child: Container(
+                constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.55),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _allModels.length,
                 itemBuilder: (context, index) {
                   final m = _allModels[index];
                   final option = AppModels.optionOf(m);
@@ -578,6 +580,7 @@ class ChatPageState extends State<ChatPage> {
                     ),
                   );
                 },
+              ),
               ),
             ),
           ],
@@ -1063,8 +1066,41 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
+  String _stripMarkdown(String md) {
+    String text = md;
+    // 代码块
+    text = text.replaceAll(RegExp(r'```[\w]*\n?([\s\S]*?)```'), r'$1');
+    // 行内代码
+    text = text.replaceAll(RegExp(r'`([^`]+)`'), r'$1');
+    // 加粗
+    text = text.replaceAll(RegExp(r'\*\*([^*]+)\*\*'), r'$1');
+    text = text.replaceAll(RegExp(r'__([^_]+)__'), r'$1');
+    // 斜体
+    text = text.replaceAll(RegExp(r'\*([^*]+)\*'), r'$1');
+    // 删除线
+    text = text.replaceAll(RegExp(r'~~([^~]+)~~'), r'$1');
+    // 链接 [text](url) -> text
+    text = text.replaceAll(RegExp(r'\[([^\]]+)\]\([^)]+\)'), r'$1');
+    // 图片 ![alt](url) -> alt
+    text = text.replaceAll(RegExp(r'!\[([^\]]*)\]\([^)]+\)'), r'$1');
+    // 标题 #
+    text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+    // 引用 >
+    text = text.replaceAll(RegExp(r'^>\s?', multiLine: true), '');
+    // 无序列表
+    text = text.replaceAll(RegExp(r'^[\-*+]\s+', multiLine: true), '');
+    // 有序列表
+    text = text.replaceAll(RegExp(r'^\d+\.\s+', multiLine: true), '');
+    // 水平线
+    text = text.replaceAll(RegExp(r'^-{3,}$', multiLine: true), '');
+    // 清理多余空行
+    text = text.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+    return text.trim();
+  }
+
   Future<void> _copyText(String text) async {
-    await Clipboard.setData(ClipboardData(text: text));
+    final plain = _stripMarkdown(text);
+    await Clipboard.setData(ClipboardData(text: plain));
     if (mounted) _showSnack('已复制到剪贴板');
   }
 
