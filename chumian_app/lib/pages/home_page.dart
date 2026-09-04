@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
             _pageLoading = true;
             _currentIndex = index;
           });
-          Future.delayed(const Duration(milliseconds: 350), () {
+          Future.delayed(const Duration(milliseconds: 2000), () {
             if (mounted) setState(() => _pageLoading = false);
           });
         },

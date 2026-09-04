@@ -9,6 +9,7 @@ import 'dart:io';
 import 'dart:convert';
 import '../services/api_service.dart';
 import '../theme.dart';
+import '../widgets/dynamic_island.dart';
 import '../utils/pkce.dart';
 import 'custom_models_page.dart';
 import '../widgets/context_ext.dart';
@@ -481,6 +482,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const ThinDivider(),
               SettingsTile(
+                icon: Icons.smart_toy_outlined,
+                title: '灵动岛设置',
+                subtitle: '实验性功能',
+                onTap: () => _showIslandSettings(context),
+              ),
+              SettingsTile(
                 icon: Icons.palette_outlined,
                 title: '主题设置',
                 onTap: _showThemePicker,
@@ -940,4 +947,75 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+  void _showIslandSettings(BuildContext context) {
+    bool enabled = false;
+    IslandStyle style = IslandStyle.dynamic;
+    double width = 120;
+    double height = 34;
+    double top = 12;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 20),
+              const Text('灵动岛设置', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('启用灵动岛'),
+                subtitle: const Text('实验性功能，默认关闭'),
+                value: enabled,
+                activeColor: const Color(0xFFFF6B9D),
+                onChanged: (v) => setState(() => enabled = v),
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('样式'),
+                trailing: SegmentedButton<IslandStyle>(
+                  segments: const [
+                    ButtonSegment(value: IslandStyle.dynamic, label: Text('灵动岛')),
+                    ButtonSegment(value: IslandStyle.atomic, label: Text('原子岛')),
+                  ],
+                  selected: {style},
+                  onSelectionChanged: (s) => setState(() => style = s.first),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text('宽度: ${width.toInt()}', style: const TextStyle(fontSize: 14)),
+              Slider(value: width, min: 80, max: 200, activeColor: const Color(0xFFFF6B9D), onChanged: (v) => setState(() => width = v)),
+              Text('高度: ${height.toInt()}', style: const TextStyle(fontSize: 14)),
+              Slider(value: height, min: 28, max: 60, activeColor: const Color(0xFFFF6B9D), onChanged: (v) => setState(() => height = v)),
+              Text('顶部间距: ${top.toInt()}', style: const TextStyle(fontSize: 14)),
+              Slider(value: top, min: 0, max: 60, activeColor: const Color(0xFFFF6B9D), onChanged: (v) => setState(() => top = v)),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await IslandConfig.save({'enabled': enabled, 'style': style, 'width': width, 'height': height, 'top': top});
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF6B9D), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+                  child: const Text('保存'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 }

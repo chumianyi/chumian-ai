@@ -1271,6 +1271,19 @@ async def list_templates():
         {"id": "10", "name": "周报生成", "prompt": "请帮我生成一份工作周报", "icon": "📝", "category": "办公"},
     ]
 
+
+@app.get("/api/version")
+async def check_version():
+    """版本检查接口"""
+    return {
+        "latest_version": "4.1.0",
+        "version_code": 6,
+        "download_url": "https://aka.doubaocdn.com/s/oXdmZ8PN8H",
+        "github_url": "https://github.com/chumianyi/chumian-ai/releases",
+        "update_message": "初眠AI v4.1.0 已发布，包含导航栏修复、灵动岛重做、新图标等大量改进。",
+        "force_update": False,
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=24512)

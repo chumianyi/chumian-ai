@@ -8,6 +8,7 @@ import 'pages/github_bind_page.dart';
 import 'utils/pkce.dart';
 import 'widgets/global_ripple.dart';
 import 'widgets/dynamic_island.dart';
+import 'services/version_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,16 @@ class _AppInitializerState extends State<AppInitializer> {
     super.initState();
     _checkStatus();
     _initDeepLinks();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkUpdate());
+  }
+
+  Future<void> _checkUpdate() async {
+    try {
+      final info = await VersionService.instance.checkUpdate();
+      if (info != null && mounted) {
+        VersionService.instance.showUpdateDialog(context, info);
+      }
+    } catch (_) {}
   }
 
   @override
