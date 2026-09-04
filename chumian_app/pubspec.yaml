@@ -57,4 +57,17 @@ flutter:
   fonts:
     - family: LXGW WenKai
       fonts:
+        - asset: assets/fonts/LXGWWenKai-Light.ttf
+          weight: 300
         - asset: assets/fonts/LXGWWenKai-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/LXGWWenKai-Medium.ttf
+          weight: 500
+    - family: LXGW WenKai Mono
+      fonts:
+        - asset: assets/fonts/LXGWWenKaiMono-Light.ttf
+          weight: 300
+        - asset: assets/fonts/LXGWWenKaiMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/LXGWWenKaiMono-Medium.ttf
+          weight: 500
