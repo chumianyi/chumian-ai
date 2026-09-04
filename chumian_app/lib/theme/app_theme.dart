@@ -434,10 +434,7 @@ class AppTheme extends ChangeNotifier {
         horizontalMargin: 16,
         dividerThickness: 1,
       ),
-      snackBarBehavior: SnackBarBehavior.floating,
-      materialTapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      applyElevationOverlayColor: false,
       platform: TargetPlatform.android,
     );
   }

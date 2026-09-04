@@ -6,7 +6,7 @@ import 'chat_provider.dart';
 import 'settings_provider.dart';
 
 class AppProviders {
-  static List<dynamic> get providers => [
+  static List<SingleChildWidget> get providers => [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
