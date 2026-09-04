@@ -434,10 +434,6 @@ class AppTheme extends ChangeNotifier {
         horizontalMargin: 16,
         dividerThickness: 1,
       ),
-      stepperTheme: StepperThemeData(
-        type: StepperType.vertical,
-        currentStep: 0,
-      ),
       snackBarBehavior: SnackBarBehavior.floating,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.adaptivePlatformDensity,
