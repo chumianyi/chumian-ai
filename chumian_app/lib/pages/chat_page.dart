@@ -13,6 +13,7 @@ import 'package:chumian_ai/utils/pkce.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
+import '../services/tts_service.dart';
 import '../models/chat_message.dart';
 import '../widgets/context_ext.dart';
 import '../widgets/chat_bubble.dart';
@@ -1026,6 +1027,12 @@ class ChatPageState extends State<ChatPage> {
                 ),
                 const SizedBox(width: 12),
                 _smallAction(
+                  Icons.volume_up_rounded,
+                  '朗读',
+                  () => _speakText(msg.content),
+                ),
+                const SizedBox(width: 12),
+                _smallAction(
                   Icons.restart_alt_rounded,
                   '重试',
                   () {
@@ -1102,6 +1109,22 @@ class ChatPageState extends State<ChatPage> {
     final plain = _stripMarkdown(text);
     await Clipboard.setData(ClipboardData(text: plain));
     if (mounted) _showSnack('已复制到剪贴板');
+  }
+
+  bool _isSpeaking = false;
+  Future<void> _speakText(String text) async {
+    if (_isSpeaking) {
+      await TtsService.instance.stop();
+      setState(() => _isSpeaking = false);
+      if (mounted) _showSnack('已停止朗读');
+      return;
+    }
+    setState(() => _isSpeaking = true);
+    await TtsService.instance.speak(_stripMarkdown(text));
+    if (mounted) _showSnack('正在朗读...');
+    Future.delayed(const Duration(seconds: 30), () {
+      if (mounted) setState(() => _isSpeaking = false);
+    });
   }
 
   Widget _buildSearchResults(ChatMessage msg) {

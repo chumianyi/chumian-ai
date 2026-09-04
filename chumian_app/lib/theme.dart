@@ -85,6 +85,27 @@ class AppShadows {
   ];
 }
 
+
+class NeuShadows {
+  NeuShadows._();
+  /// 凸起：左上亮 + 右下暗
+  static List<BoxShadow> raised(Color base) => [
+    BoxShadow(color: base.withValues(alpha: 0.0), blurRadius: 0),
+    BoxShadow(color: Colors.white.withValues(alpha: 0.9), blurRadius: 10, offset: const Offset(-4, -4)),
+    BoxShadow(color: const Color(0xFFA3B1C6).withValues(alpha: 0.5), blurRadius: 10, offset: const Offset(4, 4)),
+  ];
+  /// 凹陷：左上暗 + 右下亮（内阴影用 inset 模拟）
+  static List<BoxShadow> pressed(Color base) => [
+    BoxShadow(color: Colors.white.withValues(alpha: 0.6), blurRadius: 6, offset: const Offset(2, 2)),
+    BoxShadow(color: const Color(0xFFA3B1C6).withValues(alpha: 0.4), blurRadius: 6, offset: const Offset(-2, -2)),
+  ];
+  /// 柔和凸起
+  static List<BoxShadow> soft(Color base) => [
+    BoxShadow(color: Colors.white.withValues(alpha: 0.7), blurRadius: 8, offset: const Offset(-3, -3)),
+    BoxShadow(color: const Color(0xFFA3B1C6).withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(3, 3)),
+  ];
+}
+
 class AppTextStyles {
   AppTextStyles._();
 
@@ -168,8 +189,8 @@ class ThemeColorSet {
       primary: Color(0xFFFF6B9D),
       secondary: Color(0xFFFFB3C6),
       tertiary: Color(0xFFF48FB1),
-      background: Color(0xFFF8F8FA),
-      surface: Color(0xFFFFFFFF),
+      background: Color(0xFFE8ECF0),
+      surface: Color(0xFFE8ECF0),
       accent: Color(0xFFFF4081),
       primaryContainer: Color(0xFFFFDCE6),
       onPrimaryContainer: Color(0xFF6E1232),
@@ -283,12 +304,12 @@ class ThemeProvider extends ChangeNotifier {
   Color get gradientEnd => _set.gradientEnd;
 
   Color get backgroundColor =>
-      _isDark ? const Color(0xFF0D0D0D) : _set.background;
-  Color get surfaceColor => _isDark ? const Color(0xFF1A1A22) : _set.surface;
+      _isDark ? const Color(0xFF2A2E35) : const Color(0xFFE8ECF0);
+  Color get surfaceColor => _isDark ? const Color(0xFF2A2E35) : const Color(0xFFE8ECF0);
   Color get surfaceElevated =>
-      _isDark ? const Color(0xFF24242E) : const Color(0xFFFFFFFF);
+      _isDark ? const Color(0xFF333842) : const Color(0xFFE8ECF0);
   Color get surfaceSubtle =>
-      _isDark ? const Color(0xFF15151C) : const Color(0xFFF7F2F8);
+      _isDark ? const Color(0xFF22262D) : const Color(0xFFDDE3EA);
 
   Color get textPrimary => _isDark ? const Color(0xFFECECF4) : const Color(0xFF2A2A38);
   Color get textSecondary => _isDark ? const Color(0xFFA2A2B4) : const Color(0xFF6C6C80);
@@ -393,7 +414,7 @@ class ThemeProvider extends ChangeNotifier {
         color: surfaceColor,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shadowColor: Color(0x0A000000),
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.allXl),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -430,7 +451,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceColor,
+        fillColor: surfaceSubtle,
         hintStyle: TextStyle(color: textTertiary, fontSize: 15),
         labelStyle: TextStyle(color: textSecondary, fontSize: 15),
         border: OutlineInputBorder(

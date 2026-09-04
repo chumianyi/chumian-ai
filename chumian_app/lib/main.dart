@@ -7,6 +7,7 @@ import 'pages/login_page.dart';
 import 'pages/github_bind_page.dart';
 import 'utils/pkce.dart';
 import 'widgets/global_ripple.dart';
+import 'widgets/dynamic_island.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,18 @@ class _ChumianAppState extends State<ChumianApp> {
           title: '初眠AI',
           debugShowCheckedModeBanner: false,
           theme: _themeProvider.theme,
-          home: AppInitializer(themeProvider: _themeProvider),
+          home: Builder(
+            builder: (context) => Stack(
+              children: [
+                AppInitializer(themeProvider: _themeProvider),
+                DynamicIsland(
+                  enabled: true,
+                  style: IslandStyle.dynamic,
+                  message: null,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

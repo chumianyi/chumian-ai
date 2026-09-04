@@ -1,9 +1,12 @@
+/// 全局点击水面荡漾特效：多层圆环向外扩散，模拟水面涟漪。
+library;
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 
 class _RippleData {
   final Offset position;
-  final int startTime;
+  final double startTime;
   _RippleData({required this.position, required this.startTime});
 }
 
@@ -24,10 +27,10 @@ class _GlobalRippleState extends State<GlobalRipple> with SingleTickerProviderSt
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 700),
     )..addListener(() {
-        final now = DateTime.now().millisecondsSinceEpoch;
-        _ripples.removeWhere((r) => now - r.startTime > 450);
+        final now = DateTime.now().millisecondsSinceEpoch.toDouble();
+        _ripples.removeWhere((r) => now - r.startTime > 750);
         if (mounted) setState(() {});
       });
   }
@@ -41,7 +44,7 @@ class _GlobalRippleState extends State<GlobalRipple> with SingleTickerProviderSt
   void _addRipple(Offset position) {
     _ripples.add(_RippleData(
       position: position,
-      startTime: DateTime.now().millisecondsSinceEpoch,
+      startTime: DateTime.now().millisecondsSinceEpoch.toDouble(),
     ));
     _controller.forward(from: 0);
   }
@@ -58,7 +61,7 @@ class _GlobalRippleState extends State<GlobalRipple> with SingleTickerProviderSt
             IgnorePointer(
               child: CustomPaint(
                 size: Size.infinite,
-                painter: _GlobalRipplePainter(ripples: _ripples),
+                painter: _WaterRipplePainter(ripples: _ripples),
               ),
             ),
         ],
@@ -67,31 +70,41 @@ class _GlobalRippleState extends State<GlobalRipple> with SingleTickerProviderSt
   }
 }
 
-class _GlobalRipplePainter extends CustomPainter {
+class _WaterRipplePainter extends CustomPainter {
   final List<_RippleData> ripples;
-  _GlobalRipplePainter({required this.ripples});
+  _WaterRipplePainter({required this.ripples});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = DateTime.now().millisecondsSinceEpoch.toDouble();
     for (final ripple in ripples) {
-      final elapsed = (now - ripple.startTime) / 450.0;
+      final elapsed = (now - ripple.startTime) / 700.0;
       if (elapsed > 1.0) continue;
-      final ease = 1 - pow(1 - elapsed, 3).toDouble();
-      // Outer ring
-      final ringPaint = Paint()
-        ..color = const Color(0xFFFF6B9D).withValues(alpha: 0.18 * (1 - elapsed))
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2;
-      canvas.drawCircle(ripple.position, 6 + ease * 55, ringPaint);
-      // Inner fill
-      final fillPaint = Paint()
-        ..color = const Color(0xFFFFB3C6).withValues(alpha: 0.08 * (1 - elapsed))
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(ripple.position, 3 + ease * 35, fillPaint);
+      // 多层圆环模拟水面涟漪（3层，不同延迟）
+      for (int layer = 0; layer < 3; layer++) {
+        final layerDelay = layer * 0.12;
+        final t = (elapsed - layerDelay) / (1.0 - layerDelay);
+        if (t <= 0 || t > 1) continue;
+        final ease = Curves.easeOutCubic.transform(t);
+        final radius = 8.0 + ease * 70.0;
+        final alpha = 0.12 * (1 - t) * (1 - layer * 0.25);
+        final paint = Paint()
+          ..color = const Color(0xFFFF6B9D).withValues(alpha: alpha)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5 - layer * 0.3;
+        canvas.drawCircle(ripple.position, radius, paint);
+      }
+      // 中心点微光
+      final centerAlpha = 0.08 * (1 - elapsed);
+      if (centerAlpha > 0) {
+        final centerPaint = Paint()
+          ..color = const Color(0xFFFFB3C6).withValues(alpha: centerAlpha)
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(ripple.position, 4 + elapsed * 15, centerPaint);
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant _GlobalRipplePainter oldDelegate) => true;
+  bool shouldRepaint(covariant _WaterRipplePainter oldDelegate) => true;
 }
