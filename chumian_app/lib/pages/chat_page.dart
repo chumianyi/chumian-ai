@@ -1112,19 +1112,39 @@ class ChatPageState extends State<ChatPage> {
   }
 
   bool _isSpeaking = false;
+
   Future<void> _speakText(String text) async {
-    if (_isSpeaking) {
+    // 如果正在朗读，点击则停止
+    if (TtsService.instance.isSpeaking || TtsService.instance.isPaused) {
       await TtsService.instance.stop();
-      setState(() => _isSpeaking = false);
-      if (mounted) _showSnack('已停止朗读');
+      if (mounted) {
+        setState(() => _isSpeaking = false);
+        _showSnack('已停止朗读');
+      }
       return;
     }
+
+    final plainText = _stripMarkdown(text);
+    if (plainText.trim().isEmpty) {
+      _showSnack('没有可朗读的内容');
+      return;
+    }
+
     setState(() => _isSpeaking = true);
-    await TtsService.instance.speak(_stripMarkdown(text));
-    if (mounted) _showSnack('正在朗读...');
-    Future.delayed(const Duration(seconds: 30), () {
-      if (mounted) setState(() => _isSpeaking = false);
-    });
+    _showSnack('正在朗读...');
+
+    // 监听 TTS 状态变化，同步 UI
+    TtsService.instance.onStateChanged = (state) {
+      if (mounted) {
+        setState(() => _isSpeaking = state == TtsState.playing || state == TtsState.paused);
+      }
+    };
+
+    final success = await TtsService.instance.speak(plainText);
+    if (!success && mounted) {
+      setState(() => _isSpeaking = false);
+      _showSnack('语音朗读失败，请检查系统TTS引擎是否安装中文语音包');
+    }
   }
 
   Widget _buildSearchResults(ChatMessage msg) {

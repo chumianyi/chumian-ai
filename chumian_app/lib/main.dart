@@ -9,6 +9,7 @@ import 'utils/pkce.dart';
 import 'widgets/global_ripple.dart';
 import 'widgets/dynamic_island.dart';
 import 'services/version_service.dart';
+import 'services/tts_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -237,6 +238,7 @@ class _AppInitializerState extends State<AppInitializer> {
 
   Future<void> _checkStatus() async {
     try {
+      TtsService.instance.init();
       final valid = await ApiService.verifyApp('com.chumian.ai', 'official_release');
       if (!valid) {
         if (mounted) {
