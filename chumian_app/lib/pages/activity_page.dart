@@ -1,515 +1,221 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import '../widgets/context_ext.dart';
-import '../widgets/app_card.dart';
-import '../widgets/feedback.dart';
-import '../widgets/gradient_header.dart';
-import '../widgets/buttons.dart';
-import '../widgets/tiles.dart';
-import '../utils/formatters.dart';
-import '../utils/constants.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
-class ActivityPage extends StatefulWidget {
+class ActivityPage extends StatelessWidget {
   const ActivityPage({super.key});
-  @override
-  State<ActivityPage> createState() => _ActivityPageState();
-}
-
-class _ActivityPageState extends State<ActivityPage> {
-  bool _loading = true;
-  bool _loadFailed = false;
-  bool _playedToday = false;
-  Map<String, dynamic>? _todayRecord;
-  List<dynamic> _history = [];
-  final TextEditingController _pointsCtrl = TextEditingController();
-  String _choice = 'big';
-  bool _submitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadStatus();
-  }
-
-  @override
-  void dispose() {
-    _pointsCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadStatus() async {
-    setState(() {
-      _loading = _history.isEmpty && !_playedToday;
-      _loadFailed = false;
-    });
-    try {
-      final data = await ApiService.guessStatus();
-      if (!mounted) return;
-      setState(() {
-        _playedToday = data['played_today'] == true;
-        _todayRecord = data['today_record'];
-        _history = data['history'] ?? [];
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _loadFailed = true;
-      });
-    }
-  }
-
-  void _showSnack(String msg) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  Future<void> _play() async {
-    final points = int.tryParse(_pointsCtrl.text) ?? 0;
-    if (points <= 0) {
-      _showSnack('请输入有效的积分数量');
-      return;
-    }
-    setState(() => _submitting = true);
-    try {
-      final result = await ApiService.guessActivity(points, _choice);
-      if (!mounted) return;
-      final won = result['won'] == true;
-      final change = result['points_change'] ?? 0;
-      final roll = result['roll'];
-      final resultText = result['result'] == 'big' ? '大' : '小';
-      await _showResultDialog(won, change, roll, resultText);
-      _loadStatus();
-    } catch (e) {
-      if (!mounted) return;
-      _showSnack('参与失败: ${ErrorMessages.of(e)}');
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
-  }
-
-  Future<void> _showResultDialog(
-    bool won,
-    int change,
-    dynamic roll,
-    String resultText,
-  ) {
-    final accent = won ? context.success : context.danger;
-    return showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  won ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied_rounded,
-                  size: 38,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                won ? '恭喜赢了' : '很遗憾输了',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: context.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: context.surfaceSubtle,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      '开出：$resultText',
-                      style: TextStyle(fontSize: 14, color: context.textPrimary),
-                    ),
-                    if (roll != null)
-                      Text(
-                        '点数：$roll',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: context.textSecondary,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '积分变动：${change > 0 ? '+' : ''}$change',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: GradientButton(
-                  label: '知道了',
-                  onPressed: () => Navigator.pop(ctx),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('活动中心')),
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_loading) return const ListSkeleton(items: 4);
-    if (_loadFailed) {
-      return ErrorRetry(message: '活动数据加载失败', onRetry: _loadStatus);
-    }
-    return AppRefreshable(
-      onRefresh: _loadStatus,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        children: [
-          _buildGameCard(),
-          SectionHeader(
-            title: '历史记录',
-            subtitle: '共 ${_history.length} 次参与',
-          ),
-          if (_history.isEmpty)
-            const EmptyState(
-              icon: Icons.history_rounded,
-              title: '暂无历史记录',
-              subtitle: '参与猜大小后，结果会记录在这里',
-            )
-          else
-            AppCard(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Column(
-                children: _history.map((h) {
-                  final won = h['won'] == 1;
-                  final change = h['points_change'] ?? 0;
-                  final bet = h['choice'] == 'big' ? '大' : '小';
-                  final result = h['result'] == 'big' ? '大' : '小';
-                  return Column(
-                    children: [
-                      InfoRow(
-                        leadingIcon: won
-                            ? Icons.check_circle_rounded
-                            : Icons.cancel_rounded,
-                        title: '${h['guess_date']} 押$bet 开$result',
-                        subtitle: won ? '赢得 $change 积分' : '输掉 ${change.abs()} 积分',
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: (won ? context.success : context.danger)
-                                .withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            '${change > 0 ? '+' : ''}$change',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: won ? context.success : context.danger,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const ThinDivider(),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-        ],
+      backgroundColor: AppColors.pink50,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text('活动中心', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink600)),
       ),
-    );
-  }
-
-  Widget _buildGameCard() {
-    return GradientCard(
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFFF5A623), Color(0xFFFFCE7A)],
-      ),
-      shadow: const [
-        BoxShadow(color: Color(0x26000000), blurRadius: 18, offset: Offset(0, 6)),
-      ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(Icons.casino_rounded, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '猜大小',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      '每天一次，押对积分翻倍',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              PillTag(
-                text: _playedToday ? '今日已玩' : '可参与',
-                color: Colors.white,
-                background: Colors.white.withValues(alpha: 0.2),
-              ),
-            ],
-          ),
+          _SignInCard(),
           const SizedBox(height: 16),
-          if (_playedToday)
-            _buildTodayResult()
-          else
-            _buildPlayForm(),
+          _SectionTitle(title: '热门活动'),
+          const SizedBox(height: 12),
+          _ActivityCard(
+            title: '猜大小赢积分',
+            desc: '每日参与猜大小游戏，赢取海量积分奖励',
+            icon: Icons.casino,
+            color: AppColors.pink400,
+            onTap: () {},
+          ),
+          const SizedBox(height: 12),
+          _ActivityCard(
+            title: '连续签到',
+            desc: '连续签到7天，额外获得双倍积分奖励',
+            icon: Icons.calendar_today,
+            color: AppColors.pink500,
+            onTap: () {},
+          ),
+          const SizedBox(height: 12),
+          _ActivityCard(
+            title: '邀请好友',
+            desc: '邀请好友注册，双方各得500积分',
+            icon: Icons.group_add,
+            color: AppColors.pink300,
+            onTap: () {},
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildTodayResult() {
-    final rec = _todayRecord;
-    final resultText = rec?['result'] == 'big' ? '大' : '小';
-    final roll = rec?['roll'] ?? 0;
-    final won = rec?['won'] == 1;
-    final change = rec?['points_change'] ?? 0;
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(title, style: AppTextStyles.headingSmall.copyWith(color: AppColors.pink600));
+  }
+}
+
+class _SignInCard extends StatefulWidget {
+  @override
+  State<_SignInCard> createState() => _SignInCardState();
+}
+
+class _SignInCardState extends State<_SignInCard> {
+  bool _signedIn = false;
+  int _streak = 3;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: AppColors.pink300.withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
-          const Text(
-            '今日已参与',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _resultChip('结果', resultText),
-              const SizedBox(width: 12),
-              _resultChip('点数', '$roll'),
-              const SizedBox(width: 12),
-              _resultChip(
-                won ? '赢了' : '输了',
-                '${change > 0 ? '+' : ''}$change',
-                highlight: won,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('每日签到', style: AppTextStyles.headingSmall.copyWith(color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Text('已连续签到 $_streak 天', style: AppTextStyles.bodySmall.copyWith(color: Colors.white.withOpacity(0.85))),
+                ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _resultChip(String label, String value, {bool highlight = false}) {
-    final fg = highlight ? const Color(0xFFFFE082) : Colors.white;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: fg,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10.5,
-              color: Colors.white.withValues(alpha: 0.85),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlayForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.16),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: 15,
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '预测点数结果，押大或押小，猜对积分翻倍',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: Colors.white.withValues(alpha: 0.9),
+              GestureDetector(
+                onTap: () => setState(() => _signedIn = !_signedIn),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: _signedIn ? Colors.white.withOpacity(0.3) : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _signedIn ? '已签到' : '立即签到',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: _signedIn ? Colors.white : AppColors.pink500,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 14),
-        TextField(
-          controller: _pointsCtrl,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          decoration: InputDecoration(
-            labelText: '押注积分数量',
-            hintText: '输入要押的积分',
-            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.85)),
-            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-            prefixIcon: Icon(
-              Icons.stars_rounded,
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Colors.white.withValues(alpha: 0.25),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.white, width: 1.5),
-            ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(7, (i) {
+              final done = i < _streak;
+              return Column(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: done ? Colors.white : Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: done
+                        ? const Icon(Icons.check, color: AppColors.pink500, size: 18)
+                        : Center(child: Text('${i + 1}', style: AppTextStyles.caption.copyWith(color: Colors.white))),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(['一', '二', '三', '四', '五', '六', '日'][i], style: AppTextStyles.caption.copyWith(color: Colors.white.withOpacity(0.7))),
+                ],
+              );
+            }),
           ),
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: _choiceChip('大', _choice == 'big', () {
-                setState(() => _choice = 'big');
-              }, const Color(0xFFE8445C)),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _choiceChip('小', _choice == 'small', () {
-                setState(() => _choice = 'small');
-              }, const Color(0xFF3D7BF0)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        GradientButton(
-          label: '立即参与',
-          icon: Icons.casino_rounded,
-          loading: _submitting,
-          onPressed: _play,
-        ),
-      ],
+        ],
+      ),
     );
   }
+}
 
-  Widget _choiceChip(
-    String label,
-    bool selected,
-    VoidCallback onTap,
-    Color color,
-  ) {
+class _ActivityCard extends StatefulWidget {
+  final String title;
+  final String desc;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActivityCard({
+    required this.title,
+    required this.desc,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  State<_ActivityCard> createState() => _ActivityCardState();
+}
+
+class _ActivityCardState extends State<_ActivityCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.97).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected
-              ? color
-              : Colors.white.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: selected ? Colors.white : Colors.white.withValues(alpha: 0.3),
-            width: selected ? 1.5 : 1,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnim,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
             color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.5), blurRadius: 8)],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(color: widget.color.withOpacity(0.15), borderRadius: BorderRadius.circular(14)),
+                child: Icon(widget.icon, color: widget.color, size: 26),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.title, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                    const SizedBox(height: 4),
+                    Text(widget.desc, style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary), maxLines: 2),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.pink300),
+            ],
           ),
         ),
       ),

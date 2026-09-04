@@ -1,0 +1,1116 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import '../services/api_service.dart';
+import '../models/api_response.dart';
+import '../utils/cache_utils.dart';
+
+/// XML repository
+class XmlRepository {
+  XmlRepository._();
+  static final XmlRepository instance = XmlRepository._();
+
+  final ApiService _api = ApiService.instance;
+  final Map<String, dynamic> _cache = {};
+  final Map<String, DateTime> _cacheTimestamps = {};
+  static const Duration _cacheDuration = Duration(minutes: 5);
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  String? _lastError;
+  String? get lastError => _lastError;
+
+  DateTime? _lastUpdated;
+  DateTime? get lastUpdated => _lastUpdated;
+
+  /// Caches a value
+  void _cacheValue(String key, dynamic value) {
+    _cache[key] = value;
+    _cacheTimestamps[key] = DateTime.now();
+  }
+
+  /// Gets a cached value
+  dynamic _getCached(String key) {
+    if (!_cache.containsKey(key)) return null;
+    final timestamp = _cacheTimestamps[key];
+    if (timestamp == null) return null;
+    if (DateTime.now().difference(timestamp) > _cacheDuration) {
+      _cache.remove(key);
+      _cacheTimestamps.remove(key);
+      return null;
+    }
+    return _cache[key];
+  }
+
+  /// Clears the cache
+  void clearCache() {
+    _cache.clear();
+    _cacheTimestamps.clear();
+  }
+
+  /// Repository method 0 for XmlRepository
+  ///
+  /// Performs data operation 0 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod0({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod0_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod0',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_0',
+        'method': 'repoMethod0',
+        'repository': 'XmlRepository',
+        'index': 0,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 0,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod0',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod0',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 1 for XmlRepository
+  ///
+  /// Performs data operation 1 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod1({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod1_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod1',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_1',
+        'method': 'repoMethod1',
+        'repository': 'XmlRepository',
+        'index': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 1,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod1',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod1',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 2 for XmlRepository
+  ///
+  /// Performs data operation 2 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod2({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod2_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod2',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_2',
+        'method': 'repoMethod2',
+        'repository': 'XmlRepository',
+        'index': 2,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 2,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod2',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod2',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 3 for XmlRepository
+  ///
+  /// Performs data operation 3 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod3({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod3_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod3',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_3',
+        'method': 'repoMethod3',
+        'repository': 'XmlRepository',
+        'index': 3,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 3,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod3',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod3',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 4 for XmlRepository
+  ///
+  /// Performs data operation 4 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod4({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod4_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod4',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_4',
+        'method': 'repoMethod4',
+        'repository': 'XmlRepository',
+        'index': 4,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 4,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod4',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod4',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 5 for XmlRepository
+  ///
+  /// Performs data operation 5 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod5({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod5_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod5',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_5',
+        'method': 'repoMethod5',
+        'repository': 'XmlRepository',
+        'index': 5,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 5,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod5',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod5',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 6 for XmlRepository
+  ///
+  /// Performs data operation 6 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod6({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod6_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod6',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_6',
+        'method': 'repoMethod6',
+        'repository': 'XmlRepository',
+        'index': 6,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 6,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod6',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod6',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 7 for XmlRepository
+  ///
+  /// Performs data operation 7 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod7({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod7_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod7',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_7',
+        'method': 'repoMethod7',
+        'repository': 'XmlRepository',
+        'index': 7,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 7,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod7',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod7',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 8 for XmlRepository
+  ///
+  /// Performs data operation 8 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod8({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod8_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod8',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_8',
+        'method': 'repoMethod8',
+        'repository': 'XmlRepository',
+        'index': 8,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 8,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod8',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod8',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 9 for XmlRepository
+  ///
+  /// Performs data operation 9 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod9({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod9_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod9',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_9',
+        'method': 'repoMethod9',
+        'repository': 'XmlRepository',
+        'index': 9,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 9,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod9',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod9',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 10 for XmlRepository
+  ///
+  /// Performs data operation 10 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod10({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod10_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod10',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_10',
+        'method': 'repoMethod10',
+        'repository': 'XmlRepository',
+        'index': 10,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 10,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod10',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod10',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 11 for XmlRepository
+  ///
+  /// Performs data operation 11 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod11({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod11_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod11',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_11',
+        'method': 'repoMethod11',
+        'repository': 'XmlRepository',
+        'index': 11,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 11,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod11',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod11',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 12 for XmlRepository
+  ///
+  /// Performs data operation 12 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod12({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod12_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod12',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_12',
+        'method': 'repoMethod12',
+        'repository': 'XmlRepository',
+        'index': 12,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 12,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod12',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod12',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 13 for XmlRepository
+  ///
+  /// Performs data operation 13 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod13({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod13_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod13',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_13',
+        'method': 'repoMethod13',
+        'repository': 'XmlRepository',
+        'index': 13,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 13,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod13',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod13',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Repository method 14 for XmlRepository
+  ///
+  /// Performs data operation 14 with caching and error handling.
+  Future<Map<String, dynamic>> repoMethod14({
+    String? id,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    Duration? cacheTtl,
+  }) async {
+    final cacheKey = 'repoMethod14_${id ?? 'default'}';
+
+    // Check cache first
+    if (!forceRefresh) {
+      final cached = _getCached(cacheKey);
+      if (cached != null) {
+        return {
+          'success': true,
+          'data': cached,
+          'fromCache': true,
+          'method': 'repoMethod14',
+          'repository': 'XmlRepository',
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+    }
+
+    _isLoading = true;
+    _lastError = null;
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+      final result = <String, dynamic>{
+        'id': id ?? 'item_14',
+        'method': 'repoMethod14',
+        'repository': 'XmlRepository',
+        'index': 14,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'data': data ?? {},
+        'metadata': {
+          'generated': true,
+          'repoIndex': 14,
+          'totalMethods': 15,
+          'cacheHit': false,
+          'forceRefresh': forceRefresh,
+        },
+      };
+
+      _cacheValue(cacheKey, result);
+      _lastUpdated = DateTime.now();
+      return {
+        'success': true,
+        'data': result,
+        'fromCache': false,
+        'method': 'repoMethod14',
+        'repository': 'XmlRepository',
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      _lastError = e.toString();
+      return {
+        'success': false,
+        'error': e.toString(),
+        'method': 'repoMethod14',
+        'repository': 'XmlRepository',
+      };
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+}

@@ -53,5 +53,8 @@ flutter:
   assets:
     - assets/icon/
     - assets/fonts/
-    - assets/audio/
     - assets/images/
+  fonts:
+    - family: LXGW WenKai
+      fonts:
+        - asset: assets/fonts/LXGWWenKai-Regular.ttf
