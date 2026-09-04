@@ -139,7 +139,6 @@ class AppTheme extends ChangeNotifier {
           backgroundColor: Colors.transparent,
           hoverColor: AppColors.primary.withValues(alpha: 0.06),
           highlightColor: AppColors.primary.withValues(alpha: 0.1),
-          splashColor: AppColors.primary.withValues(alpha: 0.08),
           minimumSize: const Size(40, 40),
           padding: AppSpacing.iconButtonPadding,
         ),
@@ -434,10 +433,6 @@ class AppTheme extends ChangeNotifier {
         columnSpacing: 24,
         horizontalMargin: 16,
         dividerThickness: 1,
-      ),
-      paginatedDataTableTheme: const PaginatedDataTableThemeData(
-        columnSpacing: 24,
-        horizontalMargin: 16,
       ),
       stepperTheme: StepperThemeData(
         type: StepperType.vertical,

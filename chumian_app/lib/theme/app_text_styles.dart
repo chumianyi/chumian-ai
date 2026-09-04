@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
-
 /// 全局文字样式 - 统一使用霞鹜文楷字体
 class AppTextStyles {
   AppTextStyles._();
-
   static const String fontFamily = 'LXGW WenKai';
+
+  // 标题别名
+  static const TextStyle headingLarge = hero;
+  static const TextStyle headingMedium = h2;
+  static const TextStyle headingSmall = h3;
 
   // ---- 标题 ----
   static const TextStyle hero = TextStyle(
@@ -51,7 +54,6 @@ class AppTextStyles {
     color: AppColors.textSecondary,
     height: 1.4,
   );
-
   // ---- 正文 ----
   static const TextStyle body = TextStyle(
     fontFamily: fontFamily,
@@ -74,7 +76,6 @@ class AppTextStyles {
     color: AppColors.textSecondary,
     height: 1.45,
   );
-
   // ---- 辅助 ----
   static const TextStyle caption = TextStyle(
     fontFamily: fontFamily,
@@ -107,7 +108,6 @@ class AppTextStyles {
     height: 1.4,
     decoration: TextDecoration.underline,
   );
-
   // ---- 聊天 ----
   static const TextStyle chatUser = TextStyle(
     fontFamily: fontFamily,
@@ -130,7 +130,6 @@ class AppTextStyles {
     color: Color(0xFFE8E8E8),
     height: 1.4,
   );
-
   // ---- 深色模式 ----
   static const TextStyle darkBody = TextStyle(
     fontFamily: fontFamily,
@@ -146,7 +145,6 @@ class AppTextStyles {
     color: AppColors.darkTextPrimary,
     height: 1.4,
   );
-
   /// 带颜色的便捷构造
   static TextStyle withColor(TextStyle base, Color color) =>
       base.copyWith(color: color);

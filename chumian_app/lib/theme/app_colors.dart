@@ -4,6 +4,19 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  // ---- 粉色阶 (Material pink shades) ----
+  static const Color pink50 = Color(0xFFFFF0F5);
+  static const Color pink100 = Color(0xFFFFE0EA);
+  static const Color pink200 = Color(0xFFFFC9D9);
+  static const Color pink300 = Color(0xFFFFA8C0);
+  static const Color pink400 = Color(0xFFFF85AB);
+  static const Color pink500 = Color(0xFFFF6B9D);
+  static const Color pink600 = Color(0xFFE8558A);
+  static const Color pink700 = Color(0xFFD4487A);
+  static const Color pink800 = Color(0xFFB83A68);
+  static const Color pink900 = Color(0xFF9C2E56);
+  static const Color primaryContainer = Color(0xFFFFE0EA);
+
   // ---- 主色 ----
   static const Color primary = Color(0xFFFF6B9D);
   static const Color primaryLight = Color(0xFFFF85AB);
