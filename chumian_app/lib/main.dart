@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
-import 'providers/app_providers.dart';
+import 'providers/theme_provider.dart';
+import 'providers/user_provider.dart';
+import 'providers/chat_provider.dart';
+import 'providers/settings_provider.dart';
 import 'pages/splash_page.dart';
 
 void main() async {
@@ -18,7 +21,12 @@ class ChumianAIApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: AppProviders.providers,
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+      ],
       child: AnimatedBuilder(
         animation: AppTheme.instance,
         builder: (context, child) {
