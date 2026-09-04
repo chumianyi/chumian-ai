@@ -44,7 +44,6 @@ class TtsService {
 
   Future<void> resume() async {
     if (!_isPaused) return;
-    await _tts.continueFrom(0);
     _isPaused = false;
   }
 
