@@ -18,6 +18,14 @@ class ApiResponse<T> {
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
+  factory ApiResponse.success(T data, [String? message]) {
+    return ApiResponse<T>(success: true, data: data, message: message);
+  }
+
+  factory ApiResponse.error(String message, [int? code]) {
+    return ApiResponse<T>(success: false, message: message, code: code);
+  }
+
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
     return ApiResponse<T>(
       success: json['success'] ?? json['code'] == 200,
