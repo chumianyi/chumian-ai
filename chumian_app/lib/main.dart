@@ -7,6 +7,7 @@ import 'providers/theme_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/model_store_provider.dart';
 import 'pages/splash_page.dart';
 import 'enterprise_service_registry.dart';
 
@@ -29,6 +30,7 @@ class ChumianAIApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ModelStoreProvider.instance),
       ],
       child: AnimatedBuilder(
         animation: AppTheme.instance,

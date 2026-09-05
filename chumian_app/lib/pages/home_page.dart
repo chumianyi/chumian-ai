@@ -4,6 +4,7 @@ import '../theme/app_text_styles.dart';
 import 'chat_page.dart';
 import 'creative_page.dart';
 import 'explore_page.dart';
+import 'model_store_page.dart';
 import 'activity_page.dart';
 import 'profile_page.dart';
 
@@ -22,6 +23,7 @@ class _HomePageState extends State<HomePage>
     ChatPage(),
     CreativePage(),
     ExplorePage(),
+    ModelStorePage(),
     ActivityPage(),
     ProfilePage(),
   ];
@@ -30,6 +32,7 @@ class _HomePageState extends State<HomePage>
     _NavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '对话'),
     _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '创作'),
     _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: '发现'),
+    _NavItem(icon: Icons.store_outlined, activeIcon: Icons.store, label: '模型商店'),
     _NavItem(icon: Icons.local_activity_outlined, activeIcon: Icons.local_activity, label: '活动'),
     _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
   ];

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../providers/model_store_provider.dart';
+import '../models/local_model.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -113,10 +116,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   }
 
   Widget _buildModelSelector() {
-    return PopupMenuButton<String>(
-      initialValue: _selectedModel,
-      onSelected: (v) => setState(() => _selectedModel = v),
-      itemBuilder: (_) => _models.map((m) => PopupMenuItem(value: m, child: Text(m))).toList(),
+    return GestureDetector(
+      onTap: () => _showModelPicker(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -126,11 +127,136 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.smart_toy, size: 16, color: AppColors.pink500),
+            Icon(
+              _isLocalModel ? Icons.memory : Icons.smart_toy,
+              size: 16,
+              color: _isLocalModel ? Colors.purple : AppColors.pink500,
+            ),
             const SizedBox(width: 4),
             Text(_selectedModel, style: AppTextStyles.caption.copyWith(color: AppColors.pink600, fontWeight: FontWeight.w600)),
+            const Icon(Icons.arrow_drop_down, size: 16, color: AppColors.pink400),
           ],
         ),
+      ),
+    );
+  }
+
+  bool get _isLocalModel => _selectedModel.startsWith('本地:');
+
+  void _showModelPicker() {
+    final provider = Provider.of<ModelStoreProvider>(context, listen: false);
+    final localLanguageModels = provider.downloadedModels
+        .where((m) => m.isLanguageModel)
+        .toList();
+    final allLocalModels = provider.languageModels;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(color: AppColors.pink200, borderRadius: BorderRadius.circular(2)),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text('选择模型', style: AppTextStyles.titleLarge.copyWith(color: AppColors.pink500)),
+                    const Spacer(),
+                    IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('云端模型', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink400, fontWeight: FontWeight.w600)),
+                ),
+              ),
+              ..._models.map((m) => _buildModelOption(m, false, true)),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text('本地模型', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink400, fontWeight: FontWeight.w600)),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // Navigate to model store
+                      },
+                      child: Text('去模型商店', style: TextStyle(color: AppColors.pink500, fontSize: 12)),
+                    ),
+                  ],
+                ),
+              ),
+              ...allLocalModels.map((m) => _buildModelOption(
+                '本地:${m.name}',
+                true,
+                m.isDownloaded,
+                subtitle: m.isDownloaded ? '已下载 · 端侧推理' : '未下载 · 点击前往下载',
+              )),
+              if (allLocalModels.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('暂无本地模型，前往模型商店下载', style: TextStyle(color: Colors.black38)),
+                ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModelOption(String name, bool isLocal, bool enabled, {String? subtitle}) {
+    final isSelected = _selectedModel == name;
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: ListTile(
+        leading: Icon(
+          isLocal ? Icons.memory : Icons.cloud,
+          color: isLocal ? (enabled ? Colors.purple : Colors.grey) : AppColors.pink500,
+        ),
+        title: Text(
+          name.replaceAll('本地:', ''),
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: isSelected ? AppColors.pink500 : Colors.black87,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+          ),
+        ),
+        subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.black45)) : null,
+        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.pink500) : (enabled ? null : const Icon(Icons.lock_outline, size: 18, color: Colors.grey)),
+        onTap: enabled
+            ? () {
+                setState(() => _selectedModel = name);
+                Navigator.pop(context);
+                if (isLocal) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('本地模型运行中，可能较慢，请耐心等待', style: AppTextStyles.bodyMedium.copyWith(color: Colors.white)),
+                      backgroundColor: AppColors.pink400,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                }
+              }
+            : null,
       ),
     );
   }
