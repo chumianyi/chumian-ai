@@ -47,7 +47,7 @@ class _ModelStorePageState extends State<ModelStorePage>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('模型商店', style: AppTextStyles.titleLarge.copyWith(color: AppColors.pink500)),
+        title: Text('模型商店', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink500)),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -191,7 +191,7 @@ class _ModelCardState extends State<_ModelCard>
                             Expanded(
                               child: Text(
                                 model.name,
-                                style: AppTextStyles.titleMedium.copyWith(
+                                style: AppTextStyles.title.copyWith(
                                   color: AppColors.pink500,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -404,7 +404,7 @@ class _ModelCardState extends State<_ModelCard>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除模型', style: AppTextStyles.titleMedium),
+        title: Text('删除模型', style: AppTextStyles.title),
         content: Text('确定要删除「${model.name}」吗？删除后需要重新下载才能使用。'),
         actions: [
           TextButton(

@@ -172,7 +172,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    Text('选择模型', style: AppTextStyles.titleLarge.copyWith(color: AppColors.pink500)),
+                    Text('选择模型', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink500)),
                     const Spacer(),
                     IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
                   ],
@@ -234,7 +234,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         ),
         title: Text(
           name.replaceAll('本地:', ''),
-          style: AppTextStyles.bodyLarge.copyWith(
+          style: AppTextStyles.body.copyWith(
             color: isSelected ? AppColors.pink500 : Colors.black87,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
           ),
