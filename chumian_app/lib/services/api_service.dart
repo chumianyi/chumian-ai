@@ -85,7 +85,7 @@ class ApiService {
         queryParameters: queryParameters,
         options: options ?? Options(method: method),
       );
-      final body = response.data is String ? jsonDecode(response.data) : response.data;
+      final body = (response.data is String ? jsonDecode(response.data) : response.data) as Map<String, dynamic>;
       if (parser != null) {
         return ApiResponse.success(parser(body), body['message'] ?? '');
       }
