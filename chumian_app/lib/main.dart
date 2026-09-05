@@ -8,10 +8,13 @@ import 'providers/user_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
 import 'pages/splash_page.dart';
+import 'enterprise_service_registry.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppTheme.instance.load();
+  // Initialize all enterprise services to prevent tree-shaking
+  EnterpriseServiceRegistry.instance.initializeAll();
   runApp(const ChumianAIApp());
 }
 
