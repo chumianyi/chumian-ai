@@ -1113,9 +1113,6 @@ class ApiService {
   }
 
   /// Get points history
-  Future<ApiResponse<Map<String, dynamic>>> getHistory(Map<String, dynamic>? query) async {
-    return _get<Map<String, dynamic>>('/points/history', query: query);
-  }
 
   /// Daily check-in
   Future<ApiResponse<Map<String, dynamic>>> checkin(Map<String, dynamic>? data) async {
@@ -1348,9 +1345,6 @@ class ApiService {
   }
 
   /// Get trending songs
-  Future<ApiResponse<Map<String, dynamic>>> getTrending(Map<String, dynamic>? query) async {
-    return _get<Map<String, dynamic>>('/music/trending', query: query);
-  }
 
   /// Get top charts
   Future<ApiResponse<Map<String, dynamic>>> getTopCharts(Map<String, dynamic>? query) async {
@@ -1383,9 +1377,6 @@ class ApiService {
   }
 
   /// Update notification settings
-  Future<ApiResponse<Map<String, dynamic>>> updateNotificationSettings(Map<String, dynamic>? data) async {
-    return _put<Map<String, dynamic>>('/settings/notifications', data: data);
-  }
 
   /// Get privacy settings
   Future<ApiResponse<Map<String, dynamic>>> getPrivacySettings(Map<String, dynamic>? query) async {
@@ -1393,9 +1384,6 @@ class ApiService {
   }
 
   /// Update privacy settings
-  Future<ApiResponse<Map<String, dynamic>>> updatePrivacySettings(Map<String, dynamic>? data) async {
-    return _put<Map<String, dynamic>>('/settings/privacy', data: data);
-  }
 
   /// Get appearance settings
   Future<ApiResponse<Map<String, dynamic>>> getAppearanceSettings(Map<String, dynamic>? query) async {
@@ -1588,9 +1576,6 @@ class ApiService {
   }
 
   /// Revoke session
-  Future<ApiResponse<Map<String, dynamic>>> revokeSession(String id, Map<String, dynamic>? data) async {
-    return _post<Map<String, dynamic>>('/settings/sessions/$id/revoke', data: data);
-  }
 
   /// Get login history
   Future<ApiResponse<Map<String, dynamic>>> getLoginHistory(Map<String, dynamic>? query) async {
