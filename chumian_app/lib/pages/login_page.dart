@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Text(_isRegister ? '已有账号？' : '还没有账号？', style: const TextStyle(color: AppColors.textSecondary, fontFamily: 'LXGW WenKai')),
                     TextButton(
-                      onPressed: () => setState(() { _isRegister = !_isRegister; provider.error = null as String?; }),
+                      onPressed: () => setState(() { _isRegister = !_isRegister; provider.clearError(); }),
                       child: Text(_isRegister ? '去登录' : '去注册', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600, fontFamily: 'LXGW WenKai')),
                     ),
                   ]),

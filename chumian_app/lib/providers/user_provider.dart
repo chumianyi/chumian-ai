@@ -12,6 +12,7 @@ class UserProvider extends ChangeNotifier {
   bool get isLoggedIn => _user != null;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  void clearError() { _error = null; }
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
