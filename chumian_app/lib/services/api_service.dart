@@ -193,7 +193,7 @@ class ApiService {
   }
 
   /// Revoke a specific session
-  Future<ApiResponse<Map<String, dynamic>>> revokeSession(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> revokeSession(String id) async {
     return _delete<Map<String, dynamic>>('/auth/sessions/$id');
   }
 
@@ -213,12 +213,12 @@ class ApiService {
   }
 
   /// Get user by ID
-  Future<ApiResponse<Map<String, dynamic>>> getUserById(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getUserById(String id) async {
     return _get<Map<String, dynamic>>('/users/$id');
   }
 
   /// Get user by username
-  Future<ApiResponse<Map<String, dynamic>>> getUserByUsername(required String username) async {
+  Future<ApiResponse<Map<String, dynamic>>> getUserByUsername(String username) async {
     return _get<Map<String, dynamic>>('/users/username/$username');
   }
 
@@ -338,12 +338,12 @@ class ApiService {
   }
 
   /// Set a preference
-  Future<ApiResponse<Map<String, dynamic>>> setUserPreference(required String key, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> setUserPreference(String key, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/users/me/preferences/$key', data: data);
   }
 
   /// Delete a preference
-  Future<ApiResponse<Map<String, dynamic>>> deleteUserPreference(required String key) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteUserPreference(String key) async {
     return _delete<Map<String, dynamic>>('/users/me/preferences/$key');
   }
 
@@ -358,112 +358,112 @@ class ApiService {
   }
 
   /// Get conversation by ID
-  Future<ApiResponse<Map<String, dynamic>>> getConversation(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getConversation(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id');
   }
 
   /// Update conversation
-  Future<ApiResponse<Map<String, dynamic>>> updateConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updateConversation(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/conversations/$id', data: data);
   }
 
   /// Delete conversation
-  Future<ApiResponse<Map<String, dynamic>>> deleteConversation(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteConversation(String id) async {
     return _delete<Map<String, dynamic>>('/chat/conversations/$id');
   }
 
   /// Clear conversation messages
-  Future<ApiResponse<Map<String, dynamic>>> clearConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> clearConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/clear', data: data);
   }
 
   /// Pin conversation
-  Future<ApiResponse<Map<String, dynamic>>> pinConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> pinConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/pin', data: data);
   }
 
   /// Unpin conversation
-  Future<ApiResponse<Map<String, dynamic>>> unpinConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> unpinConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/unpin', data: data);
   }
 
   /// Archive conversation
-  Future<ApiResponse<Map<String, dynamic>>> archiveConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> archiveConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/archive', data: data);
   }
 
   /// Unarchive conversation
-  Future<ApiResponse<Map<String, dynamic>>> unarchiveConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> unarchiveConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/unarchive', data: data);
   }
 
   /// Mute conversation
-  Future<ApiResponse<Map<String, dynamic>>> muteConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> muteConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/mute', data: data);
   }
 
   /// Unmute conversation
-  Future<ApiResponse<Map<String, dynamic>>> unmuteConversation(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> unmuteConversation(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/unmute', data: data);
   }
 
   /// Get conversation messages
-  Future<ApiResponse<Map<String, dynamic>>> getMessages(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getMessages(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/messages');
   }
 
   /// Send message
-  Future<ApiResponse<Map<String, dynamic>>> sendMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> sendMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/messages', data: data);
   }
 
   /// Stream AI response
-  Future<ApiResponse<Map<String, dynamic>>> streamMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> streamMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/conversations/$id/stream', data: data);
   }
 
   /// Edit message
-  Future<ApiResponse<Map<String, dynamic>>> editMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> editMessage(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/messages/$id', data: data);
   }
 
   /// Delete message
-  Future<ApiResponse<Map<String, dynamic>>> deleteMessage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteMessage(String id) async {
     return _delete<Map<String, dynamic>>('/chat/messages/$id');
   }
 
   /// Add reaction to message
-  Future<ApiResponse<Map<String, dynamic>>> reactToMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> reactToMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/messages/$id/react', data: data);
   }
 
   /// Remove reaction
-  Future<ApiResponse<Map<String, dynamic>>> removeReaction(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> removeReaction(String id) async {
     return _delete<Map<String, dynamic>>('/chat/messages/$id/react');
   }
 
   /// Copy message text
-  Future<ApiResponse<Map<String, dynamic>>> copyMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> copyMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/messages/$id/copy', data: data);
   }
 
   /// Share message
-  Future<ApiResponse<Map<String, dynamic>>> shareMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> shareMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/messages/$id/share', data: data);
   }
 
   /// Bookmark message
-  Future<ApiResponse<Map<String, dynamic>>> bookmarkMessage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> bookmarkMessage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/messages/$id/bookmark', data: data);
   }
 
   /// Remove bookmark
-  Future<ApiResponse<Map<String, dynamic>>> unbookmarkMessage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unbookmarkMessage(String id) async {
     return _delete<Map<String, dynamic>>('/chat/messages/$id/bookmark');
   }
 
   /// Regenerate AI response
-  Future<ApiResponse<Map<String, dynamic>>> regenerateResponse(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> regenerateResponse(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/chat/messages/$id/regenerate', data: data);
   }
 
@@ -478,42 +478,42 @@ class ApiService {
   }
 
   /// Set conversation model
-  Future<ApiResponse<Map<String, dynamic>>> setModel(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> setModel(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/conversations/$id/model', data: data);
   }
 
   /// Get system prompt
-  Future<ApiResponse<Map<String, dynamic>>> getSystemPrompt(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getSystemPrompt(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/system-prompt');
   }
 
   /// Set system prompt
-  Future<ApiResponse<Map<String, dynamic>>> setSystemPrompt(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> setSystemPrompt(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/conversations/$id/system-prompt', data: data);
   }
 
   /// Get temperature setting
-  Future<ApiResponse<Map<String, dynamic>>> getTemperature(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getTemperature(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/temperature');
   }
 
   /// Set temperature
-  Future<ApiResponse<Map<String, dynamic>>> setTemperature(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> setTemperature(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/conversations/$id/temperature', data: data);
   }
 
   /// Get max tokens
-  Future<ApiResponse<Map<String, dynamic>>> getMaxTokens(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getMaxTokens(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/max-tokens');
   }
 
   /// Set max tokens
-  Future<ApiResponse<Map<String, dynamic>>> setMaxTokens(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> setMaxTokens(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/chat/conversations/$id/max-tokens', data: data);
   }
 
   /// Export conversation
-  Future<ApiResponse<Map<String, dynamic>>> exportConversation(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> exportConversation(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/export');
   }
 
@@ -528,7 +528,7 @@ class ApiService {
   }
 
   /// Get reply suggestions
-  Future<ApiResponse<Map<String, dynamic>>> getSuggestions(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getSuggestions(String id) async {
     return _get<Map<String, dynamic>>('/chat/conversations/$id/suggestions');
   }
 
@@ -608,37 +608,37 @@ class ApiService {
   }
 
   /// Get image by ID
-  Future<ApiResponse<Map<String, dynamic>>> getImage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getImage(String id) async {
     return _get<Map<String, dynamic>>('/image/$id');
   }
 
   /// Delete image
-  Future<ApiResponse<Map<String, dynamic>>> deleteImage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteImage(String id) async {
     return _delete<Map<String, dynamic>>('/image/$id');
   }
 
   /// Download image
-  Future<ApiResponse<Map<String, dynamic>>> downloadImage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> downloadImage(String id) async {
     return _get<Map<String, dynamic>>('/image/$id/download');
   }
 
   /// Share image
-  Future<ApiResponse<Map<String, dynamic>>> shareImage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> shareImage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/image/$id/share', data: data);
   }
 
   /// Like image
-  Future<ApiResponse<Map<String, dynamic>>> likeImage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> likeImage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/image/$id/like', data: data);
   }
 
   /// Unlike image
-  Future<ApiResponse<Map<String, dynamic>>> unlikeImage(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unlikeImage(String id) async {
     return _delete<Map<String, dynamic>>('/image/$id/like');
   }
 
   /// Bookmark image
-  Future<ApiResponse<Map<String, dynamic>>> bookmarkImage(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> bookmarkImage(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/image/$id/bookmark', data: data);
   }
 
@@ -668,7 +668,7 @@ class ApiService {
   }
 
   /// Delete preset
-  Future<ApiResponse<Map<String, dynamic>>> deletePreset(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deletePreset(String id) async {
     return _delete<Map<String, dynamic>>('/image/presets/$id');
   }
 
@@ -713,22 +713,22 @@ class ApiService {
   }
 
   /// Get video generation status
-  Future<ApiResponse<Map<String, dynamic>>> getVideoStatus(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getVideoStatus(String id) async {
     return _get<Map<String, dynamic>>('/video/$id/status');
   }
 
   /// Get video by ID
-  Future<ApiResponse<Map<String, dynamic>>> getVideo(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getVideo(String id) async {
     return _get<Map<String, dynamic>>('/video/$id');
   }
 
   /// Delete video
-  Future<ApiResponse<Map<String, dynamic>>> deleteVideo(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteVideo(String id) async {
     return _delete<Map<String, dynamic>>('/video/$id');
   }
 
   /// Download video
-  Future<ApiResponse<Map<String, dynamic>>> downloadVideo(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> downloadVideo(String id) async {
     return _get<Map<String, dynamic>>('/video/$id/download');
   }
 
@@ -803,7 +803,7 @@ class ApiService {
   }
 
   /// Get agent by ID
-  Future<ApiResponse<Map<String, dynamic>>> getAgent(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgent(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id');
   }
 
@@ -813,52 +813,52 @@ class ApiService {
   }
 
   /// Update agent
-  Future<ApiResponse<Map<String, dynamic>>> updateAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updateAgent(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/agents/$id', data: data);
   }
 
   /// Delete agent
-  Future<ApiResponse<Map<String, dynamic>>> deleteAgent(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteAgent(String id) async {
     return _delete<Map<String, dynamic>>('/agents/$id');
   }
 
   /// Duplicate agent
-  Future<ApiResponse<Map<String, dynamic>>> duplicateAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> duplicateAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/duplicate', data: data);
   }
 
   /// Publish agent to store
-  Future<ApiResponse<Map<String, dynamic>>> publishAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> publishAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/publish', data: data);
   }
 
   /// Unpublish agent
-  Future<ApiResponse<Map<String, dynamic>>> unpublishAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> unpublishAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/unpublish', data: data);
   }
 
   /// Rate agent
-  Future<ApiResponse<Map<String, dynamic>>> rateAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> rateAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/rate', data: data);
   }
 
   /// Review agent
-  Future<ApiResponse<Map<String, dynamic>>> reviewAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> reviewAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/review', data: data);
   }
 
   /// Get agent reviews
-  Future<ApiResponse<Map<String, dynamic>>> getAgentReviews(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgentReviews(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id/reviews');
   }
 
   /// Install agent
-  Future<ApiResponse<Map<String, dynamic>>> installAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> installAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/install', data: data);
   }
 
   /// Uninstall agent
-  Future<ApiResponse<Map<String, dynamic>>> uninstallAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> uninstallAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/uninstall', data: data);
   }
 
@@ -893,62 +893,62 @@ class ApiService {
   }
 
   /// Chat with agent
-  Future<ApiResponse<Map<String, dynamic>>> chatWithAgent(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> chatWithAgent(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/chat', data: data);
   }
 
   /// Get agent configuration
-  Future<ApiResponse<Map<String, dynamic>>> getAgentConfig(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgentConfig(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id/config');
   }
 
   /// Update agent configuration
-  Future<ApiResponse<Map<String, dynamic>>> updateAgentConfig(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updateAgentConfig(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/agents/$id/config', data: data);
   }
 
   /// Get agent skills
-  Future<ApiResponse<Map<String, dynamic>>> getAgentSkills(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgentSkills(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id/skills');
   }
 
   /// Add skill to agent
-  Future<ApiResponse<Map<String, dynamic>>> addAgentSkill(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> addAgentSkill(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/skills', data: data);
   }
 
   /// Remove skill
-  Future<ApiResponse<Map<String, dynamic>>> removeAgentSkill(required String id, required String skillId) async {
+  Future<ApiResponse<Map<String, dynamic>>> removeAgentSkill(String id, String skillId) async {
     return _delete<Map<String, dynamic>>('/agents/$id/skills/$skillId');
   }
 
   /// Get agent tools
-  Future<ApiResponse<Map<String, dynamic>>> getAgentTools(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgentTools(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id/tools');
   }
 
   /// Add tool to agent
-  Future<ApiResponse<Map<String, dynamic>>> addAgentTool(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> addAgentTool(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/tools', data: data);
   }
 
   /// Remove tool
-  Future<ApiResponse<Map<String, dynamic>>> removeAgentTool(required String id, required String toolId) async {
+  Future<ApiResponse<Map<String, dynamic>>> removeAgentTool(String id, String toolId) async {
     return _delete<Map<String, dynamic>>('/agents/$id/tools/$toolId');
   }
 
   /// Get agent knowledge base
-  Future<ApiResponse<Map<String, dynamic>>> getAgentKnowledge(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAgentKnowledge(String id) async {
     return _get<Map<String, dynamic>>('/agents/$id/knowledge');
   }
 
   /// Upload knowledge document
-  Future<ApiResponse<Map<String, dynamic>>> uploadKnowledge(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> uploadKnowledge(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/agents/$id/knowledge', data: data);
   }
 
   /// Delete knowledge
-  Future<ApiResponse<Map<String, dynamic>>> deleteKnowledge(required String id, required String docId) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteKnowledge(String id, String docId) async {
     return _delete<Map<String, dynamic>>('/agents/$id/knowledge/$docId');
   }
 
@@ -963,7 +963,7 @@ class ApiService {
   }
 
   /// Get post by ID
-  Future<ApiResponse<Map<String, dynamic>>> getPost(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getPost(String id) async {
     return _get<Map<String, dynamic>>('/community/posts/$id');
   }
 
@@ -973,67 +973,67 @@ class ApiService {
   }
 
   /// Update post
-  Future<ApiResponse<Map<String, dynamic>>> updatePost(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updatePost(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/community/posts/$id', data: data);
   }
 
   /// Delete post
-  Future<ApiResponse<Map<String, dynamic>>> deletePost(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deletePost(String id) async {
     return _delete<Map<String, dynamic>>('/community/posts/$id');
   }
 
   /// Like post
-  Future<ApiResponse<Map<String, dynamic>>> likePost(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> likePost(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/posts/$id/like', data: data);
   }
 
   /// Unlike post
-  Future<ApiResponse<Map<String, dynamic>>> unlikePost(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unlikePost(String id) async {
     return _delete<Map<String, dynamic>>('/community/posts/$id/like');
   }
 
   /// Share post
-  Future<ApiResponse<Map<String, dynamic>>> sharePost(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> sharePost(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/posts/$id/share', data: data);
   }
 
   /// Bookmark post
-  Future<ApiResponse<Map<String, dynamic>>> bookmarkPost(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> bookmarkPost(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/posts/$id/bookmark', data: data);
   }
 
   /// Remove bookmark
-  Future<ApiResponse<Map<String, dynamic>>> unbookmarkPost(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unbookmarkPost(String id) async {
     return _delete<Map<String, dynamic>>('/community/posts/$id/bookmark');
   }
 
   /// Report post
-  Future<ApiResponse<Map<String, dynamic>>> reportPost(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> reportPost(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/posts/$id/report', data: data);
   }
 
   /// Get post comments
-  Future<ApiResponse<Map<String, dynamic>>> getComments(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getComments(String id) async {
     return _get<Map<String, dynamic>>('/community/posts/$id/comments');
   }
 
   /// Add comment
-  Future<ApiResponse<Map<String, dynamic>>> addComment(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> addComment(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/posts/$id/comments', data: data);
   }
 
   /// Reply to comment
-  Future<ApiResponse<Map<String, dynamic>>> replyComment(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> replyComment(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/comments/$id/reply', data: data);
   }
 
   /// Like comment
-  Future<ApiResponse<Map<String, dynamic>>> likeComment(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> likeComment(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/comments/$id/like', data: data);
   }
 
   /// Delete comment
-  Future<ApiResponse<Map<String, dynamic>>> deleteComment(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteComment(String id) async {
     return _delete<Map<String, dynamic>>('/community/comments/$id');
   }
 
@@ -1043,17 +1043,17 @@ class ApiService {
   }
 
   /// Get topic by ID
-  Future<ApiResponse<Map<String, dynamic>>> getTopic(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getTopic(String id) async {
     return _get<Map<String, dynamic>>('/community/topics/$id');
   }
 
   /// Follow topic
-  Future<ApiResponse<Map<String, dynamic>>> followTopic(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> followTopic(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/topics/$id/follow', data: data);
   }
 
   /// Unfollow topic
-  Future<ApiResponse<Map<String, dynamic>>> unfollowTopic(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unfollowTopic(String id) async {
     return _delete<Map<String, dynamic>>('/community/topics/$id/follow');
   }
 
@@ -1068,37 +1068,37 @@ class ApiService {
   }
 
   /// Get user profile
-  Future<ApiResponse<Map<String, dynamic>>> getUserProfile(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getUserProfile(String id) async {
     return _get<Map<String, dynamic>>('/community/users/$id');
   }
 
   /// Follow user
-  Future<ApiResponse<Map<String, dynamic>>> followUser(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> followUser(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/users/$id/follow', data: data);
   }
 
   /// Unfollow user
-  Future<ApiResponse<Map<String, dynamic>>> unfollowUser(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unfollowUser(String id) async {
     return _delete<Map<String, dynamic>>('/community/users/$id/follow');
   }
 
   /// Get followers
-  Future<ApiResponse<Map<String, dynamic>>> getFollowers(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getFollowers(String id) async {
     return _get<Map<String, dynamic>>('/community/users/$id/followers');
   }
 
   /// Get following
-  Future<ApiResponse<Map<String, dynamic>>> getFollowing(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getFollowing(String id) async {
     return _get<Map<String, dynamic>>('/community/users/$id/following');
   }
 
   /// Block user
-  Future<ApiResponse<Map<String, dynamic>>> blockUser(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> blockUser(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/community/users/$id/block', data: data);
   }
 
   /// Unblock user
-  Future<ApiResponse<Map<String, dynamic>>> unblockUser(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unblockUser(String id) async {
     return _delete<Map<String, dynamic>>('/community/users/$id/block');
   }
 
@@ -1178,7 +1178,7 @@ class ApiService {
   }
 
   /// Redeem reward
-  Future<ApiResponse<Map<String, dynamic>>> redeemReward(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> redeemReward(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/points/rewards/$id/redeem', data: data);
   }
 
@@ -1193,7 +1193,7 @@ class ApiService {
   }
 
   /// Complete task
-  Future<ApiResponse<Map<String, dynamic>>> completeTask(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> completeTask(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/points/tasks/$id/complete', data: data);
   }
 
@@ -1203,7 +1203,7 @@ class ApiService {
   }
 
   /// Unlock achievement
-  Future<ApiResponse<Map<String, dynamic>>> unlockAchievement(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> unlockAchievement(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/points/achievements/$id/unlock', data: data);
   }
 
@@ -1233,7 +1233,7 @@ class ApiService {
   }
 
   /// Get song by ID
-  Future<ApiResponse<Map<String, dynamic>>> getSong(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getSong(String id) async {
     return _get<Map<String, dynamic>>('/music/songs/$id');
   }
 
@@ -1248,7 +1248,7 @@ class ApiService {
   }
 
   /// Get playlist
-  Future<ApiResponse<Map<String, dynamic>>> getPlaylist(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getPlaylist(String id) async {
     return _get<Map<String, dynamic>>('/music/playlists/$id');
   }
 
@@ -1258,22 +1258,22 @@ class ApiService {
   }
 
   /// Update playlist
-  Future<ApiResponse<Map<String, dynamic>>> updatePlaylist(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updatePlaylist(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/music/playlists/$id', data: data);
   }
 
   /// Delete playlist
-  Future<ApiResponse<Map<String, dynamic>>> deletePlaylist(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deletePlaylist(String id) async {
     return _delete<Map<String, dynamic>>('/music/playlists/$id');
   }
 
   /// Add song to playlist
-  Future<ApiResponse<Map<String, dynamic>>> addSongToPlaylist(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> addSongToPlaylist(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/music/playlists/$id/songs', data: data);
   }
 
   /// Remove song
-  Future<ApiResponse<Map<String, dynamic>>> removeSongFromPlaylist(required String id, required String songId) async {
+  Future<ApiResponse<Map<String, dynamic>>> removeSongFromPlaylist(String id, String songId) async {
     return _delete<Map<String, dynamic>>('/music/playlists/$id/songs/$songId');
   }
 
@@ -1283,7 +1283,7 @@ class ApiService {
   }
 
   /// Get album
-  Future<ApiResponse<Map<String, dynamic>>> getAlbum(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getAlbum(String id) async {
     return _get<Map<String, dynamic>>('/music/albums/$id');
   }
 
@@ -1293,22 +1293,22 @@ class ApiService {
   }
 
   /// Get artist
-  Future<ApiResponse<Map<String, dynamic>>> getArtist(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getArtist(String id) async {
     return _get<Map<String, dynamic>>('/music/artists/$id');
   }
 
   /// Get song lyrics
-  Future<ApiResponse<Map<String, dynamic>>> getLyrics(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> getLyrics(String id) async {
     return _get<Map<String, dynamic>>('/music/songs/$id/lyrics');
   }
 
   /// Like song
-  Future<ApiResponse<Map<String, dynamic>>> likeSong(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> likeSong(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/music/songs/$id/like', data: data);
   }
 
   /// Unlike song
-  Future<ApiResponse<Map<String, dynamic>>> unlikeSong(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> unlikeSong(String id) async {
     return _delete<Map<String, dynamic>>('/music/songs/$id/like');
   }
 
@@ -1358,7 +1358,7 @@ class ApiService {
   }
 
   /// Report song play
-  Future<ApiResponse<Map<String, dynamic>>> reportPlay(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> reportPlay(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/music/songs/$id/play', data: data);
   }
 
@@ -1528,7 +1528,7 @@ class ApiService {
   }
 
   /// Disconnect account
-  Future<ApiResponse<Map<String, dynamic>>> disconnectAccount(required String provider, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> disconnectAccount(String provider, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/settings/connected-accounts/$provider/disconnect', data: data);
   }
 
@@ -1543,7 +1543,7 @@ class ApiService {
   }
 
   /// Revoke API key
-  Future<ApiResponse<Map<String, dynamic>>> revokeApiKey(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> revokeApiKey(String id) async {
     return _delete<Map<String, dynamic>>('/settings/api-keys/$id');
   }
 
@@ -1558,17 +1558,17 @@ class ApiService {
   }
 
   /// Update webhook
-  Future<ApiResponse<Map<String, dynamic>>> updateWebhook(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> updateWebhook(String id, Map<String, dynamic>? data) async {
     return _put<Map<String, dynamic>>('/settings/webhooks/$id', data: data);
   }
 
   /// Delete webhook
-  Future<ApiResponse<Map<String, dynamic>>> deleteWebhook(required String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> deleteWebhook(String id) async {
     return _delete<Map<String, dynamic>>('/settings/webhooks/$id');
   }
 
   /// Test webhook
-  Future<ApiResponse<Map<String, dynamic>>> testWebhook(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> testWebhook(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/settings/webhooks/$id/test', data: data);
   }
 
@@ -1588,7 +1588,7 @@ class ApiService {
   }
 
   /// Revoke session
-  Future<ApiResponse<Map<String, dynamic>>> revokeSession(required String id, Map<String, dynamic>? data) async {
+  Future<ApiResponse<Map<String, dynamic>>> revokeSession(String id, Map<String, dynamic>? data) async {
     return _post<Map<String, dynamic>>('/settings/sessions/$id/revoke', data: data);
   }
 
