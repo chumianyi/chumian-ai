@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import 'chat_page.dart';
 import 'creative_page.dart';
 import 'explore_page.dart';
-import 'model_store_page.dart';
 import 'activity_page.dart';
 import 'profile_page.dart';
+import 'model_store_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,9 +14,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with TickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+  late AnimationController _navCtrl;
 
   final List<Widget> _pages = const [
     ChatPage(),
@@ -28,178 +27,102 @@ class _HomePageState extends State<HomePage>
     ProfilePage(),
   ];
 
-  final List<_NavItem> _navItems = [
-    _NavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '对话'),
-    _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '创作'),
-    _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: '发现'),
-    _NavItem(icon: Icons.store_outlined, activeIcon: Icons.store, label: '模型商店'),
-    _NavItem(icon: Icons.local_activity_outlined, activeIcon: Icons.local_activity, label: '活动'),
-    _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
+  final List<IconData> _icons = [
+    Icons.chat_bubble_outline,
+    Icons.auto_awesome,
+    Icons.explore_outlined,
+    Icons.store_outlined,
+    Icons.sports_esports_outlined,
+    Icons.person_outline,
   ];
 
-  void _onNavTap(int index) {
+  final List<String> _labels = ['对话', '创作', '发现', '模型商店', '活动', '我的'];
+
+  @override
+  void initState() {
+    super.initState();
+    _navCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _navCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _navCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onTabTapped(int index) {
     if (index == _currentIndex) return;
     setState(() => _currentIndex = index);
+    _navCtrl.reset();
+    _navCtrl.forward();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.pink50,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 500),
-        transitionBuilder: (child, animation) {
-          // Scale from 0.2 to 1.0 with elasticOut curve
-          final scaleAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: Curves.elasticOut,
-            ),
-          );
-          final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-            ),
-          );
-          return FadeTransition(
-            opacity: fadeAnimation,
-            child: ScaleTransition(
-              scale: scaleAnimation,
-              child: child,
-            ),
-          );
-        },
-        child: KeyedSubtree(
-          key: ValueKey<int>(_currentIndex),
-          child: _pages[_currentIndex],
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          transitionBuilder: (child, anim) {
+            final scaleAnim = Tween<double>(begin: 0.2, end: 1.0).animate(
+              CurvedAnimation(parent: anim, curve: Curves.elasticOut),
+            );
+            final fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(parent: anim, curve: const Interval(0.0, 0.5)),
+            );
+            return FadeTransition(
+              opacity: fadeAnim,
+              child: ScaleTransition(scale: scaleAnim, child: child),
+            );
+          },
+          child: KeyedSubtree(key: ValueKey<int>(_currentIndex), child: _pages[_currentIndex]),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.pink200.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(_navItems.length, (index) {
-              final item = _navItems[index];
-              final isSelected = index == _currentIndex;
-              return _NavButton(
-                item: item,
-                isSelected: isSelected,
-                onTap: () => _onNavTap(index),
-              );
-            }),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.12), blurRadius: 20, offset: const Offset(0, -4))],
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(_icons.length, (i) => _buildNavItem(i)),
+            ),
           ),
         ),
       ),
     );
   }
-}
 
-class _NavItem {
-  final IconData icon;
-  final IconData activeIcon;
-  final String label;
-  const _NavItem({required this.icon, required this.activeIcon, required this.label});
-}
-
-class _NavButton extends StatefulWidget {
-  final _NavItem item;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _NavButton({
-    required this.item,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  State<_NavButton> createState() => _NavButtonState();
-}
-
-class _NavButtonState extends State<_NavButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _bounceController;
-  late Animation<double> _bounceAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-    _bounceAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.3), weight: 40),
-      TweenSequenceItem(tween: Tween(begin: 1.3, end: 0.95), weight: 30),
-      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 30),
-    ]).animate(CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut));
-  }
-
-  @override
-  void didUpdateWidget(_NavButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isSelected && !oldWidget.isSelected) {
-      _bounceController.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _bounceController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildNavItem(int index) {
+    final isSelected = _currentIndex == index;
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: () => _onTabTapped(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.symmetric(horizontal: isSelected ? 16 : 10, vertical: 8),
         decoration: BoxDecoration(
-          color: widget.isSelected ? AppColors.pink100 : Colors.transparent,
+          color: isSelected ? AppColors.primary.withOpacity(0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ScaleTransition(
-              scale: widget.isSelected ? _bounceAnimation : const AlwaysStoppedAnimation(1.0),
-              child: Icon(
-                widget.isSelected ? widget.item.activeIcon : widget.item.icon,
-                color: widget.isSelected ? AppColors.pink500 : AppColors.pink300,
-                size: 26,
-              ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedDefaultTextStyle(
+            AnimatedScale(
+              scale: isSelected ? 1.2 : 1.0,
               duration: const Duration(milliseconds: 300),
-              style: AppTextStyles.caption.copyWith(
-                color: widget.isSelected ? AppColors.pink500 : AppColors.pink300,
-                fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
-              child: Text(widget.item.label),
+              curve: Curves.elasticOut,
+              child: Icon(_icons[index], color: isSelected ? AppColors.primary : AppColors.textTertiary, size: 24),
             ),
+            const SizedBox(height: 2),
+            Text(_labels[index], style: TextStyle(fontSize: 11, color: isSelected ? AppColors.primary : AppColors.textTertiary, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal, fontFamily: 'LXGW WenKai')),
           ],
         ),
       ),

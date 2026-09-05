@@ -1,7 +1,7 @@
 name: chumian_ai
 description: "初眠AI - 智能AI助手"
 publish_to: 'none'
-version: 4.0.0+5
+version: 4.2.0+6
 
 environment:
   sdk: ^3.5.0
@@ -54,6 +54,7 @@ flutter:
     - assets/icon/
     - assets/fonts/
     - assets/images/
+    - assets/audio/
   fonts:
     - family: LXGW WenKai
       fonts:

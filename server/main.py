@@ -214,6 +214,16 @@ async def init_db():
             created_at TEXT,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
+        CREATE TABLE IF NOT EXISTS mails (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            sender TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
+            created_at TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
         CREATE TABLE IF NOT EXISTS points_log (
             id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,
@@ -475,16 +485,7 @@ async def auth_middleware(request: Request, call_next):
         ban_until = user["ban_until"]
         if ban_until and datetime.fromisoformat(ban_until) > datetime.now():
             return JSONResponse(status_code=403, content={"error": "账号已被封禁至 %s" % ban_until, "ban_until": ban_until})
-    # GitHub binding check: unbound users can only access binding-related endpoints
-    if not user.get("github_id"):
-        unbound_allowed = ["/api/auth/github", "/api/auth/logout", "/api/user/info"]
-        allowed = False
-        for p in unbound_allowed:
-            if path.startswith(p):
-                allowed = True
-                break
-        if not allowed:
-            return JSONResponse(status_code=403, content={"error": "您的账号未绑定 GitHub，拒绝访问", "need_github_bind": True})
+    # GitHub binding check removed - all authenticated users can access all APIs
     await reset_daily_points(user["id"])
     request.state.user = user
     return await call_next(request)
@@ -517,6 +518,27 @@ async def register(req: RegisterRequest):
     await db.execute(
         "INSERT INTO users (id, email, password_hash, nickname, token, last_reset, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (user_id, req.username, hash_password(req.password), req.nickname, token, datetime.now().strftime("%Y-%m-%d"), now)
+    )
+    await db.commit()
+    # Send welcome email
+    welcome_id = str(uuid.uuid4())
+    welcome_content = (
+        "亲爱的" + req.nickname + "：\n\n"
+        "欢迎加入初眠AI大家庭！🎉\n\n"
+        "初眠AI是一款集成了GLM、Kimi等多模型对话、AI创作、联网搜索、智能体社区等功能的智能助手应用。\n\n"
+        "【新手指南】\n"
+        "1. 在对话页面选择喜欢的模型开始聊天\n"
+        "2. 在创作页面体验图片/视频生成\n"
+        "3. 在发现页面浏览社区精选内容\n"
+        "4. 在活动页面每日签到领取积分\n"
+        "5. 在模型商店下载本地模型体验端侧推理\n\n"
+        "如有任何问题或建议，欢迎联系我们：3835347820@qq.com\n\n"
+        "祝你使用愉快！\n\n"
+        "—— 初眠AI团队"
+    )
+    await db.execute(
+        "INSERT INTO mails (id, user_id, sender, title, content, is_read, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)",
+        (welcome_id, user_id, "初眠AI官方", "欢迎加入初眠AI！", welcome_content, now)
     )
     await db.commit()
     await db.close()
@@ -2001,3 +2023,66 @@ async def get_local_models():
         "total": len(sorted_models),
         "recommended": [m for m in sorted_models if m["recommended"]],
     }
+
+
+# ==================== Mail System ====================
+
+@app.get("/api/mails")
+async def get_mails(request: Request):
+    """获取用户邮件列表"""
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute(
+        "SELECT id, sender, title, is_read, created_at FROM mails WHERE user_id = ? ORDER BY created_at DESC",
+        (user["id"],),
+    )
+    rows = await cursor.fetchall()
+    await db.close()
+    mails = [dict(r) for r in rows]
+    unread = sum(1 for m in mails if m["is_read"] == 0)
+    return {"success": True, "data": mails, "total": len(mails), "unread": unread}
+
+
+@app.get("/api/mails/{mail_id}")
+async def get_mail_detail(mail_id: str, request: Request):
+    """获取邮件详情并标记已读"""
+    user = request.state.user
+    db = await get_db()
+    cursor = await db.execute(
+        "SELECT * FROM mails WHERE id = ? AND user_id = ?",
+        (mail_id, user["id"]),
+    )
+    row = await cursor.fetchone()
+    if not row:
+        await db.close()
+        raise HTTPException(status_code=404, detail="邮件不存在")
+    # Mark as read
+    await db.execute("UPDATE mails SET is_read = 1 WHERE id = ?", (mail_id,))
+    await db.commit()
+    await db.close()
+    return {"success": True, "data": dict(row)}
+
+
+@app.post("/api/mails/{mail_id}/read")
+async def mark_mail_read(mail_id: str, request: Request):
+    """标记邮件已读"""
+    user = request.state.user
+    db = await get_db()
+    await db.execute(
+        "UPDATE mails SET is_read = 1 WHERE id = ? AND user_id = ?",
+        (mail_id, user["id"]),
+    )
+    await db.commit()
+    await db.close()
+    return {"success": True}
+
+
+@app.post("/api/mails/read-all")
+async def mark_all_mails_read(request: Request):
+    """标记所有邮件已读"""
+    user = request.state.user
+    db = await get_db()
+    await db.execute("UPDATE mails SET is_read = 1 WHERE user_id = ?", (user["id"],))
+    await db.commit()
+    await db.close()
+    return {"success": True}

@@ -1,222 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
+import '../providers/user_provider.dart';
+import 'mail_page.dart';
 import 'privacy_policy_page.dart';
 import 'user_agreement_page.dart';
+import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
     return Scaffold(
-      backgroundColor: AppColors.pink50,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text('我的', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink600)),
-        actions: [
-          IconButton(icon: const Icon(Icons.settings, color: AppColors.pink400), onPressed: () {}),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _ProfileHeader(),
-          const SizedBox(height: 20),
-          _PointsCard(),
-          const SizedBox(height: 20),
-          _MenuSection(
-            items: [
-              _MenuItem(icon: Icons.account_circle, title: '账号管理', subtitle: 'GitHub绑定、个人信息', onTap: () {}),
-              _MenuItem(icon: Icons.history, title: '历史记录', subtitle: '查看对话和创作历史', onTap: () {}),
-              _MenuItem(icon: Icons.favorite_border, title: '我的收藏', subtitle: '收藏的内容和智能体', onTap: () {}),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _MenuSection(
-            items: [
-              _MenuItem(icon: Icons.palette, title: '主题设置', subtitle: '粉色主题、深浅模式', onTap: () {}),
-              _MenuItem(icon: Icons.font_download, title: '字体设置', subtitle: '霞鹜文楷', onTap: () {}),
-              _MenuItem(icon: Icons.volume_up, title: '语音朗读', subtitle: 'TTS设置', onTap: () {}),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _MenuSection(
-            items: [
-              _MenuItem(icon: Icons.privacy_tip_outlined, title: '隐私声明', subtitle: '查看隐私政策', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyPage()))),
-              _MenuItem(icon: Icons.description_outlined, title: '用户协议', subtitle: '查看服务条款', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UserAgreementPage()))),
-              _MenuItem(icon: Icons.info_outline, title: '关于初眠AI', subtitle: '版本 4.0.0', onTap: () {}),
-              _MenuItem(icon: Icons.system_update, title: '检查更新', subtitle: '检测最新版本', onTap: () {}),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Center(
-            child: Text('初眠AI v4.0.0', style: AppTextStyles.caption.copyWith(color: AppColors.pink300)),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, title: const Text('我的', style: TextStyle(color: AppColors.primaryDeep, fontWeight: FontWeight.bold, fontFamily: 'LXGW WenKai'))),
+      body: SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(children: [
+        _buildProfileHeader(context, user),
+        const SizedBox(height: 20),
+        _buildMenuGroup([
+          _menuItem(Icons.mail_outline, '我的信件', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MailPage()))),
+          _menuItem(Icons.history, '对话历史', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('对话历史开发中')))),
+          _menuItem(Icons.favorite_border, '我的收藏', () {}),
+          _menuItem(Icons.download_outlined, '下载管理', () {}),
+        ]),
+        const SizedBox(height: 12),
+        _buildMenuGroup([
+          _menuItem(Icons.privacy_tip_outlined, '隐私声明', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyPage()))),
+          _menuItem(Icons.description_outlined, '用户协议', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UserAgreementPage()))),
+          _menuItem(Icons.feedback_outlined, '意见反馈', () {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('反馈邮箱：3835347820@qq.com（已复制）')));
+          }),
+          _menuItem(Icons.info_outline, '关于初眠AI', () {
+            showAboutDialog(context: context, applicationName: '初眠AI', applicationVersion: '4.1.0', children: [const Text('反馈邮箱：3835347820@qq.com', style: TextStyle(fontFamily: 'LXGW WenKai'))]);
+          }),
+        ]),
+        const SizedBox(height: 24),
+        GestureDetector(
+          onTap: () async {
+            await context.read<UserProvider>().logout();
+            if (context.mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
+          },
+          child: Container(padding: const EdgeInsets.symmetric(vertical: 16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.06), blurRadius: 8)]), child: const Center(child: Text('退出登录', style: TextStyle(color: AppColors.error, fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'LXGW WenKai')))),
+        ),
+        const SizedBox(height: 16),
+        const Text('反馈邮箱：3835347820@qq.com', style: TextStyle(fontSize: 12, color: AppColors.textTertiary, fontFamily: 'LXGW WenKai')),
+      ])),
     );
   }
-}
 
-class _ProfileHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildProfileHeader(BuildContext context, user) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: AppColors.pink300.withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 4))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(Icons.person, color: AppColors.pink400, size: 36),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('初眠用户', style: AppTextStyles.headingSmall.copyWith(color: Colors.white)),
-                const SizedBox(height: 4),
-                Text('ID: 10086', style: AppTextStyles.bodySmall.copyWith(color: Colors.white.withOpacity(0.8))),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.25), borderRadius: BorderRadius.circular(12)),
-                  child: Text('VIP会员', style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
-                ),
-              ],
-            ),
-          ),
-          IconButton(icon: const Icon(Icons.edit, color: Colors.white), onPressed: () {}),
-        ],
-      ),
+      decoration: BoxDecoration(gradient: AppColors.primaryVibrantGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 8))]),
+      child: Row(children: [
+        CircleAvatar(radius: 32, backgroundColor: Colors.white.withOpacity(0.3), child: Text(user?.nickname?.substring(0, 1) ?? 'U', style: const TextStyle(fontSize: 28, color: Colors.white, fontFamily: 'LXGW WenKai'))),
+        const SizedBox(width: 16),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(user?.nickname ?? '未登录', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'LXGW WenKai')),
+          const SizedBox(height: 4),
+          Text(user?.email ?? '', style: const TextStyle(fontSize: 13, color: Colors.white70, fontFamily: 'LXGW WenKai')),
+        ])),
+        const Icon(Icons.chevron_right, color: Colors.white70),
+      ]),
     );
   }
-}
 
-class _PointsCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.5), blurRadius: 8)],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _PointsItem(label: '积分', value: '2,580'),
-          _PointsDivider(),
-          _PointsItem(label: '对话次数', value: '128'),
-          _PointsDivider(),
-          _PointsItem(label: '创作数', value: '36'),
-        ],
-      ),
-    );
+  Widget _buildMenuGroup(List<Widget> items) {
+    return Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.06), blurRadius: 8)]), child: Column(children: items));
   }
-}
 
-class _PointsItem extends StatelessWidget {
-  final String label;
-  final String value;
-  const _PointsItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(value, style: AppTextStyles.headingSmall.copyWith(color: AppColors.pink500)),
-        const SizedBox(height: 4),
-        Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
-      ],
-    );
-  }
-}
-
-class _PointsDivider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Container(width: 1, height: 32, color: AppColors.pink100);
-}
-
-class _MenuSection extends StatelessWidget {
-  final List<_MenuItem> items;
-  const _MenuSection({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.4), blurRadius: 6)],
-      ),
-      child: Column(
-        children: items.asMap().entries.map((e) {
-          final isLast = e.key == items.length - 1;
-          return Column(
-            children: [
-              e.value,
-              if (!isLast) Padding(padding: const EdgeInsets.only(left: 56), child: Divider(height: 1, color: AppColors.pink50)),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class _MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _MenuItem({required this.icon, required this.title, required this.subtitle, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _menuItem(IconData icon, String label, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(color: AppColors.pink100, borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: AppColors.pink500, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: AppColors.pink300, size: 20),
-          ],
-        ),
-      ),
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14), child: Row(children: [
+        Icon(icon, color: AppColors.primary, size: 22),
+        const SizedBox(width: 14),
+        Expanded(child: Text(label, style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontFamily: 'LXGW WenKai'))),
+        const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
+      ])),
     );
   }
 }

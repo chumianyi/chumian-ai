@@ -1,34 +1,78 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_model.dart';
+import '../services/api_service.dart';
 
 class UserProvider extends ChangeNotifier {
-  bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
+  UserModel? _user;
+  bool _isLoading = false;
+  String? _error;
 
-  String? _username;
-  String? get username => _username;
+  UserModel? get user => _user;
+  bool get isLoggedIn => _user != null;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
 
-  String? _avatar;
-  String? get avatar => _avatar;
-
-  int _points = 0;
-  int get points => _points;
-
-  void login(String name) {
-    _isLoggedIn = true;
-    _username = name;
+  Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null && token.isNotEmpty) {
+      ApiService().setToken(token);
+      try {
+        _user = await ApiService().getUserInfo();
+      } catch (_) {
+        _user = null;
+        await prefs.remove('token');
+      }
+    }
     notifyListeners();
   }
 
-  void logout() {
-    _isLoggedIn = false;
-    _username = null;
-    _avatar = null;
-    _points = 0;
+  Future<bool> login(String username, String password) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _user = await ApiService().login(username, password);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> register(String username, String password, String nickname, String code) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _user = await ApiService().register(username, password, nickname, code);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    await ApiService().logout();
+    _user = null;
     notifyListeners();
   }
 
-  void addPoints(int amount) {
-    _points += amount;
-    notifyListeners();
+  Future<void> refreshUser() async {
+    if (_user == null) return;
+    try {
+      _user = await ApiService().getUserInfo();
+      notifyListeners();
+    } catch (_) {}
   }
 }

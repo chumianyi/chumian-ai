@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../providers/model_store_provider.dart';
-import '../models/local_model.dart';
+import '../providers/chat_provider.dart';
+import '../providers/user_provider.dart';
+import '../services/api_service.dart';
+import '../models/chat_message.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -12,525 +14,210 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
-  bool _isTyping = false;
-  String _selectedModel = 'GLM-4';
-
-  final List<String> _models = ['GLM-4', 'GLM-4-Flash', 'Kimi', 'Kimi-Long'];
-  final List<String> _suggestions = [
-    '帮我写一首诗',
-    '解释量子力学',
-    '翻译这段文字',
-    '生成Python代码',
-  ];
+class _ChatPageState extends State<ChatPage> {
+  final _inputCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
+  List<String> _models = ['glm-4-flash', 'glm-4.7-flash', 'glm-z1-flash', 'kimi-k2.5', 'kimi-k2.6'];
+  bool _loadingModels = true;
 
   @override
-  void dispose() {
-    _messageController.dispose();
-    _scrollController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadModels();
   }
 
-  void _sendMessage(String text) {
-    if (text.trim().isEmpty) return;
-    setState(() {
-      _messages.add(ChatMessage(
-        text: text,
-        isUser: true,
-        time: DateTime.now(),
-      ));
-      _isTyping = true;
-    });
-    _messageController.clear();
-    _scrollToBottom();
-
-    // Simulate AI typing response
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      setState(() {
-        _isTyping = false;
-        _messages.add(ChatMessage(
-          text: '你好！我是初眠AI，很高兴为你服务。这是一个演示回复，展示了对话界面的效果。',
-          isUser: false,
-          time: DateTime.now(),
-        ));
-      });
-      _scrollToBottom();
-    });
+  Future<void> _loadModels() async {
+    try {
+      final models = await ApiService().getModels();
+      if (models.isNotEmpty) {
+        setState(() => _models = models.map((e) => e.id).toList());
+      }
+    } catch (_) {}
+    setState(() => _loadingModels = false);
   }
 
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollCtrl.hasClients) {
+        _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final chatProvider = context.watch<ChatProvider>();
+    final userProvider = context.watch<UserProvider>();
     return Scaffold(
-      backgroundColor: AppColors.pink50,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.nightlight_round, color: Colors.white, size: 20),
-            ),
-            const SizedBox(width: 10),
-            Text('初眠AI', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink600)),
-          ],
-        ),
+        title: const Text('初眠对话', style: TextStyle(color: AppColors.primaryDeep, fontWeight: FontWeight.bold, fontFamily: 'LXGW WenKai')),
         actions: [
-          _buildModelSelector(),
-          IconButton(
-            icon: const Icon(Icons.history, color: AppColors.pink400),
-            onPressed: () {},
-          ),
+          _buildModelSelector(chatProvider),
+          IconButton(icon: const Icon(Icons.delete_outline, color: AppColors.textSecondary), onPressed: () => chatProvider.clearChat()),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: _messages.isEmpty ? _buildEmptyState() : _buildMessageList(),
+            child: chatProvider.messages.isEmpty
+                ? _buildEmptyState(userProvider)
+                : ListView.builder(
+                    controller: _scrollCtrl,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: chatProvider.messages.length,
+                    itemBuilder: (_, i) => _buildMessageBubble(chatProvider.messages[i]),
+                  ),
           ),
-          _buildInputArea(),
+          _buildInputBar(chatProvider),
         ],
       ),
     );
   }
 
-  Widget _buildModelSelector() {
-    return GestureDetector(
-      onTap: () => _showModelPicker(),
+  Widget _buildModelSelector(ChatProvider chat) {
+    return PopupMenuButton<String>(
+      initialValue: chat.currentModel,
+      onSelected: (v) => chat.setModel(v),
+      itemBuilder: (_) => _models.map((m) => PopupMenuItem(value: m, child: Text(m, style: const TextStyle(fontFamily: 'LXGW WenKai', fontSize: 13)))).toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppColors.pink100,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              _isLocalModel ? Icons.memory : Icons.smart_toy,
-              size: 16,
-              color: _isLocalModel ? Colors.purple : AppColors.pink500,
-            ),
-            const SizedBox(width: 4),
-            Text(_selectedModel, style: AppTextStyles.caption.copyWith(color: AppColors.pink600, fontWeight: FontWeight.w600)),
-            const Icon(Icons.arrow_drop_down, size: 16, color: AppColors.pink400),
-          ],
-        ),
+        decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.smart_toy_outlined, size: 16, color: AppColors.primary),
+          const SizedBox(width: 4),
+          Text(chat.currentModel, style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600, fontFamily: 'LXGW WenKai')),
+        ]),
       ),
     );
   }
 
-  bool get _isLocalModel => _selectedModel.startsWith('本地:');
-
-  void _showModelPicker() {
-    final provider = Provider.of<ModelStoreProvider>(context, listen: false);
-    final localLanguageModels = provider.downloadedModels
-        .where((m) => m.isLanguageModel)
-        .toList();
-    final allLocalModels = provider.languageModels;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40, height: 4,
-                decoration: BoxDecoration(color: AppColors.pink200, borderRadius: BorderRadius.circular(2)),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text('选择模型', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink500)),
-                    const Spacer(),
-                    IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('云端模型', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink400, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              ..._models.map((m) => _buildModelOption(m, false, true)),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text('本地模型', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink400, fontWeight: FontWeight.w600)),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Navigate to model store
-                      },
-                      child: Text('去模型商店', style: TextStyle(color: AppColors.pink500, fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ),
-              ...allLocalModels.map((m) => _buildModelOption(
-                '本地:${m.name}',
-                true,
-                m.isDownloaded,
-                subtitle: m.isDownloaded ? '已下载 · 端侧推理' : '未下载 · 点击前往下载',
-              )),
-              if (allLocalModels.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('暂无本地模型，前往模型商店下载', style: TextStyle(color: Colors.black38)),
-                ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModelOption(String name, bool isLocal, bool enabled, {String? subtitle}) {
-    final isSelected = _selectedModel == name;
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.4,
-      child: ListTile(
-        leading: Icon(
-          isLocal ? Icons.memory : Icons.cloud,
-          color: isLocal ? (enabled ? Colors.purple : Colors.grey) : AppColors.pink500,
-        ),
-        title: Text(
-          name.replaceAll('本地:', ''),
-          style: AppTextStyles.body.copyWith(
-            color: isSelected ? AppColors.pink500 : Colors.black87,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-          ),
-        ),
-        subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.black45)) : null,
-        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.pink500) : (enabled ? null : const Icon(Icons.lock_outline, size: 18, color: Colors.grey)),
-        onTap: enabled
-            ? () {
-                setState(() => _selectedModel = name);
-                Navigator.pop(context);
-                if (isLocal) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('本地模型运行中，可能较慢，请耐心等待', style: AppTextStyles.bodyMedium.copyWith(color: Colors.white)),
-                      backgroundColor: AppColors.pink400,
-                      behavior: SnackBarBehavior.floating,
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-                }
-              }
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(UserProvider user) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [AppColors.pink300, AppColors.pink400]),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [BoxShadow(color: AppColors.pink200.withOpacity(0.5), blurRadius: 20)],
-            ),
-            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 40),
-          ),
-          const SizedBox(height: 20),
-          Text('有什么可以帮你的？', style: AppTextStyles.headingMedium.copyWith(color: AppColors.pink600)),
-          const SizedBox(height: 8),
-          Text('选择一个建议开始对话', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink400)),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: _suggestions.map((s) => _SuggestionChip(text: s, onTap: () => _sendMessage(s))).toList(),
-          ),
-        ],
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(width: 80, height: 80, decoration: BoxDecoration(gradient: AppColors.primaryVibrantGradient, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 20)]), child: const Icon(Icons.nightlight_round, color: Colors.white, size: 40)),
+        const SizedBox(height: 16),
+        Text('你好，${user.user?.nickname ?? '朋友'}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryDeep, fontFamily: 'LXGW WenKai')),
+        const SizedBox(height: 8),
+        const Text('有什么我可以帮你的吗？', style: TextStyle(fontSize: 14, color: AppColors.textSecondary, fontFamily: 'LXGW WenKai')),
+        const SizedBox(height: 24),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          _suggestionChip('写一首关于春天的诗'),
+          _suggestionChip('帮我解释量子力学'),
+          _suggestionChip('推荐一部科幻电影'),
+          _suggestionChip('写一段Python排序代码'),
+        ]),
+      ]),
+    );
+  }
+
+  Widget _suggestionChip(String text) {
+    return GestureDetector(
+      onTap: () { _inputCtrl.text = text; },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.borderLight), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.05), blurRadius: 6)]),
+        child: Text(text, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, fontFamily: 'LXGW WenKai')),
       ),
     );
   }
 
-  Widget _buildMessageList() {
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(16),
-      itemCount: _messages.length + (_isTyping ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == _messages.length && _isTyping) {
-          return _TypingIndicator();
-        }
-        final msg = _messages[index];
-        return _MessageBubble(message: msg);
-      },
-    );
-  }
-
-  Widget _buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, -2))],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline, color: AppColors.pink400, size: 28),
-              onPressed: () {},
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.pink50,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.pink200),
-                ),
-                child: TextField(
-                  controller: _messageController,
-                  decoration: InputDecoration(
-                    hintText: '输入消息...',
-                    hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.pink300),
-                    border: InputBorder.none,
-                  ),
-                  style: AppTextStyles.bodyMedium,
-                  onSubmitted: _sendMessage,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => _sendMessage(_messageController.text),
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
-                  shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: AppColors.pink300.withOpacity(0.4), blurRadius: 8)],
-                ),
-                child: const Icon(Icons.send, color: Colors.white, size: 20),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime time;
-  ChatMessage({required this.text, required this.isUser, required this.time});
-}
-
-class _MessageBubble extends StatelessWidget {
-  final ChatMessage message;
-  const _MessageBubble({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.isUser;
+  Widget _buildMessageBubble(ChatMessage msg) {
+    final isUser = msg.role == 'user';
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isUser) ...[
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.nightlight_round, color: Colors.white, size: 16),
-            ),
-            const SizedBox(width: 8),
-          ],
+          if (!isUser) _buildAvatar(false),
+          if (!isUser) const SizedBox(width: 10),
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isUser ? AppColors.pink400 : Colors.white,
+                color: isUser ? AppColors.primary : Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isUser ? 16 : 4),
-                  bottomRight: Radius.circular(isUser ? 4 : 16),
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
+                  bottomLeft: isUser ? const Radius.circular(18) : Radius.zero,
+                  bottomRight: isUser ? Radius.zero : const Radius.circular(18),
                 ),
-                boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.5), blurRadius: 6)],
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
               ),
-              child: Text(
-                message.text,
-                style: AppTextStyles.bodyMedium.copyWith(color: isUser ? Colors.white : AppColors.textPrimary),
-              ),
+              child: isUser
+                  ? Text(msg.content, style: const TextStyle(color: Colors.white, fontSize: 15, fontFamily: 'LXGW WenKai'))
+                  : msg.isStreaming && msg.content.isEmpty
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                      : MarkdownBody(data: msg.content, styleSheet: MarkdownStyleSheet.fromTheme(ThemeData(textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 15, color: AppColors.textPrimary, fontFamily: 'LXGW WenKai'))))),
             ),
           ),
-          if (isUser) ...[
-            const SizedBox(width: 8),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppColors.pink200,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.person, color: AppColors.pink500, size: 16),
-            ),
-          ],
+          if (isUser) const SizedBox(width: 10),
+          if (isUser) _buildAvatar(true),
         ],
       ),
     );
   }
-}
 
-class _TypingIndicator extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+  Widget _buildAvatar(bool isUser) {
+    return Container(
+      width: 36, height: 36,
+      decoration: BoxDecoration(
+        gradient: isUser ? const LinearGradient(colors: [Color(0xFFB39DDB), Color(0xFF9575CD)]) : AppColors.primaryVibrantGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(isUser ? Icons.person : Icons.nightlight_round, color: Colors.white, size: 20),
+    );
+  }
+
+  Widget _buildInputBar(ChatProvider chat) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+      decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, -2))]),
       child: Row(
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [AppColors.pink400, AppColors.pink500]),
-              borderRadius: BorderRadius.circular(8),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(24)),
+              child: TextField(
+                controller: _inputCtrl,
+                maxLines: null,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => _send(chat),
+                style: const TextStyle(fontFamily: 'LXGW WenKai', fontSize: 15),
+                decoration: const InputDecoration(hintText: '输入消息...', hintStyle: TextStyle(color: AppColors.textHint, fontFamily: 'LXGW WenKai'), border: InputBorder.none, contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
+              ),
             ),
-            child: const Icon(Icons.nightlight_round, color: Colors.white, size: 16),
           ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.5), blurRadius: 6)],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (i) => _TypingDot(delay: i * 150)),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: chat.isStreaming ? null : () => _send(chat),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 46, height: 46,
+              decoration: BoxDecoration(
+                gradient: chat.isStreaming ? null : AppColors.primaryVibrantGradient,
+                color: chat.isStreaming ? AppColors.textHint : null,
+                borderRadius: BorderRadius.circular(23),
+                boxShadow: chat.isStreaming ? null : [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8)],
+              ),
+              child: const Icon(Icons.send, color: Colors.white, size: 22),
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class _TypingDot extends StatefulWidget {
-  final int delay;
-  const _TypingDot({required this.delay});
-
-  @override
-  State<_TypingDot> createState() => _TypingDotState();
-}
-
-class _TypingDotState extends State<_TypingDot> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    Future.delayed(Duration(milliseconds: widget.delay), () {
-      if (mounted) _controller.repeat();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (_, __) {
-        final bounce = (0.5 + 0.5 * (1 - (1 - _controller.value).abs())).clamp(0.0, 1.0);
-        return Transform.translate(
-          offset: Offset(0, -4 * bounce),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2),
-            width: 7,
-            height: 7,
-            decoration: const BoxDecoration(color: AppColors.pink400, shape: BoxShape.circle),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SuggestionChip extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-  const _SuggestionChip({required this.text, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.pink200),
-          boxShadow: [BoxShadow(color: AppColors.pink100.withOpacity(0.3), blurRadius: 4)],
-        ),
-        child: Text(text, style: AppTextStyles.bodySmall.copyWith(color: AppColors.pink500)),
-      ),
-    );
+  void _send(ChatProvider chat) {
+    final text = _inputCtrl.text.trim();
+    if (text.isEmpty) return;
+    _inputCtrl.clear();
+    chat.sendMessage(text);
+    _scrollToBottom();
   }
 }
