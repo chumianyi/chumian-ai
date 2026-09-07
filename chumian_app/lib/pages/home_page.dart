@@ -107,24 +107,22 @@ class _HomePageState extends State<HomePage>
     final isDark = themeProvider.isDark;
     final bgColor = isDark ? MiuixColors.darkBackground : MiuixColors.background;
 
-    return MiuixRipple(
-      child: Scaffold(
-        backgroundColor: bgColor,
-        appBar: _buildAppBar(isDark),
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: const [
-            ChatPage(),
-            CreativePage(),
-            ExplorePage(),
-            ActivityPage(),
-            PointsPage(),
-            ProfilePage(),
-          ],
-        ),
-        bottomNavigationBar: _buildBottomNav(isDark),
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: _buildAppBar(isDark),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          ChatPage(),
+          CreativePage(),
+          ExplorePage(),
+          ActivityPage(),
+          PointsPage(),
+          ProfilePage(),
+        ],
       ),
+      bottomNavigationBar: _buildBottomNav(isDark),
     );
   }
 
