@@ -72,7 +72,7 @@ class MiuixHeroAnimation extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: glowOpacity),
+                color: MiuixColors.primary.withOpacity(glowOpacity),
                 blurRadius: 24 + animation.value * 16,
                 spreadRadius: animation.value * 4,
               ),
@@ -178,7 +178,7 @@ class _MiuixHeroPageState extends State<MiuixHeroPage>
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.white.withOpacity(0.8),
                             borderRadius:
                                 BorderRadius.circular(MiuixRadius.pill),
                             boxShadow: MiuixShadows.xs,
@@ -339,14 +339,14 @@ class _MiuixHeroCardState extends State<MiuixHeroCard>
               colors: [
                 widget.cardColor ?? MiuixColors.primaryLight,
                 (widget.cardColor ?? MiuixColors.primary)
-                    .withValues(alpha: 0.8),
+                    .withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(MiuixRadius.lg),
             boxShadow: [
               BoxShadow(
                 color: (widget.cardColor ?? MiuixColors.primary)
-                    .withValues(alpha: 0.3),
+                    .withOpacity(0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -385,7 +385,7 @@ class _MiuixHeroCardState extends State<MiuixHeroCard>
                         Text(
                           widget.subtitle!,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.85),
+                            color: Colors.white.withOpacity(0.85),
                             fontSize: MiuixFontSize.sm,
                           ),
                         ),
@@ -438,7 +438,7 @@ class MiuixHeroImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.2),
+                color: MiuixColors.primary.withOpacity(0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),

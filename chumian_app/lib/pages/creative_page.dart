@@ -207,7 +207,7 @@ class _CreativePageState extends State<CreativePage>
                   gradient: LinearGradient(colors: template.gradient),
                   borderRadius: MiuixRadius.mdRadius,
                   boxShadow: [
-                    BoxShadow(color: template.gradient.last.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                    BoxShadow(color: template.gradient.last.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
                   ],
                 ),
                 child: Icon(template.icon, color: Colors.white, size: 26),

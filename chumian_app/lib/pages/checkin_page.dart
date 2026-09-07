@@ -93,16 +93,16 @@ class _CheckinPageState extends State<CheckinPage> with SingleTickerProviderStat
   }
 
   Widget _buildHeaderCard() {
-    return Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFF8FB5), Color(0xFFFF6B9D), Color(0xFFFF5588)]), borderRadius: MiuixRadius.xlRadius, boxShadow: [BoxShadow(color: MiuixColors.primary.withValues(alpha: 0.3), blurRadius: 24, offset: const Offset(0, 8))]), child: Column(children: [
+    return Container(width: double.infinity, padding: const EdgeInsets.all(24), decoration: BoxDecoration(gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFF8FB5), Color(0xFFFF6B9D), Color(0xFFFF5588)]), borderRadius: MiuixRadius.xlRadius, boxShadow: [BoxShadow(color: MiuixColors.primary.withOpacity(0.3), blurRadius: 24, offset: const Offset(0, 8))]), child: Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         const Icon(Icons.local_fire_department, color: Colors.white, size: 28),
         const SizedBox(width: 8),
         Text('连续签到 $_continuousDays 天', style: const TextStyle(color: Colors.white, fontSize: MiuixFontSize.xxl, fontWeight: FontWeight.bold)),
       ]),
       const SizedBox(height: 8),
-      Text('再签到 ${7 - _continuousDays % 7} 天即可获得200积分大奖', style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: MiuixFontSize.sm)),
+      Text('再签到 ${7 - _continuousDays % 7} 天即可获得200积分大奖', style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: MiuixFontSize.sm)),
       const SizedBox(height: 16),
-      Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: MiuixRadius.pillRadius), child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: MiuixRadius.pillRadius), child: Row(mainAxisSize: MainAxisSize.min, children: [
         const Icon(Icons.stars, color: Colors.white, size: 18),
         const SizedBox(width: 6),
         Text('累计获得 ${_continuousDays * 50} 积分', style: const TextStyle(color: Colors.white, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w500)),
@@ -126,7 +126,7 @@ class _CheckinPageState extends State<CheckinPage> with SingleTickerProviderStat
   Widget _buildDayItem(int day, int reward, bool isChecked, bool isToday) {
     return Column(children: [
       Stack(children: [
-        AnimatedContainer(duration: MiuixDuration.normal, width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, gradient: isChecked ? const LinearGradient(colors: MiuixColors.primaryGradient) : null, color: isChecked ? null : (isToday ? MiuixColors.primary.withValues(alpha: 0.15) : MiuixColors.surfaceVariant), border: isToday ? Border.all(color: MiuixColors.primary, width: 2, style: BorderStyle.solid) : null), child: Center(child: isChecked ? const Icon(Icons.check, color: Colors.white, size: 22) : Text('$day', style: TextStyle(color: isToday ? MiuixColors.primary : MiuixColors.textTertiary, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w600)))),
+        AnimatedContainer(duration: MiuixDuration.normal, width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, gradient: isChecked ? const LinearGradient(colors: MiuixColors.primaryGradient) : null, color: isChecked ? null : (isToday ? MiuixColors.primary.withOpacity(0.15) : MiuixColors.surfaceVariant), border: isToday ? Border.all(color: MiuixColors.primary, width: 2, style: BorderStyle.solid) : null), child: Center(child: isChecked ? const Icon(Icons.check, color: Colors.white, size: 22) : Text('$day', style: TextStyle(color: isToday ? MiuixColors.primary : MiuixColors.textTertiary, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w600)))),
         if (isToday) Positioned(top: -2, right: -2, child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: MiuixColors.error, shape: BoxShape.circle))),
       ]),
       const SizedBox(height: 6),
@@ -138,7 +138,7 @@ class _CheckinPageState extends State<CheckinPage> with SingleTickerProviderStat
 
   Widget _buildCheckinButton() {
     return AnimatedBuilder(animation: _scaleAnim, builder: (context, _) {
-      return Transform.scale(scale: _scaleAnim.value, child: MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: _doCheckin, child: Container(width: double.infinity, height: 56, decoration: BoxDecoration(gradient: _isCheckedToday ? null : const LinearGradient(colors: MiuixColors.primaryGradient), color: _isCheckedToday ? MiuixColors.surfaceVariant : null, borderRadius: MiuixRadius.pillRadius, boxShadow: _isCheckedToday ? null : MiuixShadows.lg, border: _isCheckedToday ? Border.all(color: MiuixColors.success.withValues(alpha: 0.3)) : null), child: Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      return Transform.scale(scale: _scaleAnim.value, child: MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: _doCheckin, child: Container(width: double.infinity, height: 56, decoration: BoxDecoration(gradient: _isCheckedToday ? null : const LinearGradient(colors: MiuixColors.primaryGradient), color: _isCheckedToday ? MiuixColors.surfaceVariant : null, borderRadius: MiuixRadius.pillRadius, boxShadow: _isCheckedToday ? null : MiuixShadows.lg, border: _isCheckedToday ? Border.all(color: MiuixColors.success.withOpacity(0.3)) : null), child: Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         if (_isCheckedToday) ...[const Icon(Icons.check_circle, color: MiuixColors.success, size: 24), const SizedBox(width: 8), Text('今日已签到', style: TextStyle(color: MiuixColors.success, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600))]
         else ...[const Icon(Icons.calendar_today, color: Colors.white, size: 22), const SizedBox(width: 8), Text(_isAnimating ? '签到中...' : '立即签到', style: const TextStyle(color: Colors.white, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600, letterSpacing: 1))],
       ])))));
@@ -159,7 +159,7 @@ class _CheckinPageState extends State<CheckinPage> with SingleTickerProviderStat
 
   Widget _buildRuleItem(String num, String text) {
     return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(width: 20, height: 20, decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.15), shape: BoxShape.circle), child: Center(child: Text(num, style: TextStyle(color: MiuixColors.primary, fontSize: 11, fontWeight: FontWeight.bold)))),
+      Container(width: 20, height: 20, decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.15), shape: BoxShape.circle), child: Center(child: Text(num, style: TextStyle(color: MiuixColors.primary, fontSize: 11, fontWeight: FontWeight.bold)))),
       const SizedBox(width: 10),
       Expanded(child: Text(text, style: TextStyle(color: MiuixColors.textSecondary, fontSize: MiuixFontSize.sm, height: 1.5))),
     ]));

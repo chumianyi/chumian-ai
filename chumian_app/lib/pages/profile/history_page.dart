@@ -321,7 +321,7 @@ class _HistoryPageState extends State<HistoryPage>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.08),
+                  color: MiuixColors.primary.withOpacity(0.08),
                   borderRadius: MiuixRadius.mdRadius,
                 ),
                 child: Icon(item.icon, size: 20, color: MiuixColors.primary),

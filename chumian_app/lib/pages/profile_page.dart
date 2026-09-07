@@ -155,8 +155,8 @@ class _ProfilePageState extends State<ProfilePage>
                 width: 72, height: 72,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 12)],
+                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 12)],
                 ),
                 child: ClipOval(
                   child: Image.asset(
@@ -184,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage>
                     Text(
                       userProvider.email ?? 'ID: ${userProvider.userId ?? '------'}',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                         fontSize: MiuixFontSize.sm,
                       ),
                     ),
@@ -192,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: MiuixRadius.pillRadius,
                       ),
                       child: const Text(
@@ -308,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage>
         leading: Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: item.color.withValues(alpha: 0.15),
+            color: item.color.withOpacity(0.15),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(item.icon, color: item.color, size: 20),
@@ -360,9 +360,9 @@ class _ProfilePageState extends State<ProfilePage>
             width: double.infinity,
             height: 48,
             decoration: BoxDecoration(
-              color: MiuixColors.error.withValues(alpha: 0.08),
+              color: MiuixColors.error.withOpacity(0.08),
               borderRadius: MiuixRadius.pillRadius,
-              border: Border.all(color: MiuixColors.error.withValues(alpha: 0.3), width: 1),
+              border: Border.all(color: MiuixColors.error.withOpacity(0.3), width: 1),
             ),
             child: const Center(
               child: Text(

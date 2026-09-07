@@ -254,15 +254,15 @@ class _MiuixToastWidgetState extends State<_MiuixToastWidget>
                   ),
                   decoration: BoxDecoration(
                     color: widget.backgroundColor ??
-                        MiuixColors.surface.withValues(alpha: 0.85),
+                        MiuixColors.surface.withOpacity(0.85),
                     borderRadius: BorderRadius.circular(MiuixRadius.lg),
                     border: Border.all(
-                      color: typeColor.withValues(alpha: 0.3),
+                      color: typeColor.withOpacity(0.3),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: typeColor.withValues(alpha: 0.15),
+                        color: typeColor.withOpacity(0.15),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),

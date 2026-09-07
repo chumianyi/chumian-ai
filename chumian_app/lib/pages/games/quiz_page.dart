@@ -328,8 +328,8 @@ class _QuizPageState extends State<QuizPage>
               horizontal: MiuixSpacing.lg, vertical: MiuixSpacing.sm),
           decoration: BoxDecoration(
             color: _timeLeft <= 5
-                ? MiuixColors.error.withValues(alpha: 0.1)
-                : MiuixColors.primary.withValues(alpha: 0.1),
+                ? MiuixColors.error.withOpacity(0.1)
+                : MiuixColors.primary.withOpacity(0.1),
             borderRadius: MiuixRadius.pillRadius,
           ),
           child: Row(
@@ -351,7 +351,7 @@ class _QuizPageState extends State<QuizPage>
           padding: const EdgeInsets.symmetric(
               horizontal: MiuixSpacing.lg, vertical: MiuixSpacing.sm),
           decoration: BoxDecoration(
-            color: MiuixColors.warning.withValues(alpha: 0.1),
+            color: MiuixColors.warning.withOpacity(0.1),
             borderRadius: MiuixRadius.pillRadius,
           ),
           child: Row(
@@ -391,18 +391,18 @@ class _QuizPageState extends State<QuizPage>
 
     if (_answered) {
       if (isCorrect) {
-        bgColor = MiuixColors.success.withValues(alpha: 0.1);
+        bgColor = MiuixColors.success.withOpacity(0.1);
         borderColor = MiuixColors.success;
         textColor = MiuixColors.success;
         trailingIcon = Icons.check_circle;
       } else if (isSelected) {
-        bgColor = MiuixColors.error.withValues(alpha: 0.1);
+        bgColor = MiuixColors.error.withOpacity(0.1);
         borderColor = MiuixColors.error;
         textColor = MiuixColors.error;
         trailingIcon = Icons.cancel;
       }
     } else if (isSelected) {
-      bgColor = MiuixColors.primary.withValues(alpha: 0.1);
+      bgColor = MiuixColors.primary.withOpacity(0.1);
       borderColor = MiuixColors.primary;
       textColor = MiuixColors.primary;
     }
@@ -423,7 +423,7 @@ class _QuizPageState extends State<QuizPage>
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: borderColor.withValues(alpha: 0.2),
+                color: borderColor.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -529,7 +529,7 @@ class _QuizPageState extends State<QuizPage>
                 fontWeight: FontWeight.bold)),
         Text(label,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: MiuixFontSize.xs)),
       ],
     );

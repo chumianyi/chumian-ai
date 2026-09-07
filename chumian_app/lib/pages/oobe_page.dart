@@ -202,7 +202,7 @@ class _OobePageState extends State<OobePage>
         gradient: LinearGradient(colors: item.gradient),
         boxShadow: [
           BoxShadow(
-            color: item.gradient.last.withValues(alpha: 0.4),
+            color: item.gradient.last.withOpacity(0.4),
             blurRadius: 40,
             offset: const Offset(0, 12),
           ),
@@ -226,7 +226,7 @@ class _OobePageState extends State<OobePage>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: item.gradient.first.withValues(alpha: 0.3),
+                  color: item.gradient.first.withOpacity(0.3),
                   width: 2,
                 ),
               ),

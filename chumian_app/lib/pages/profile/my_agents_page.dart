@@ -378,7 +378,7 @@ class _MyAgentsPageState extends State<MyAgentsPage>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: MiuixColors.success.withValues(alpha: 0.15),
+                              color: MiuixColors.success.withOpacity(0.15),
                               borderRadius: MiuixRadius.pillRadius,
                             ),
                             child: const Text(

@@ -116,7 +116,7 @@ class _MiuixAnimatedBackgroundState extends State<MiuixAnimatedBackground>
                 colors: [
                   widget.baseColor ?? MiuixColors.background,
                   (widget.baseColor ?? MiuixColors.background)
-                      .withValues(alpha: 0.8),
+                      .withOpacity(0.8),
                 ],
               ),
             ),
@@ -225,13 +225,13 @@ class _BackgroundPainter extends CustomPainter {
       final center = Offset(x * size.width, y * size.height);
 
       final paint = Paint()
-        ..color = baseColor.withValues(alpha: bubble.opacity)
+        ..color = baseColor.withOpacity(bubble.opacity)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(center, bubble.radius, paint);
 
       // 气泡高光
       final highlightPaint = Paint()
-        ..color = Colors.white.withValues(alpha: bubble.opacity * 0.5)
+        ..color = Colors.white.withOpacity(bubble.opacity * 0.5)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(
         center + Offset(-bubble.radius * 0.3, -bubble.radius * 0.3),
@@ -254,8 +254,8 @@ class _BackgroundPainter extends CustomPainter {
       final paint = Paint()
         ..shader = RadialGradient(
           colors: [
-            baseColor.withValues(alpha: 0.12),
-            baseColor.withValues(alpha: 0.0),
+            baseColor.withOpacity(0.12),
+            baseColor.withOpacity(0.0),
           ],
         ).createShader(Rect.fromCircle(center: center, radius: radius));
       canvas.drawCircle(center, radius, paint);
@@ -271,13 +271,13 @@ class _BackgroundPainter extends CustomPainter {
       final center = Offset(x * size.width, y * size.height);
 
       final paint = Paint()
-        ..color = baseColor.withValues(alpha: particle.opacity)
+        ..color = baseColor.withOpacity(particle.opacity)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(center, particle.radius, paint);
 
       // 粒子拖尾
       final trailPaint = Paint()
-        ..color = baseColor.withValues(alpha: particle.opacity * 0.3)
+        ..color = baseColor.withOpacity(particle.opacity * 0.3)
         ..strokeWidth = particle.radius * 0.5
         ..strokeCap = StrokeCap.round;
       final trailEnd = center + const Offset(0, 8);
@@ -481,8 +481,8 @@ class _OrbsPainter extends CustomPainter {
       final paint = Paint()
         ..shader = RadialGradient(
           colors: [
-            orb.color.withValues(alpha: 0.3),
-            orb.color.withValues(alpha: 0.0),
+            orb.color.withOpacity(0.3),
+            orb.color.withOpacity(0.0),
           ],
         ).createShader(Rect.fromCircle(
           center: Offset(x, y),

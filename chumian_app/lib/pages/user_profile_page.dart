@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:chumian_ai/theme/miuix_colors.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_ripple.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_glass.dart';
@@ -129,7 +130,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [MiuixColors.primaryLight.withValues(alpha: 0.3), MiuixColors.background],
+          colors: [MiuixColors.primaryLight.withOpacity(0.3), MiuixColors.background],
         ),
       ),
       child: SafeArea(
@@ -190,7 +191,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                           gradient: _isFollowing ? null : const LinearGradient(colors: MiuixColors.primaryGradient),
                           color: _isFollowing ? MiuixColors.surfaceVariant : null,
                           borderRadius: MiuixRadius.pillRadius,
-                          border: _isFollowing ? Border.all(color: MiuixColors.primary.withValues(alpha: 0.3)) : null,
+                          border: _isFollowing ? Border.all(color: MiuixColors.primary.withOpacity(0.3)) : null,
                           boxShadow: _isFollowing ? null : MiuixShadows.sm,
                         ),
                         child: Text(
@@ -252,12 +253,12 @@ class _UserProfilePageState extends State<UserProfilePage>
                   if (post['image_url'] != null)
                     Image.network(post['image_url'], fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: MiuixColors.surfaceVariant, child: const Icon(Icons.image, color: MiuixColors.textTertiary, size: 32)))
                   else
-                    Container(color: MiuixColors.primary.withValues(alpha: 0.1), padding: const EdgeInsets.all(12), child: Center(child: Text(post['content'], style: TextStyle(color: MiuixColors.primary, fontSize: MiuixFontSize.sm, fontWeight: FontWeight.w500), maxLines: 3, overflow: TextOverflow.ellipsis))),
+                    Container(color: MiuixColors.primary.withOpacity(0.1), padding: const EdgeInsets.all(12), child: Center(child: Text(post['content'], style: TextStyle(color: MiuixColors.primary, fontSize: MiuixFontSize.sm, fontWeight: FontWeight.w500), maxLines: 3, overflow: TextOverflow.ellipsis))),
                   Positioned(
                     bottom: 0, left: 0, right: 0,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                      decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)])),
+                      decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withOpacity(0.6)])),
                       child: Row(
                         children: [
                           const Icon(Icons.favorite, color: Colors.white, size: 14),

@@ -169,7 +169,7 @@ class _MiuixShimmerButtonState extends State<MiuixShimmerButton>
               borderRadius: BorderRadius.circular(radius),
               boxShadow: [
                 BoxShadow(
-                  color: MiuixColors.primary.withValues(alpha: 0.4),
+                  color: MiuixColors.primary.withOpacity(0.4),
                   blurRadius: _isPressed ? 8 : 16,
                   offset: Offset(0, _isPressed ? 2 : 6),
                 ),
@@ -194,7 +194,7 @@ class _MiuixShimmerButtonState extends State<MiuixShimmerButton>
                                 gradient: LinearGradient(
                                   colors: [
                                     Colors.transparent,
-                                    Colors.white.withValues(alpha: 0.4),
+                                    Colors.white.withOpacity(0.4),
                                     Colors.transparent,
                                   ],
                                 ),
@@ -208,7 +208,7 @@ class _MiuixShimmerButtonState extends State<MiuixShimmerButton>
                   if (_isPressed)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: Colors.white.withOpacity(0.15),
                       ),
                     ),
                   // 内容
@@ -322,7 +322,7 @@ class _MiuixShimmerLoadingState extends State<MiuixShimmerLoading>
                           colors: [
                             Colors.transparent,
                             (widget.highlightColor ?? Colors.white)
-                                .withValues(alpha: 0.4),
+                                .withOpacity(0.4),
                             Colors.transparent,
                           ],
                         ),

@@ -440,7 +440,7 @@ class _NotesPageState extends State<NotesPage>
             ),
             boxShadow: [
               BoxShadow(
-                color: _noteBorderColors[note.colorIndex].withValues(alpha: 0.3),
+                color: _noteBorderColors[note.colorIndex].withOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

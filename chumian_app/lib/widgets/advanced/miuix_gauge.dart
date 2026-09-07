@@ -274,7 +274,7 @@ class _GaugePainter extends CustomPainter {
       final endPoint = center +
           Offset(math.cos(endAngle) * radius, math.sin(endAngle) * radius);
       final glowPaint = Paint()
-        ..color = MiuixColors.primary.withValues(alpha: 0.4)
+        ..color = MiuixColors.primary.withOpacity(0.4)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
       canvas.drawCircle(endPoint, 10, glowPaint);
     }
@@ -340,7 +340,7 @@ class _GaugePainter extends CustomPainter {
       ..moveTo(center.dx, center.dy)
       ..lineTo(pointerEnd.dx, pointerEnd.dy);
     final shadowPaint = Paint()
-      ..color = MiuixColors.primary.withValues(alpha: 0.3)
+      ..color = MiuixColors.primary.withOpacity(0.3)
       ..strokeWidth = 6
       ..strokeCap = StrokeCap.round
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);

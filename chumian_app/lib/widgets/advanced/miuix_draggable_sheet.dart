@@ -223,13 +223,13 @@ class _MiuixDraggableSheetState extends State<MiuixDraggableSheet>
             child: Container(
               decoration: BoxDecoration(
                 color: widget.backgroundColor ??
-                    Colors.white.withValues(alpha: 0.85),
+                    Colors.white.withOpacity(0.85),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(MiuixRadius.xxl),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.15),
+                    color: MiuixColors.primary.withOpacity(0.15),
                     blurRadius: 24,
                     offset: const Offset(0, -4),
                   ),
@@ -241,7 +241,7 @@ class _MiuixDraggableSheetState extends State<MiuixDraggableSheet>
                 ),
                 child: BackdropFilter(
                   filter: ColorFilter.mode(
-                    Colors.white.withValues(alpha: 0.7),
+                    Colors.white.withOpacity(0.7),
                     BlendMode.srcOver,
                   ),
                   child: Column(
@@ -309,7 +309,7 @@ class MiuixBottomSheet extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.1),
+            color: MiuixColors.primary.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),

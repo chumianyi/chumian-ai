@@ -136,7 +136,7 @@ class _StatCardState extends State<StatCard>
                 borderRadius: BorderRadius.circular(MiuixRadius.lg),
                 boxShadow: [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.3),
+                    color: MiuixColors.primary.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -155,7 +155,7 @@ class _StatCardState extends State<StatCard>
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withOpacity(0.2),
                             borderRadius:
                                 BorderRadius.circular(MiuixRadius.sm),
                           ),
@@ -174,7 +174,7 @@ class _StatCardState extends State<StatCard>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withOpacity(0.2),
                             borderRadius:
                                 BorderRadius.circular(MiuixRadius.pill),
                           ),
@@ -220,7 +220,7 @@ class _StatCardState extends State<StatCard>
                   Text(
                     widget.label,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: Colors.white.withOpacity(0.85),
                       fontSize: MiuixFontSize.md,
                       fontWeight: FontWeight.w500,
                     ),

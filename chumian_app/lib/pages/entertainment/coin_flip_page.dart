@@ -242,7 +242,7 @@ class _CoinFlipPageState extends State<CoinFlipPage>
               width: 140,
               height: 20,
               decoration: BoxDecoration(
-                color: MiuixColors.primary.withValues(alpha: 0.2),
+                color: MiuixColors.primary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(50),
               ),
             ),
@@ -266,12 +266,12 @@ class _CoinFlipPageState extends State<CoinFlipPage>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
                   ],
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 4),
+                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 4),
                 ),
                 child: Center(
                   child: Transform(
@@ -397,8 +397,8 @@ class _CoinFlipPageState extends State<CoinFlipPage>
                 padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: MiuixSpacing.xs),
                 decoration: BoxDecoration(
                   color: isHeads
-                      ? MiuixColors.primary.withValues(alpha: 0.15)
-                      : MiuixColors.primaryDeep.withValues(alpha: 0.15),
+                      ? MiuixColors.primary.withOpacity(0.15)
+                      : MiuixColors.primaryDeep.withOpacity(0.15),
                   borderRadius: MiuixRadius.pillRadius,
                   border: Border.all(
                     color: isHeads ? MiuixColors.primary : MiuixColors.primaryDeep,

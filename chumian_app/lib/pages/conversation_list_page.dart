@@ -116,7 +116,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
         const SizedBox(height: 4),
         Text(conv.lastMessage, style: TextStyle(color: MiuixColors.textSecondary, fontSize: MiuixFontSize.sm), maxLines: 1, overflow: TextOverflow.ellipsis),
         const SizedBox(height: 4),
-        Row(children: [Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.xsRadius), child: Text(conv.model, style: TextStyle(color: MiuixColors.primary, fontSize: 10, fontWeight: FontWeight.w500))), const SizedBox(width: 8), Text('${conv.messageCount}条消息', style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs))]),
+        Row(children: [Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.xsRadius), child: Text(conv.model, style: TextStyle(color: MiuixColors.primary, fontSize: 10, fontWeight: FontWeight.w500))), const SizedBox(width: 8), Text('${conv.messageCount}条消息', style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs))]),
       ])),
       const SizedBox(width: 8),
       Icon(Icons.chevron_right, color: MiuixColors.textTertiary, size: 20),

@@ -192,7 +192,7 @@ class _MiuixBounceIndicatorState extends State<MiuixBounceIndicator>
                         gradient: isActive
                             ? LinearGradient(
                                 colors: [
-                                  activeColor.withValues(alpha: 0.8),
+                                  activeColor.withOpacity(0.8),
                                   activeColor,
                                 ],
                               )
@@ -202,7 +202,7 @@ class _MiuixBounceIndicatorState extends State<MiuixBounceIndicator>
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: activeColor.withValues(alpha: 0.4),
+                                  color: activeColor.withOpacity(0.4),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
@@ -245,10 +245,10 @@ class _MiuixBounceIndicatorState extends State<MiuixBounceIndicator>
       decoration: BoxDecoration(
         color: MiuixColors.surface,
         borderRadius: BorderRadius.circular(MiuixRadius.pill),
-        border: Border.all(color: activeColor.withValues(alpha: 0.3), width: 1),
+        border: Border.all(color: activeColor.withOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
-            color: activeColor.withValues(alpha: 0.15),
+            color: activeColor.withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

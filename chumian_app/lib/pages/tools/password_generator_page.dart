@@ -244,7 +244,7 @@ class _PasswordGeneratorPageState extends State<PasswordGeneratorPage>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: 4),
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.1),
+                    color: MiuixColors.primary.withOpacity(0.1),
                     borderRadius: MiuixRadius.pillRadius,
                   ),
                   child: Text('${_length.toInt()}', style: const TextStyle(fontSize: MiuixFontSize.md, fontWeight: FontWeight.w700, color: MiuixColors.primary)),

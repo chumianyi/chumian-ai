@@ -99,7 +99,7 @@ class _TextLinkState extends State<TextLink> {
               : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: _isPressed
-                ? linkColor.withValues(alpha: 0.08)
+                ? linkColor.withOpacity(0.08)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(4),
           ),
@@ -110,7 +110,7 @@ class _TextLinkState extends State<TextLink> {
                 widget.text,
                 style: TextStyle(
                   color: _isHovering
-                      ? linkColor.withValues(alpha: 0.8)
+                      ? linkColor.withOpacity(0.8)
                       : linkColor,
                   fontSize: widget.fontSize,
                   fontWeight: widget.fontWeight,
@@ -119,7 +119,7 @@ class _TextLinkState extends State<TextLink> {
                           ? TextDecoration.none
                           : TextDecoration.underline)
                       : TextDecoration.none,
-                  decorationColor: linkColor.withValues(alpha: 0.5),
+                  decorationColor: linkColor.withOpacity(0.5),
                   decorationThickness: 1,
                 ),
               ),
@@ -127,7 +127,7 @@ class _TextLinkState extends State<TextLink> {
                 const SizedBox(width: 3),
                 Icon(
                   Icons.open_in_new,
-                  color: linkColor.withValues(alpha: 0.7),
+                  color: linkColor.withOpacity(0.7),
                   size: widget.fontSize * 0.85,
                 ),
               ],
@@ -162,7 +162,7 @@ class RichTextLink extends TextSpan {
             fontSize: fontSize,
             decoration: TextDecoration.underline,
             decorationColor: (color ?? MiuixColors.textLink)
-                .withValues(alpha: 0.5),
+                .withOpacity(0.5),
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () async {

@@ -381,7 +381,7 @@ class MiuixCelebrationOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black.withValues(alpha: 0.5),
+      color: Colors.black.withOpacity(0.5),
       child: InkWell(
         onTap: onDismiss,
         child: Center(
@@ -398,7 +398,7 @@ class MiuixCelebrationOverlay extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.5),
+                      color: MiuixColors.primary.withOpacity(0.5),
                       blurRadius: 24,
                       offset: const Offset(0, 8),
                     ),
@@ -420,7 +420,7 @@ class MiuixCelebrationOverlay extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: MiuixFontSize.md,
                   ),
                 ),

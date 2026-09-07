@@ -196,7 +196,7 @@ class _UnitConverterPageState extends State<UnitConverterPage>
                   color: isSelected ? null : MiuixColors.surface,
                   borderRadius: MiuixRadius.lgRadius,
                   border: Border.all(color: isSelected ? Colors.transparent : MiuixColors.borderLight, width: 1),
-                  boxShadow: isSelected ? [BoxShadow(color: MiuixColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))] : null,
+                  boxShadow: isSelected ? [BoxShadow(color: MiuixColors.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))] : null,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -230,7 +230,7 @@ class _UnitConverterPageState extends State<UnitConverterPage>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.1),
+                  color: MiuixColors.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.swap_vert, size: 20, color: MiuixColors.primary),
@@ -264,9 +264,9 @@ class _UnitConverterPageState extends State<UnitConverterPage>
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: MiuixSpacing.md),
                       decoration: BoxDecoration(
-                        color: MiuixColors.primary.withValues(alpha: 0.06),
+                        color: MiuixColors.primary.withOpacity(0.06),
                         borderRadius: MiuixRadius.mdRadius,
-                        border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.2), width: 1),
+                        border: Border.all(color: MiuixColors.primary.withOpacity(0.2), width: 1),
                       ),
                       child: Text(
                         _result.isEmpty ? '—' : _result,
@@ -342,7 +342,7 @@ class _UnitConverterPageState extends State<UnitConverterPage>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.xl, vertical: MiuixSpacing.md),
                     decoration: BoxDecoration(
-                      color: isSelected ? MiuixColors.primary.withValues(alpha: 0.06) : Colors.transparent,
+                      color: isSelected ? MiuixColors.primary.withOpacity(0.06) : Colors.transparent,
                     ),
                     child: Row(
                       children: [

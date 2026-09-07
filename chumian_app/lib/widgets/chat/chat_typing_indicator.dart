@@ -100,7 +100,7 @@ class _ChatTypingIndicatorState extends State<ChatTypingIndicator>
         vertical: MiuixSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: MiuixColors.surface.withValues(alpha: 0.85),
+        color: MiuixColors.surface.withOpacity(0.85),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(MiuixRadius.lg),
           topRight: Radius.circular(MiuixRadius.lg),

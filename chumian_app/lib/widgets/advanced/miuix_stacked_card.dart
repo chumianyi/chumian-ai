@@ -308,13 +308,13 @@ class _MiuixStackedCardState extends State<MiuixStackedCard>
           end: Alignment.bottomRight,
           colors: [
             card.color ?? MiuixColors.primaryLight,
-            (card.color ?? MiuixColors.primary).withValues(alpha: 0.8),
+            (card.color ?? MiuixColors.primary).withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(MiuixRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: (card.color ?? MiuixColors.primary).withValues(alpha: 0.3),
+            color: (card.color ?? MiuixColors.primary).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -358,7 +358,7 @@ class _MiuixStackedCardState extends State<MiuixStackedCard>
                       Text(
                         card.description!,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withOpacity(0.9),
                           fontSize: MiuixFontSize.md,
                         ),
                       ),
@@ -423,7 +423,7 @@ class _MiuixStackedCardState extends State<MiuixStackedCard>
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.3),
+              color: color.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

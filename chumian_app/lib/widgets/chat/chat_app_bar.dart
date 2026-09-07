@@ -102,7 +102,7 @@ class _ChatAppBarState extends State<ChatAppBar>
           height: widget.height + MediaQuery.of(context).padding.top,
           padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           decoration: BoxDecoration(
-            color: MiuixColors.surface.withValues(alpha: 0.85),
+            color: MiuixColors.surface.withOpacity(0.85),
             border: Border(
               bottom: BorderSide(color: MiuixColors.borderLight, width: 1),
             ),
@@ -171,7 +171,7 @@ class _ChatAppBarState extends State<ChatAppBar>
                       boxShadow: [
                         BoxShadow(
                           color: MiuixColors.primary
-                              .withValues(alpha: 0.3 + _pulseController.value * 0.4),
+                              .withOpacity(0.3 + _pulseController.value * 0.4),
                           blurRadius: 6 + _pulseController.value * 6,
                         ),
                       ],
@@ -297,7 +297,7 @@ class _ChatAppBarState extends State<ChatAppBar>
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? MiuixColors.primary.withValues(alpha: 0.08)
+                          ? MiuixColors.primary.withOpacity(0.08)
                           : Colors.transparent,
                       borderRadius: MiuixRadius.mdRadius,
                     ),

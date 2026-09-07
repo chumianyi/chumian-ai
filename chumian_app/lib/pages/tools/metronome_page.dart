@@ -237,7 +237,7 @@ class _MetronomePageState extends State<MetronomePage>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: MiuixColors.primary.withValues(alpha: 0.4 + pulse * 0.3),
+                            color: MiuixColors.primary.withOpacity(0.4 + pulse * 0.3),
                             blurRadius: 12 + pulse * 8,
                           ),
                         ],
@@ -254,7 +254,7 @@ class _MetronomePageState extends State<MetronomePage>
                     width: 60 * pulse,
                     height: 60 * pulse,
                     decoration: BoxDecoration(
-                      color: MiuixColors.primary.withValues(alpha: (1 - pulse) * 0.3),
+                      color: MiuixColors.primary.withOpacity((1 - pulse) * 0.3),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -289,7 +289,7 @@ class _MetronomePageState extends State<MetronomePage>
             boxShadow: isActive
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.5),
+                      color: MiuixColors.primary.withOpacity(0.5),
                       blurRadius: 12,
                     ),
                   ]

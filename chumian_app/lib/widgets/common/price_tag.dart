@@ -137,8 +137,8 @@ class _PriceTagState extends State<PriceTag>
               ? BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      color.withValues(alpha: 0.1),
-                      color.withValues(alpha: 0.05),
+                      color.withOpacity(0.1),
+                      color.withOpacity(0.05),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(MiuixRadius.md),
@@ -226,7 +226,7 @@ class _PriceTagState extends State<PriceTag>
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color, color.withValues(alpha: 0.8)],
+          colors: [color, color.withOpacity(0.8)],
         ),
         borderRadius: BorderRadius.circular(MiuixRadius.xs),
       ),
@@ -302,7 +302,7 @@ class _PriceCardState extends State<PriceCard> {
           boxShadow: widget.isRecommended
               ? [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.3),
+                    color: MiuixColors.primary.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -332,7 +332,7 @@ class _PriceCardState extends State<PriceCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.25),
+                      color: Colors.white.withOpacity(0.25),
                       borderRadius: BorderRadius.circular(MiuixRadius.pill),
                     ),
                     child: Text(
@@ -382,7 +382,7 @@ class _PriceCardState extends State<PriceCard> {
                       color: (widget.isRecommended
                               ? Colors.white
                               : MiuixColors.textSecondary)
-                          .withValues(alpha: 0.7),
+                          .withOpacity(0.7),
                       fontSize: 13,
                     ),
                   ),
@@ -395,7 +395,7 @@ class _PriceCardState extends State<PriceCard> {
                       color: (widget.isRecommended
                               ? Colors.white
                               : MiuixColors.textTertiary)
-                          .withValues(alpha: 0.5),
+                          .withOpacity(0.5),
                       fontSize: 13,
                       decoration: TextDecoration.lineThrough,
                     ),
@@ -425,7 +425,7 @@ class _PriceCardState extends State<PriceCard> {
                           style: TextStyle(
                             fontSize: 13,
                             color: widget.isRecommended
-                                ? Colors.white.withValues(alpha: 0.9)
+                                ? Colors.white.withOpacity(0.9)
                                 : MiuixColors.textSecondary,
                           ),
                         ),

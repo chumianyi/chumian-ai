@@ -214,7 +214,7 @@ class _MiuixTabBarState extends State<MiuixTabBar>
                         BorderRadius.circular(widget.indicatorHeight / 2),
                     boxShadow: [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.4),
+                        color: MiuixColors.primary.withOpacity(0.4),
                         blurRadius: 4,
                       ),
                     ],

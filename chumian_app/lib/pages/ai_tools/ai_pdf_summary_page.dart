@@ -223,7 +223,7 @@ class _AIPdfSummaryPageState extends State<AIPdfSummaryPage>
                     duration: MiuixDuration.fast,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isSelected ? MiuixColors.primaryLight.withValues(alpha: 0.1) : MiuixColors.surfaceVariant,
+                      color: isSelected ? MiuixColors.primaryLight.withOpacity(0.1) : MiuixColors.surfaceVariant,
                       borderRadius: MiuixRadius.smRadius,
                       border: Border.all(color: isSelected ? MiuixColors.primary : MiuixColors.borderLight),
                     ),
@@ -232,7 +232,7 @@ class _AIPdfSummaryPageState extends State<AIPdfSummaryPage>
                         Container(
                           width: 36,
                           height: 36,
-                          decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.smRadius),
+                          decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.smRadius),
                           child: const Icon(Icons.picture_as_pdf, color: MiuixColors.primary, size: 20),
                         ),
                         const SizedBox(width: 10),
@@ -336,7 +336,7 @@ class _AIPdfSummaryPageState extends State<AIPdfSummaryPage>
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
             child: SingleChildScrollView(
               maxHeight: 500,
               child: Text(_displayedSummary, style: const TextStyle(fontSize: MiuixFontSize.md, height: 1.8, color: MiuixColors.textPrimary)),
@@ -375,7 +375,7 @@ class _AIPdfSummaryPageState extends State<AIPdfSummaryPage>
         children: [
           Row(
             children: [
-              Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.smRadius), child: const Icon(Icons.question_answer, color: MiuixColors.primary, size: 18)),
+              Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.smRadius), child: const Icon(Icons.question_answer, color: MiuixColors.primary, size: 18)),
               const SizedBox(width: 8),
               const Text('文档问答', style: TextStyle(fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600, color: MiuixColors.textPrimary)),
             ],

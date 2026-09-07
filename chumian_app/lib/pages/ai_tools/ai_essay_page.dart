@@ -413,7 +413,7 @@ class _AIEssayPageState extends State<AIEssayPage>
               activeTrackColor: MiuixColors.primary,
               inactiveTrackColor: MiuixColors.surfaceVariant,
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               trackHeight: 6,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
             ),
@@ -522,7 +522,7 @@ class _AIEssayPageState extends State<AIEssayPage>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.7),
+              color: Colors.white.withOpacity(0.7),
               borderRadius: MiuixRadius.mdRadius,
               border: Border.all(color: MiuixColors.borderLight),
             ),

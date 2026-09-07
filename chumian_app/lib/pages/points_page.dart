@@ -112,7 +112,7 @@ class _PointsPageState extends State<PointsPage>
             },
           ),
           const SizedBox(height: 4),
-          Text('积分可兑换SVIP会员和精美礼品', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: MiuixFontSize.sm)),
+          Text('积分可兑换SVIP会员和精美礼品', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: MiuixFontSize.sm)),
         ],
       ),
     );
@@ -172,13 +172,13 @@ class _PointsPageState extends State<PointsPage>
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
-                  Container(width: 36, height: 36, decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.smRadius), child: Icon(way.icon, color: MiuixColors.primary, size: 20)),
+                  Container(width: 36, height: 36, decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.smRadius), child: Icon(way.icon, color: MiuixColors.primary, size: 20)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(way.title, style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w500)),
                     Text(way.desc, style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs)),
                   ])),
-                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: MiuixColors.success.withValues(alpha: 0.1), borderRadius: MiuixRadius.xsRadius), child: Text(way.points, style: TextStyle(color: MiuixColors.success, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w600))),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: MiuixColors.success.withOpacity(0.1), borderRadius: MiuixRadius.xsRadius), child: Text(way.points, style: TextStyle(color: MiuixColors.success, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w600))),
                 ],
               ),
             )),
@@ -210,7 +210,7 @@ class _PointsPageState extends State<PointsPage>
                   padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
                   child: Row(
                     children: [
-                      Container(width: 36, height: 36, decoration: BoxDecoration(color: (log.type == 'earn' ? MiuixColors.success : MiuixColors.error).withValues(alpha: 0.1), shape: BoxShape.circle), child: Icon(log.type == 'earn' ? Icons.add : Icons.remove, color: log.type == 'earn' ? MiuixColors.success : MiuixColors.error, size: 18)),
+                      Container(width: 36, height: 36, decoration: BoxDecoration(color: (log.type == 'earn' ? MiuixColors.success : MiuixColors.error).withOpacity(0.1), shape: BoxShape.circle), child: Icon(log.type == 'earn' ? Icons.add : Icons.remove, color: log.type == 'earn' ? MiuixColors.success : MiuixColors.error, size: 18)),
                       const SizedBox(width: 12),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(log.title, style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.md)),

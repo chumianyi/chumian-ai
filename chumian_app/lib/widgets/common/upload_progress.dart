@@ -247,7 +247,7 @@ class _UploadProgressState extends State<UploadProgress> {
         color: MiuixColors.background,
         borderRadius: BorderRadius.circular(MiuixRadius.md),
         border: Border.all(
-          color: _getStatusColor(file.status).withValues(alpha: 0.2),
+          color: _getStatusColor(file.status).withOpacity(0.2),
         ),
       ),
       child: Column(
@@ -260,7 +260,7 @@ class _UploadProgressState extends State<UploadProgress> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _getStatusColor(file.status).withValues(alpha: 0.1),
+                  color: _getStatusColor(file.status).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(MiuixRadius.sm),
                 ),
                 child: Icon(
@@ -393,7 +393,7 @@ class _UploadProgressState extends State<UploadProgress> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.1),
+                    color: MiuixColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(MiuixRadius.pill),
                   ),
                   child: Row(

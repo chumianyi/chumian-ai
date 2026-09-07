@@ -145,12 +145,12 @@ class _MiuixExpandableState extends State<MiuixExpandable>
       decoration: BoxDecoration(
         color: isExpanded
             ? (widget.expandedColor ??
-                MiuixColors.primaryLight.withValues(alpha: 0.05))
+                MiuixColors.primaryLight.withOpacity(0.05))
             : (widget.headerColor ?? MiuixColors.surface),
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(
           color: isExpanded
-              ? MiuixColors.primary.withValues(alpha: 0.3)
+              ? MiuixColors.primary.withOpacity(0.3)
               : MiuixColors.border,
         ),
       ),
@@ -167,7 +167,7 @@ class _MiuixExpandableState extends State<MiuixExpandable>
                     ? Radius.zero
                     : Radius.circular(radius),
               ),
-              color: MiuixColors.primary.withValues(alpha: 0.1),
+              color: MiuixColors.primary.withOpacity(0.1),
               child: Container(
                 padding: widget.padding ??
                     const EdgeInsets.symmetric(

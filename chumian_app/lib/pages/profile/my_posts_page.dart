@@ -293,8 +293,8 @@ class _MyPostsPageState extends State<MyPostsPage>
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: isDraft
-                      ? MiuixColors.warning.withValues(alpha: 0.15)
-                      : MiuixColors.primaryLight.withValues(alpha: 0.2),
+                      ? MiuixColors.warning.withOpacity(0.15)
+                      : MiuixColors.primaryLight.withOpacity(0.2),
                   borderRadius: MiuixRadius.pillRadius,
                 ),
                 child: Text(
@@ -349,8 +349,8 @@ class _MyPostsPageState extends State<MyPostsPage>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        MiuixColors.primaryLight.withValues(alpha: 0.3),
-                        MiuixColors.primary.withValues(alpha: 0.2),
+                        MiuixColors.primaryLight.withOpacity(0.3),
+                        MiuixColors.primary.withOpacity(0.2),
                       ],
                     ),
                     borderRadius: MiuixRadius.smRadius,

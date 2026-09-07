@@ -178,7 +178,7 @@ class _TopicDetailPageState extends State<TopicDetailPage>
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -190,7 +190,7 @@ class _TopicDetailPageState extends State<TopicDetailPage>
               width: 140,
               height: 140,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: Colors.white.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
             ),
@@ -207,7 +207,7 @@ class _TopicDetailPageState extends State<TopicDetailPage>
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.25),
+                    color: Colors.white.withOpacity(0.25),
                     borderRadius: MiuixRadius.pillRadius,
                   ),
                   child: const Row(
@@ -464,7 +464,7 @@ class _TopicDetailPageState extends State<TopicDetailPage>
           borderRadius: MiuixRadius.pillRadius,
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.4),
+              color: MiuixColors.primary.withOpacity(0.4),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),

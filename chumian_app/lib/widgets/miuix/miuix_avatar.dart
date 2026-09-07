@@ -141,7 +141,7 @@ class MiuixAvatar extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.15),
+            color: MiuixColors.primary.withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -223,7 +223,7 @@ class MiuixAvatar extends StatelessWidget {
           : Icon(
               Icons.person,
               size: size * 0.5,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
             ),
     );
   }

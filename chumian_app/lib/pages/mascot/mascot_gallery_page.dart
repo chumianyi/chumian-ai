@@ -113,7 +113,7 @@ class _MascotGalleryPageState extends State<MascotGalleryPage>
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Colors.white.withOpacity(0.3),
                   borderRadius: MiuixRadius.xlRadius,
                 ),
                 child: Center(
@@ -134,7 +134,7 @@ class _MascotGalleryPageState extends State<MascotGalleryPage>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: MiuixRadius.pillRadius,
                 ),
                 child: Text(
@@ -150,7 +150,7 @@ class _MascotGalleryPageState extends State<MascotGalleryPage>
                 image.desc,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withOpacity(0.9),
                   fontSize: MiuixFontSize.md,
                 ),
               ),
@@ -371,7 +371,7 @@ class _MascotGalleryPageState extends State<MascotGalleryPage>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.4),
+                        Colors.black.withOpacity(0.4),
                       ],
                     ),
                     borderRadius: const BorderRadius.vertical(
@@ -391,7 +391,7 @@ class _MascotGalleryPageState extends State<MascotGalleryPage>
                       Text(
                         image.category,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.white.withOpacity(0.7),
                           fontSize: MiuixFontSize.xs,
                         ),
                       ),

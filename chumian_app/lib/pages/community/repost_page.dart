@@ -303,7 +303,7 @@ class _RepostPageState extends State<RepostPage>
       child: Container(
         padding: const EdgeInsets.all(MiuixSpacing.md),
         decoration: BoxDecoration(
-          color: MiuixColors.surfaceVariant.withValues(alpha: 0.6),
+          color: MiuixColors.surfaceVariant.withOpacity(0.6),
           borderRadius: MiuixRadius.lgRadius,
           border: Border.all(color: MiuixColors.borderLight, width: 1),
         ),
@@ -316,7 +316,7 @@ class _RepostPageState extends State<RepostPage>
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.15),
+                    color: MiuixColors.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
@@ -356,7 +356,7 @@ class _RepostPageState extends State<RepostPage>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.1),
+                    color: MiuixColors.primary.withOpacity(0.1),
                     borderRadius: MiuixRadius.xsRadius,
                   ),
                   child: const Text(

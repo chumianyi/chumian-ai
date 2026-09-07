@@ -176,7 +176,7 @@ class MiuixEmptyState extends StatelessWidget {
             width: iconSize * 1.4,
             height: iconSize * 1.4,
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -268,8 +268,8 @@ class _BouncingIconState extends State<_BouncingIcon>
         decoration: BoxDecoration(
           gradient: RadialGradient(
             colors: [
-              MiuixColors.primaryLight.withValues(alpha: 0.2),
-              MiuixColors.primary.withValues(alpha: 0.05),
+              MiuixColors.primaryLight.withOpacity(0.2),
+              MiuixColors.primary.withOpacity(0.05),
             ],
           ),
           shape: BoxShape.circle,

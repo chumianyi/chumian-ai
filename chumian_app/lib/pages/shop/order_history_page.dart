@@ -290,7 +290,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(order.status).withValues(alpha: 0.1),
+                  color: _getStatusColor(order.status).withOpacity(0.1),
                   borderRadius: MiuixRadius.pillRadius,
                 ),
                 child: Text(

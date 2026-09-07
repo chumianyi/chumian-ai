@@ -228,7 +228,7 @@ class _MiuixFabMenuState extends State<MiuixFabMenu>
               boxShadow: [
                 BoxShadow(
                   color: (item.color ?? MiuixColors.primary)
-                      .withValues(alpha: 0.4),
+                      .withOpacity(0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -264,7 +264,7 @@ class _MiuixFabMenuState extends State<MiuixFabMenu>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.45),
+                color: MiuixColors.primary.withOpacity(0.45),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -380,7 +380,7 @@ class _MiuixFABState extends State<MiuixFAB>
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.4),
+            color: MiuixColors.primary.withOpacity(0.4),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

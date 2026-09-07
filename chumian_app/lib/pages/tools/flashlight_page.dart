@@ -166,14 +166,14 @@ class _FlashlightPageState extends State<FlashlightPage>
   @override
   Widget build(BuildContext context) {
     final bgColor = _isOn
-        ? _colors[_lightColor].withValues(alpha: _brightness * 0.15)
+        ? _colors[_lightColor].withOpacity(_brightness * 0.15)
         : MiuixColors.background;
 
     return Scaffold(
       backgroundColor: bgColor,
       appBar: MiuixAppBar(
         title: '手电筒',
-        backgroundColor: _isOn ? _colors[_lightColor].withValues(alpha: 0.3) : null,
+        backgroundColor: _isOn ? _colors[_lightColor].withOpacity(0.3) : null,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(MiuixSpacing.lg),
@@ -206,11 +206,11 @@ class _FlashlightPageState extends State<FlashlightPage>
           height: 160,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _isOn ? _colors[_lightColor].withValues(alpha: glow * 0.3) : MiuixColors.surfaceVariant,
+            color: _isOn ? _colors[_lightColor].withOpacity(glow * 0.3) : MiuixColors.surfaceVariant,
             boxShadow: _isOn
                 ? [
                     BoxShadow(
-                      color: _colors[_lightColor].withValues(alpha: glow * 0.6),
+                      color: _colors[_lightColor].withOpacity(glow * 0.6),
                       blurRadius: 60,
                       spreadRadius: 20,
                     ),
@@ -311,7 +311,7 @@ class _FlashlightPageState extends State<FlashlightPage>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: _colors[i].withValues(alpha: 0.4),
+                              color: _colors[i].withOpacity(0.4),
                               blurRadius: 8,
                             ),
                           ],
@@ -394,9 +394,9 @@ class _FlashlightPageState extends State<FlashlightPage>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: MiuixSpacing.sm),
         decoration: BoxDecoration(
-          color: MiuixColors.primary.withValues(alpha: 0.1),
+          color: MiuixColors.primary.withOpacity(0.1),
           borderRadius: MiuixRadius.pillRadius,
-          border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.3)),
+          border: Border.all(color: MiuixColors.primary.withOpacity(0.3)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

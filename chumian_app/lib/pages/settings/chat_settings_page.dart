@@ -135,7 +135,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage>
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: (isSelected ? MiuixColors.primary : MiuixColors.textTertiary).withValues(alpha: 0.1),
+                                color: (isSelected ? MiuixColors.primary : MiuixColors.textTertiary).withOpacity(0.1),
                                 borderRadius: MiuixRadius.smRadius,
                               ),
                               child: Icon(model['icon'] as IconData, size: 18, color: isSelected ? MiuixColors.primary : MiuixColors.textTertiary),
@@ -282,7 +282,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage>
                       duration: MiuixDuration.fast,
                       padding: const EdgeInsets.symmetric(vertical: MiuixSpacing.sm),
                       decoration: BoxDecoration(
-                        color: isSelected ? MiuixColors.primary.withValues(alpha: 0.08) : MiuixColors.surfaceVariant,
+                        color: isSelected ? MiuixColors.primary.withOpacity(0.08) : MiuixColors.surfaceVariant,
                         borderRadius: MiuixRadius.mdRadius,
                         border: Border.all(color: isSelected ? MiuixColors.primary : Colors.transparent, width: 1),
                       ),

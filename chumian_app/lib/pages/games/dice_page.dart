@@ -196,7 +196,7 @@ class _DicePageState extends State<DicePage>
                 border: Border.all(color: MiuixColors.border, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.2),
+                    color: MiuixColors.primary.withOpacity(0.2),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -390,7 +390,7 @@ class _DicePageState extends State<DicePage>
                     horizontal: MiuixSpacing.md, vertical: MiuixSpacing.xs),
                 decoration: BoxDecoration(
                   color: e.key == 0
-                      ? MiuixColors.primary.withValues(alpha: 0.15)
+                      ? MiuixColors.primary.withOpacity(0.15)
                       : MiuixColors.surfaceVariant,
                   borderRadius: MiuixRadius.pillRadius,
                   border: Border.all(

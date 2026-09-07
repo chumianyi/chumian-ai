@@ -141,7 +141,7 @@ class _SettingTileState extends State<SettingTile> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  iconBg.withValues(alpha: 0.8),
+                                  iconBg.withOpacity(0.8),
                                   iconBg,
                                 ],
                                 begin: Alignment.topLeft,
@@ -151,7 +151,7 @@ class _SettingTileState extends State<SettingTile> {
                                   BorderRadius.circular(MiuixRadius.sm),
                               boxShadow: [
                                 BoxShadow(
-                                  color: iconBg.withValues(alpha: 0.25),
+                                  color: iconBg.withOpacity(0.25),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),

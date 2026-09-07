@@ -158,8 +158,8 @@ class _DecorationPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color.withValues(alpha: 0.6),
-          color.withValues(alpha: 0.2),
+          color.withOpacity(0.6),
+          color.withOpacity(0.2),
         ],
       ).createShader(Offset.zero & size);
     canvas.drawPath(path, paint);
@@ -178,7 +178,7 @@ class _DecorationPainter extends CustomPainter {
     path2.close();
 
     final paint2 = Paint()
-      ..color = color.withValues(alpha: 0.3);
+      ..color = color.withOpacity(0.3);
     canvas.drawPath(path2, paint2);
   }
 
@@ -187,7 +187,7 @@ class _DecorationPainter extends CustomPainter {
     final floatOffset = math.sin(progress * math.pi * 2) * 3;
 
     final cloudPaint = Paint()
-      ..color = color.withValues(alpha: 0.7)
+      ..color = color.withOpacity(0.7)
       ..style = PaintingStyle.fill;
 
     // 云朵由多个圆组成
@@ -237,7 +237,7 @@ class _DecorationPainter extends CustomPainter {
 
     final paint = Paint()
       ..shader = LinearGradient(
-        colors: [color.withValues(alpha: 0.8), color],
+        colors: [color.withOpacity(0.8), color],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Offset.zero & size)
@@ -246,7 +246,7 @@ class _DecorationPainter extends CustomPainter {
 
     // 闪烁光晕
     final glowPaint = Paint()
-      ..color = color.withValues(alpha: 0.3 + math.sin(progress * math.pi * 2) * 0.2)
+      ..color = color.withOpacity(0.3 + math.sin(progress * math.pi * 2) * 0.2)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
     canvas.drawPath(path, glowPaint);
   }
@@ -283,7 +283,7 @@ class _DecorationPainter extends CustomPainter {
 
     final paint = Paint()
       ..shader = LinearGradient(
-        colors: [color.withValues(alpha: 0.7), color],
+        colors: [color.withOpacity(0.7), color],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Offset.zero & size)
@@ -292,7 +292,7 @@ class _DecorationPainter extends CustomPainter {
 
     // 高光
     final highlightPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
+      ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.fill;
     canvas.drawOval(
       Rect.fromLTWH(
@@ -324,8 +324,8 @@ class _DecorationPainter extends CustomPainter {
       final petalPaint = Paint()
         ..shader = RadialGradient(
           colors: [
-            color.withValues(alpha: 0.9),
-            color.withValues(alpha: 0.5),
+            color.withOpacity(0.9),
+            color.withOpacity(0.5),
           ],
         ).createShader(Rect.fromCircle(
           center: petalCenter,
@@ -342,7 +342,7 @@ class _DecorationPainter extends CustomPainter {
 
     // 花心纹理
     final dotPaint = Paint()
-      ..color = color.withValues(alpha: 0.6)
+      ..color = color.withOpacity(0.6)
       ..style = PaintingStyle.fill;
     for (int i = 0; i < 5; i++) {
       final angle = progress * math.pi + i * 2 * math.pi / 5;

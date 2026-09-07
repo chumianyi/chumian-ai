@@ -184,7 +184,7 @@ class _MiuixMediaCarouselState extends State<MiuixMediaCarousel> {
                               colors: MiuixColors.primaryGradient,
                             )
                           : null,
-                      color: isActive ? null : Colors.white.withValues(alpha: 0.5),
+                      color: isActive ? null : Colors.white.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(MiuixRadius.pill),
                     ),
                   );
@@ -207,7 +207,7 @@ class _MiuixMediaCarouselState extends State<MiuixMediaCarousel> {
           borderRadius: BorderRadius.circular(widget.borderRadius),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.2),
+              color: MiuixColors.primary.withOpacity(0.2),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -246,8 +246,8 @@ class _MiuixMediaCarouselState extends State<MiuixMediaCarousel> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          MiuixColors.primary.withValues(alpha: 0.1),
-                          Colors.black.withValues(alpha: 0.6),
+                          MiuixColors.primary.withOpacity(0.1),
+                          Colors.black.withOpacity(0.6),
                         ],
                         stops: const [0.3, 0.6, 1.0],
                       ),
@@ -284,7 +284,7 @@ class _MiuixMediaCarouselState extends State<MiuixMediaCarousel> {
                         Text(
                           item.subtitle!,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white.withOpacity(0.9),
                             fontSize: MiuixFontSize.sm,
                           ),
                         ),

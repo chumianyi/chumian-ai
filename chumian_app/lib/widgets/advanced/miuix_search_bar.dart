@@ -220,7 +220,7 @@ class _MiuixSearchBarState extends State<MiuixSearchBar>
         boxShadow: _isFocused
             ? [
                 BoxShadow(
-                  color: MiuixColors.primary.withValues(alpha: 0.15),
+                  color: MiuixColors.primary.withOpacity(0.15),
                   blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),

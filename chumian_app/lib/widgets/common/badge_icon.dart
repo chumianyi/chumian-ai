@@ -157,7 +157,7 @@ class _BadgeIconState extends State<BadgeIcon>
         padding: EdgeInsets.symmetric(horizontal: isSingleDigit ? 0 : 4),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [color, color.withValues(alpha: 0.85)],
+            colors: [color, color.withOpacity(0.85)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -165,7 +165,7 @@ class _BadgeIconState extends State<BadgeIcon>
           border: Border.all(color: Colors.white, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.4),
+              color: color.withOpacity(0.4),
               blurRadius: 4,
               offset: const Offset(0, 1),
             ),

@@ -216,7 +216,7 @@ class _ChatInputBarState extends State<ChatInputBar>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: MiuixColors.surface.withValues(alpha: 0.9),
+        color: MiuixColors.surface.withOpacity(0.9),
         border: Border(
           top: BorderSide(color: MiuixColors.borderLight, width: 1),
         ),
@@ -358,7 +358,7 @@ class _ChatInputBarState extends State<ChatInputBar>
         height: 40,
         decoration: BoxDecoration(
           color: isActive
-              ? MiuixColors.primary.withValues(alpha: 0.1)
+              ? MiuixColors.primary.withOpacity(0.1)
               : MiuixColors.surfaceVariant,
           shape: BoxShape.circle,
         ),
@@ -380,7 +380,7 @@ class _ChatInputBarState extends State<ChatInputBar>
             boxShadow: [
               BoxShadow(
                 color: MiuixColors.primary
-                    .withValues(alpha: 0.15 * _glowAnimation.value),
+                    .withOpacity(0.15 * _glowAnimation.value),
                 blurRadius: 16 * _glowAnimation.value,
                 spreadRadius: 1 * _glowAnimation.value,
               ),
@@ -472,7 +472,7 @@ class _ChatInputBarState extends State<ChatInputBar>
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.error.withValues(alpha: 0.3),
+              color: MiuixColors.error.withOpacity(0.3),
               blurRadius: 8,
             ),
           ],
@@ -515,12 +515,12 @@ class _ChatInputBarState extends State<ChatInputBar>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MiuixColors.primary.withValues(alpha: 0.1),
-            MiuixColors.primaryLight.withValues(alpha: 0.05),
+            MiuixColors.primary.withOpacity(0.1),
+            MiuixColors.primaryLight.withOpacity(0.05),
           ],
         ),
         borderRadius: MiuixRadius.lgRadius,
-        border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.3)),
+        border: Border.all(color: MiuixColors.primary.withOpacity(0.3)),
       ),
       child: Column(
         children: [
@@ -566,7 +566,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                   height: 6 + level * 30,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.6 + level * 0.4),
+                    color: MiuixColors.primary.withOpacity(0.6 + level * 0.4),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 );

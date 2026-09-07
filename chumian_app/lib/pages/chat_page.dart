@@ -756,7 +756,7 @@ class _ChatPageState extends State<ChatPage>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
-                  color: MiuixColors.error.withValues(alpha: 0.08),
+                  color: MiuixColors.error.withOpacity(0.08),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(4),
                     topRight: Radius.circular(MiuixRadius.lg),
@@ -764,7 +764,7 @@ class _ChatPageState extends State<ChatPage>
                     bottomRight: const Radius.circular(MiuixRadius.lg),
                   ),
                   border: Border.all(
-                      color: MiuixColors.error.withValues(alpha: 0.3),
+                      color: MiuixColors.error.withOpacity(0.3),
                       width: 0.5),
                 ),
                 child: Column(
@@ -795,7 +795,7 @@ class _ChatPageState extends State<ChatPage>
                     Text(
                       msg.errorMessage,
                       style: TextStyle(
-                        color: MiuixColors.error.withValues(alpha: 0.8),
+                        color: MiuixColors.error.withOpacity(0.8),
                         fontSize: MiuixFontSize.sm,
                         height: 1.5,
                       ),
@@ -1016,7 +1016,7 @@ class _ChatPageState extends State<ChatPage>
             ? MiuixColors.darkSurfaceVariant
             : MiuixColors.surfaceVariant,
         border: Border.all(
-            color: MiuixColors.primary.withValues(alpha: 0.3), width: 1),
+            color: MiuixColors.primary.withOpacity(0.3), width: 1),
       ),
       child: Icon(Icons.person, color: MiuixColors.primary, size: 20),
     );
@@ -1130,11 +1130,11 @@ class _ChatPageState extends State<ChatPage>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 8),
                     decoration: BoxDecoration(
-                      color: MiuixColors.primary.withValues(alpha: 0.05),
+                      color: MiuixColors.primary.withOpacity(0.05),
                       borderRadius: MiuixRadius.smRadius,
                       border: Border.all(
                           color:
-                              MiuixColors.primary.withValues(alpha: 0.15),
+                              MiuixColors.primary.withOpacity(0.15),
                           width: 0.5),
                     ),
                     child: Column(
@@ -1174,12 +1174,12 @@ class _ChatPageState extends State<ChatPage>
       blur: 24,
       borderRadius: 0,
       backgroundColor: isDark
-          ? MiuixColors.darkSurface.withValues(alpha: 0.85)
-          : Colors.white.withValues(alpha: 0.85),
+          ? MiuixColors.darkSurface.withOpacity(0.85)
+          : Colors.white.withOpacity(0.85),
       borderColor: Colors.transparent,
       shadow: [
         BoxShadow(
-          color: MiuixColors.primary.withValues(alpha: 0.06),
+          color: MiuixColors.primary.withOpacity(0.06),
           blurRadius: 16,
           offset: const Offset(0, -4),
         ),
@@ -1256,8 +1256,7 @@ class _ChatPageState extends State<ChatPage>
                             boxShadow: _inputGlowAnim.value > 0
                                 ? [
                                     BoxShadow(
-                                      color: MiuixColors.primary.withValues(
-                                          alpha: 0.15 * _inputGlowAnim.value),
+                                      color: MiuixColors.primary.withOpacity(0.15 * _inputGlowAnim.value),
                                       blurRadius: 12,
                                       spreadRadius: 1,
                                     ),
@@ -1368,7 +1367,7 @@ class _ChatPageState extends State<ChatPage>
             border: Border.all(
               color: isActive
                   ? Colors.transparent
-                  : MiuixColors.primary.withValues(alpha: 0.4),
+                  : MiuixColors.primary.withOpacity(0.4),
               width: 1,
             ),
             borderRadius: MiuixRadius.pillRadius,
@@ -1415,7 +1414,7 @@ class _ChatPageState extends State<ChatPage>
             width: 3,
             height: 8 + (i * 7 % 20).toDouble(),
             decoration: BoxDecoration(
-              color: MiuixColors.error.withValues(alpha: 0.6 + (i % 3) * 0.13),
+              color: MiuixColors.error.withOpacity(0.6 + (i % 3) * 0.13),
               borderRadius: MiuixRadius.pillRadius,
             ),
           );

@@ -135,14 +135,14 @@ class _ContactUsPageState extends State<ContactUsPage>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                MiuixColors.primary.withValues(alpha: 0.08),
-                MiuixColors.primaryLight.withValues(alpha: 0.04),
+                MiuixColors.primary.withOpacity(0.08),
+                MiuixColors.primaryLight.withOpacity(0.04),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: MiuixRadius.xlRadius,
-            border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.15)),
+            border: Border.all(color: MiuixColors.primary.withOpacity(0.15)),
           ),
           child: Column(
             children: [
@@ -158,7 +158,7 @@ class _ContactUsPageState extends State<ContactUsPage>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -249,7 +249,7 @@ class _ContactUsPageState extends State<ContactUsPage>
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: (method['color'] as Color).withValues(alpha: 0.1),
+                  color: (method['color'] as Color).withOpacity(0.1),
                   borderRadius: MiuixRadius.mdRadius,
                 ),
                 child: Icon(
@@ -285,7 +285,7 @@ class _ContactUsPageState extends State<ContactUsPage>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: 6),
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.08),
+                  color: MiuixColors.primary.withOpacity(0.08),
                   borderRadius: MiuixRadius.pillRadius,
                 ),
                 child: Text(

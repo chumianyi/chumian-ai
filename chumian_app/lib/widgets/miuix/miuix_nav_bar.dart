@@ -96,17 +96,17 @@ class _MiuixNavBarState extends State<MiuixNavBar> {
           padding: EdgeInsets.only(bottom: bottomInset),
           decoration: BoxDecoration(
             color: widget.backgroundColor ??
-                MiuixColors.surface.withValues(alpha: 0.85),
+                MiuixColors.surface.withOpacity(0.85),
             border: Border(
               top: BorderSide(
-                color: MiuixColors.border.withValues(alpha: 0.5),
+                color: MiuixColors.border.withOpacity(0.5),
                 width: 0.5,
               ),
             ),
             boxShadow: widget.elevation
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.08),
+                      color: MiuixColors.primary.withOpacity(0.08),
                       blurRadius: 20,
                       offset: const Offset(0, -4),
                     ),
@@ -226,7 +226,7 @@ class _NavBarItemWidgetState extends State<_NavBarItemWidget>
             boxShadow: widget.isSelected
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.35),
+                      color: MiuixColors.primary.withOpacity(0.35),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),

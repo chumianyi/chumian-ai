@@ -153,7 +153,7 @@ class _MiuixIconButtonState extends State<MiuixIconButton>
               ? null
               : [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.3),
+                    color: MiuixColors.primary.withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -175,7 +175,7 @@ class _MiuixIconButtonState extends State<MiuixIconButton>
         );
       case MiuixIconButtonStyle.glass:
         return BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: Colors.white.withOpacity(0.2),
           shape: BoxShape.circle,
           border: Border.all(
             color: MiuixColors.glassBorder,
@@ -216,8 +216,8 @@ class _MiuixIconButtonState extends State<MiuixIconButton>
         child: MiuixRipple(
           borderRadius: BorderRadius.circular(widget.size / 2),
           color: widget.style == MiuixIconButtonStyle.filled
-              ? Colors.white.withValues(alpha: 0.3)
-              : MiuixColors.primary.withValues(alpha: 0.2),
+              ? Colors.white.withOpacity(0.3)
+              : MiuixColors.primary.withOpacity(0.2),
           child: Opacity(
             opacity: widget.disabled ? 0.5 : 1.0,
             child: Container(

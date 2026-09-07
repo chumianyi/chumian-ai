@@ -403,8 +403,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          MiuixColors.primaryLight.withValues(alpha: 0.4),
-                          MiuixColors.primary.withValues(alpha: 0.3),
+                          MiuixColors.primaryLight.withOpacity(0.4),
+                          MiuixColors.primary.withOpacity(0.3),
                         ],
                       ),
                       borderRadius: MiuixRadius.mdRadius,
@@ -482,7 +482,7 @@ class _CreatePostPageState extends State<CreatePostPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: MiuixColors.primary, size: 20),

@@ -62,9 +62,9 @@ class PrivacyPolicyPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: MiuixColors.primary.withValues(alpha: 0.06),
+                color: MiuixColors.primary.withOpacity(0.06),
                 borderRadius: MiuixRadius.mdRadius,
-                border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.15)),
+                border: Border.all(color: MiuixColors.primary.withOpacity(0.15)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +121,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [MiuixColors.primary.withValues(alpha: 0.12), MiuixColors.primary.withValues(alpha: 0.04)],
+                colors: [MiuixColors.primary.withOpacity(0.12), MiuixColors.primary.withOpacity(0.04)],
               ),
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(MiuixRadius.md),

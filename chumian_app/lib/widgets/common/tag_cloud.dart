@@ -113,7 +113,7 @@ class _TagCloudState extends State<TagCloud> {
     final colorIndex = index % _tagColors.length;
     final baseColor = tag.color ?? _tagColors[colorIndex];
     final bgColor = tag.backgroundColor ??
-        baseColor.withValues(alpha: isSelected ? 1.0 : 0.1);
+        baseColor.withOpacity(isSelected ? 1.0 : 0.1);
 
     // 根据权重决定字体大小
     final fontSize = 12.0 + (tag.weight.clamp(1, 5) - 1) * 2.0;
@@ -137,11 +137,11 @@ class _TagCloudState extends State<TagCloud> {
             borderRadius: BorderRadius.circular(MiuixRadius.pill),
             border: isSelected
                 ? Border.all(color: baseColor, width: 1.5)
-                : Border.all(color: baseColor.withValues(alpha: 0.3), width: 1),
+                : Border.all(color: baseColor.withOpacity(0.3), width: 1),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: baseColor.withValues(alpha: 0.3),
+                      color: baseColor.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

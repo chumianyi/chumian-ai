@@ -55,7 +55,7 @@ class MiuixActionSheet {
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black.withValues(alpha: 0.4),
+      barrierColor: Colors.black.withOpacity(0.4),
       transitionDuration: const Duration(milliseconds: 350),
       pageBuilder: (context, animation, secondaryAnimation) {
         return _MiuixActionSheetWidget(
@@ -115,7 +115,7 @@ class _MiuixActionSheetWidget extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: MiuixColors.surface.withValues(alpha: 0.95),
+                  color: MiuixColors.surface.withOpacity(0.95),
                   borderRadius: BorderRadius.circular(MiuixRadius.xl),
                   border: Border.all(color: MiuixColors.glassBorder),
                 ),
@@ -236,7 +236,7 @@ class _ActionSheetItemWidgetState extends State<_ActionSheetItemWidget>
           child: child,
         ),
         child: MiuixRipple(
-          color: MiuixColors.primary.withValues(alpha: 0.1),
+          color: MiuixColors.primary.withOpacity(0.1),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(

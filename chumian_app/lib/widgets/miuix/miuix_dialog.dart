@@ -116,7 +116,7 @@ class MiuixDialog extends StatefulWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black.withValues(alpha: 0.4),
+      barrierColor: Colors.black.withOpacity(0.4),
       transitionDuration: MiuixDuration.normal,
       pageBuilder: (context, animation, secondaryAnimation) {
         return MiuixDialog(
@@ -195,7 +195,7 @@ class _MiuixDialogState extends State<MiuixDialog> {
                 width: double.infinity,
                 constraints: const BoxConstraints(maxWidth: 340),
                 decoration: BoxDecoration(
-                  color: MiuixColors.surface.withValues(alpha: 0.95),
+                  color: MiuixColors.surface.withOpacity(0.95),
                   borderRadius: BorderRadius.circular(MiuixRadius.xl),
                   border: Border.all(
                     color: MiuixColors.glassBorder,
@@ -216,8 +216,8 @@ class _MiuixDialogState extends State<MiuixDialog> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            typeColor.withValues(alpha: 0.1),
-                            typeColor.withValues(alpha: 0.05),
+                            typeColor.withOpacity(0.1),
+                            typeColor.withOpacity(0.05),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -233,7 +233,7 @@ class _MiuixDialogState extends State<MiuixDialog> {
                               width: 56,
                               height: 56,
                               decoration: BoxDecoration(
-                                color: typeColor.withValues(alpha: 0.15),
+                                color: typeColor.withOpacity(0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(

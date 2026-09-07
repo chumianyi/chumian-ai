@@ -116,14 +116,14 @@ class _MiuixTypingIndicatorState extends State<MiuixTypingIndicator>
                         gradient: widget.gradient ??
                             RadialGradient(
                               colors: [
-                                dotColor.withValues(alpha: 0.8),
+                                dotColor.withOpacity(0.8),
                                 dotColor,
                               ],
                             ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: dotColor.withValues(alpha: 0.4),
+                            color: dotColor.withOpacity(0.4),
                             blurRadius: 4,
                           ),
                         ],
@@ -161,10 +161,10 @@ class _MiuixTypingIndicatorState extends State<MiuixTypingIndicator>
         ),
         decoration: BoxDecoration(
           color: widget.bubbleColor ??
-              MiuixColors.primaryLight.withValues(alpha: 0.1),
+              MiuixColors.primaryLight.withOpacity(0.1),
           borderRadius: BorderRadius.circular(MiuixRadius.lg),
           border: Border.all(
-            color: MiuixColors.primary.withValues(alpha: 0.2),
+            color: MiuixColors.primary.withOpacity(0.2),
           ),
         ),
         child: dots,
@@ -305,7 +305,7 @@ class _ThinkingPainter extends CustomPainter {
         center.dy + radius * math.sin(angle),
       );
       final Paint paint = Paint()
-        ..color = color.withValues(alpha: 0.4 + 0.6 * (i / 3))
+        ..color = color.withOpacity(0.4 + 0.6 * (i / 3))
         ..style = PaintingStyle.fill;
       canvas.drawCircle(dotCenter, size.width * 0.1, paint);
     }

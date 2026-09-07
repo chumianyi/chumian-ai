@@ -152,15 +152,15 @@ class _ChatSearchResultsState extends State<ChatSearchResults>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  MiuixColors.primary.withValues(alpha: 0.04),
-                  MiuixColors.primaryLight.withValues(alpha: 0.02),
+                  MiuixColors.primary.withOpacity(0.04),
+                  MiuixColors.primaryLight.withOpacity(0.02),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: MiuixRadius.mdRadius,
               border: Border.all(
-                color: MiuixColors.primary.withValues(alpha: 0.12),
+                color: MiuixColors.primary.withOpacity(0.12),
                 width: 1,
               ),
             ),
@@ -241,7 +241,7 @@ class _ChatSearchResultsState extends State<ChatSearchResults>
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: MiuixColors.primary.withValues(alpha: 0.1),
+        color: MiuixColors.primary.withOpacity(0.1),
         borderRadius: MiuixRadius.xsRadius,
       ),
       child: Icon(
@@ -262,7 +262,7 @@ class _ChatSearchResultsState extends State<ChatSearchResults>
           vertical: MiuixSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: MiuixColors.primary.withValues(alpha: 0.06),
+          color: MiuixColors.primary.withOpacity(0.06),
           borderRadius: MiuixRadius.pillRadius,
         ),
         child: Row(

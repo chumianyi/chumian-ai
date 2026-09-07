@@ -195,10 +195,10 @@ class _SvipPageState extends State<SvipPage>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 10),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withOpacity(0.2),
                           borderRadius: MiuixRadius.pillRadius,
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.5),
+                            color: Colors.white.withOpacity(0.5),
                             width: 1.5,
                           ),
                         ),
@@ -235,7 +235,7 @@ class _SvipPageState extends State<SvipPage>
                 Text(
                   '已有 128,560 位用户开通',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: MiuixFontSize.sm,
                   ),
                 ),
@@ -370,7 +370,7 @@ class _SvipPageState extends State<SvipPage>
                                   style: TextStyle(
                                     fontSize: MiuixFontSize.xs,
                                     color: isSelected
-                                        ? Colors.white.withValues(alpha: 0.7)
+                                        ? Colors.white.withOpacity(0.7)
                                         : MiuixColors.textTertiary,
                                     decoration: TextDecoration.lineThrough,
                                   ),
@@ -381,7 +381,7 @@ class _SvipPageState extends State<SvipPage>
                                   style: TextStyle(
                                     fontSize: MiuixFontSize.xs,
                                     color: isSelected
-                                        ? Colors.white.withValues(alpha: 0.9)
+                                        ? Colors.white.withOpacity(0.9)
                                         : MiuixColors.textSecondary,
                                   ),
                                 ),

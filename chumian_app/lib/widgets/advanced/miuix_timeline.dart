@@ -219,7 +219,7 @@ class _TimelineNode extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     color: (item.color ?? MiuixColors.primary)
-                        .withValues(alpha: 0.4),
+                        .withOpacity(0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -243,7 +243,7 @@ class _TimelineNode extends StatelessWidget {
                     colors: [
                       item.color ?? MiuixColors.primary,
                       (item.color ?? MiuixColors.primary)
-                          .withValues(alpha: 0.2),
+                          .withOpacity(0.2),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(2),

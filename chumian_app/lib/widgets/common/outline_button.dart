@@ -123,19 +123,19 @@ class _OutlineButtonState extends State<OutlineButton> {
                   const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: _isHovering && _isEnabled
-                    ? border.withValues(alpha: 0.06)
+                    ? border.withOpacity(0.06)
                     : bg,
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 border: Border.all(
                   color: _isHovering && _isEnabled
-                      ? border.withValues(alpha: 0.8)
+                      ? border.withOpacity(0.8)
                       : border,
                   width: widget.borderWidth,
                 ),
                 boxShadow: _isPressed && _isEnabled
                     ? [
                         BoxShadow(
-                          color: border.withValues(alpha: 0.15),
+                          color: border.withOpacity(0.15),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -147,8 +147,8 @@ class _OutlineButtonState extends State<OutlineButton> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(widget.borderRadius),
                   onTap: _isEnabled ? widget.onTap : null,
-                  splashColor: border.withValues(alpha: 0.1),
-                  highlightColor: border.withValues(alpha: 0.05),
+                  splashColor: border.withOpacity(0.1),
+                  highlightColor: border.withOpacity(0.05),
                   child: Center(
                     child: _buildContent(text),
                   ),

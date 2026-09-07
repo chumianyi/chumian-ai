@@ -125,7 +125,7 @@ class _ChatEmptyStateState extends State<ChatEmptyState>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.2),
+                color: MiuixColors.primary.withOpacity(0.2),
                 blurRadius: 30,
                 offset: const Offset(0, 10),
               ),
@@ -218,10 +218,10 @@ class _ChatEmptyStateState extends State<ChatEmptyState>
             vertical: MiuixSpacing.xs,
           ),
           decoration: BoxDecoration(
-            color: MiuixColors.primary.withValues(alpha: 0.08),
+            color: MiuixColors.primary.withOpacity(0.08),
             borderRadius: MiuixRadius.pillRadius,
             border: Border.all(
-              color: MiuixColors.primary.withValues(alpha: 0.2),
+              color: MiuixColors.primary.withOpacity(0.2),
             ),
           ),
           child: Row(

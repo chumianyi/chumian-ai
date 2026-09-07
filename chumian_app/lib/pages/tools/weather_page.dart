@@ -247,7 +247,7 @@ class _WeatherPageState extends State<WeatherPage>
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: MiuixRadius.pillRadius,
                     ),
                     child: Row(
@@ -320,7 +320,7 @@ class _WeatherPageState extends State<WeatherPage>
           Text(
             '体感温度 ${_currentWeather.feelsLike}°C',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
               fontSize: MiuixFontSize.sm,
             ),
           ),
@@ -358,7 +358,7 @@ class _WeatherPageState extends State<WeatherPage>
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                     color: index == 0
-                        ? MiuixColors.primaryLight.withValues(alpha: 0.15)
+                        ? MiuixColors.primaryLight.withOpacity(0.15)
                         : MiuixColors.surfaceVariant,
                     borderRadius: MiuixRadius.mdRadius,
                   ),
@@ -522,7 +522,7 @@ class _WeatherPageState extends State<WeatherPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -610,7 +610,7 @@ class _WeatherIconPainter extends CustomPainter {
 
     // 太阳光芒
     final sunPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.6)
+      ..color = Colors.white.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     for (int i = 0; i < 8; i++) {
@@ -630,7 +630,7 @@ class _WeatherIconPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       22,
-      Paint()..color = Colors.white.withValues(alpha: 0.9),
+      Paint()..color = Colors.white.withOpacity(0.9),
     );
 
     // 云朵

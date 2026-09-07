@@ -155,7 +155,7 @@ class _MiuixVoiceVisualizerState extends State<MiuixVoiceVisualizer>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.4),
+                    color: MiuixColors.primary.withOpacity(0.4),
                     blurRadius: 12,
                   ),
                 ],
@@ -273,7 +273,7 @@ class _VoiceCircularPainter extends CustomPainter {
 
     // 外圈光晕
     final glowPaint = Paint()
-      ..color = MiuixColors.primary.withValues(alpha: 0.15 * amplitude)
+      ..color = MiuixColors.primary.withOpacity(0.15 * amplitude)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
@@ -379,7 +379,7 @@ class _AudioWaveformPainter extends CustomPainter {
       final isActive = i <= activeIndex;
 
       final paint = Paint()
-        ..color = isActive ? activeColor : color.withValues(alpha: 0.3)
+        ..color = isActive ? activeColor : color.withOpacity(0.3)
         ..style = PaintingStyle.fill;
 
       canvas.drawRRect(
@@ -472,7 +472,7 @@ class _MiuixRecordingIndicatorState extends State<MiuixRecordingIndicator>
         ),
         decoration: BoxDecoration(
           color: widget.isRecording
-              ? MiuixColors.error.withValues(alpha: 0.1)
+              ? MiuixColors.error.withOpacity(0.1)
               : MiuixColors.surface,
           borderRadius: BorderRadius.circular(MiuixRadius.pill),
           border: Border.all(
@@ -498,9 +498,7 @@ class _MiuixRecordingIndicatorState extends State<MiuixRecordingIndicator>
                     boxShadow: widget.isRecording
                         ? [
                             BoxShadow(
-                              color: MiuixColors.error.withValues(
-                                alpha: 0.3 + _pulseController.value * 0.4,
-                              ),
+                              color: MiuixColors.error.withOpacity(0.3 + _pulseController.value * 0.4),
                               blurRadius: 8 + _pulseController.value * 8,
                             ),
                           ]

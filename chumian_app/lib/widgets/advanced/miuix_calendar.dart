@@ -446,7 +446,7 @@ class _CalendarDayCellState extends State<_CalendarDayCell>
           margin: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             color: hasRangeBg
-                ? MiuixColors.primary.withValues(alpha: 0.12)
+                ? MiuixColors.primary.withOpacity(0.12)
                 : Colors.transparent,
             borderRadius: BorderRadius.horizontal(
               left: Radius.circular(
@@ -468,7 +468,7 @@ class _CalendarDayCellState extends State<_CalendarDayCell>
                       )
                     : null,
                 color: widget.isToday && !isHighlighted
-                    ? MiuixColors.primary.withValues(alpha: 0.1)
+                    ? MiuixColors.primary.withOpacity(0.1)
                     : Colors.transparent,
                 shape: BoxShape.circle,
                 border: widget.isToday && !isHighlighted
@@ -484,7 +484,7 @@ class _CalendarDayCellState extends State<_CalendarDayCell>
                       color: isHighlighted
                           ? Colors.white
                           : widget.isDisabled
-                              ? MiuixColors.textTertiary.withValues(alpha: 0.4)
+                              ? MiuixColors.textTertiary.withOpacity(0.4)
                               : widget.isToday
                                   ? MiuixColors.primary
                                   : MiuixColors.textPrimary,

@@ -235,7 +235,7 @@ class _JokesPageState extends State<JokesPage>
                 padding: const EdgeInsets.symmetric(
                     horizontal: MiuixSpacing.md, vertical: MiuixSpacing.xs),
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.15),
+                  color: MiuixColors.primary.withOpacity(0.15),
                   borderRadius: MiuixRadius.pillRadius,
                 ),
                 child: Text(_categories[joke.category],
@@ -280,7 +280,7 @@ class _JokesPageState extends State<JokesPage>
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Icon(Icons.format_quote,
-                  color: MiuixColors.primary.withValues(alpha: 0.5), size: 24),
+                  color: MiuixColors.primary.withOpacity(0.5), size: 24),
             ],
           ),
         ],

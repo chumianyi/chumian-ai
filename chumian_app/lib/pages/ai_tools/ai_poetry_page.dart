@@ -262,7 +262,7 @@ class _AIPoetryPageState extends State<AIPoetryPage>
                                 : null,
                             color: isSelected
                                 ? null
-                                : MiuixColors.primaryLight.withValues(alpha: 0.2),
+                                : MiuixColors.primaryLight.withOpacity(0.2),
                             borderRadius: MiuixRadius.smRadius,
                           ),
                           child: Icon(
@@ -420,15 +420,15 @@ class _AIPoetryPageState extends State<AIPoetryPage>
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                  color: MiuixColors.primary.withValues(alpha: 0.4), width: 2),
+                  color: MiuixColors.primary.withOpacity(0.4), width: 2),
               top: isBottom
                   ? BorderSide.none
                   : BorderSide(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       width: 2),
               bottom: isBottom
                   ? BorderSide(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       width: 2)
                   : BorderSide.none,
             ),
@@ -440,15 +440,15 @@ class _AIPoetryPageState extends State<AIPoetryPage>
           decoration: BoxDecoration(
             border: Border(
               right: BorderSide(
-                  color: MiuixColors.primary.withValues(alpha: 0.4), width: 2),
+                  color: MiuixColors.primary.withOpacity(0.4), width: 2),
               top: isBottom
                   ? BorderSide.none
                   : BorderSide(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       width: 2),
               bottom: isBottom
                   ? BorderSide(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       width: 2)
                   : BorderSide.none,
             ),
@@ -596,7 +596,7 @@ class _BrushPainter extends CustomPainter {
       canvas.drawCircle(
         Offset(dx, dy),
         3 + sin(angle * 2) * 1.5,
-        Paint()..color = MiuixColors.primary.withValues(alpha: 0.6),
+        Paint()..color = MiuixColors.primary.withOpacity(0.6),
       );
     }
 

@@ -186,7 +186,7 @@ class _MascotInteractionPageState extends State<MascotInteractionPage>
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: MiuixRadius.lgRadius,
                 ),
                 child: const Icon(Icons.favorite, color: Colors.white, size: 24),
@@ -210,7 +210,7 @@ class _MascotInteractionPageState extends State<MascotInteractionPage>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withOpacity(0.2),
                             borderRadius: MiuixRadius.pillRadius,
                           ),
                           child: Text(
@@ -230,7 +230,7 @@ class _MascotInteractionPageState extends State<MascotInteractionPage>
                       child: LinearProgressIndicator(
                         value: _affection / 100,
                         minHeight: 8,
-                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        backgroundColor: Colors.white.withOpacity(0.3),
                         valueColor:
                             const AlwaysStoppedAnimation(Colors.white),
                       ),
@@ -601,12 +601,12 @@ class _MascotPainter extends CustomPainter {
       canvas.drawCircle(
         Offset(center.dx - 35, eyeY + 15),
         8,
-        Paint()..color = const Color(0xFFFF8FB5).withValues(alpha: 0.5),
+        Paint()..color = const Color(0xFFFF8FB5).withOpacity(0.5),
       );
       canvas.drawCircle(
         Offset(center.dx + 35, eyeY + 15),
         8,
-        Paint()..color = const Color(0xFFFF8FB5).withValues(alpha: 0.5),
+        Paint()..color = const Color(0xFFFF8FB5).withOpacity(0.5),
       );
     }
 

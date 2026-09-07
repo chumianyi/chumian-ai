@@ -59,8 +59,8 @@ class MiuixRipple extends StatefulWidget {
   /// 最大扩散半径，默认自动计算为子组件对角线的一半
   final double? maxRadius;
 
-  /// 涟漪裁剪圆角，默认与子组件一致（不裁剪则为 null）
-  final BorderRadius? borderRadius;
+  /// 涟漪裁剪圆角（double 数值，内部转为 BorderRadius.circular），默认不裁剪
+  final double? borderRadius;
 
   @override
   State<MiuixRipple> createState() => _MiuixRippleState();
@@ -132,7 +132,7 @@ class _MiuixRippleState extends State<MiuixRipple>
         _addRipple(event.position);
       },
       child: ClipRRect(
-        borderRadius: widget.borderRadius ?? BorderRadius.zero,
+        borderRadius: widget.borderRadius != null ? BorderRadius.circular(widget.borderRadius!) : BorderRadius.zero,
         child: Stack(
           key: _containerKey,
           children: [
@@ -145,7 +145,7 @@ class _MiuixRippleState extends State<MiuixRipple>
                   painter: _RipplePainter(
                     ripples: _ripples,
                     color: widget.color ??
-                        MiuixColors.primary.withValues(alpha: 0.25),
+                        MiuixColors.primary.withOpacity(0.25),
                   ),
                 ),
               ),
@@ -178,7 +178,7 @@ class _RipplePainter extends CustomPainter {
       final double opacity = (1.0 - t) * 0.6;
 
       final Paint paint = Paint()
-        ..color = color.withValues(alpha: opacity.clamp(0.0, 1.0))
+        ..color = color.withOpacity(opacity.clamp(0.0, 1.0))
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(ripple.position, radius, paint);
@@ -310,7 +310,7 @@ class _GlobalRipplePainter extends CustomPainter {
       final double radius = Curves.easeOut.transform(t) * ripple.maxRadius;
       final double opacity = (1.0 - t) * 0.35;
       final Paint paint = Paint()
-        ..color = MiuixColors.primary.withValues(alpha: opacity)
+        ..color = MiuixColors.primary.withOpacity(opacity)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(ripple.position, radius, paint);
     }
@@ -332,7 +332,7 @@ class PinkRippleEffect {
   static Paint createPaint(double progress, {double baseOpacity = 0.25}) {
     final double opacity = (1.0 - progress) * baseOpacity;
     return Paint()
-      ..color = MiuixColors.primary.withValues(alpha: opacity.clamp(0.0, 1.0))
+      ..color = MiuixColors.primary.withOpacity(opacity.clamp(0.0, 1.0))
       ..style = PaintingStyle.fill;
   }
 

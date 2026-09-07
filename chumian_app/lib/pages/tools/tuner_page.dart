@@ -309,9 +309,9 @@ class _TunerPageState extends State<TunerPage>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.xl, vertical: MiuixSpacing.md),
       decoration: BoxDecoration(
-        color: _statusColor.withValues(alpha: 0.1),
+        color: _statusColor.withOpacity(0.1),
         borderRadius: MiuixRadius.pillRadius,
-        border: Border.all(color: _statusColor.withValues(alpha: 0.3)),
+        border: Border.all(color: _statusColor.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -354,7 +354,7 @@ class _TunerPageState extends State<TunerPage>
           boxShadow: _isListening
               ? [
                   BoxShadow(
-                    color: MiuixColors.error.withValues(alpha: 0.4),
+                    color: MiuixColors.error.withOpacity(0.4),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -387,7 +387,7 @@ class _TunerPageState extends State<TunerPage>
           Container(
             padding: const EdgeInsets.all(MiuixSpacing.md),
             decoration: BoxDecoration(
-              color: MiuixColors.primary.withValues(alpha: 0.08),
+              color: MiuixColors.primary.withOpacity(0.08),
               borderRadius: MiuixRadius.mdRadius,
             ),
             child: const Row(
@@ -413,7 +413,7 @@ class _TunerPageState extends State<TunerPage>
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
+            color: color.withOpacity(0.15),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 16),
@@ -457,7 +457,7 @@ class _MeterPainter extends CustomPainter {
 
     // 颜色分区
     final leftPaint = Paint()
-      ..color = MiuixColors.warning.withValues(alpha: 0.6)
+      ..color = MiuixColors.warning.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;
@@ -470,7 +470,7 @@ class _MeterPainter extends CustomPainter {
     );
 
     final centerPaint = Paint()
-      ..color = MiuixColors.success.withValues(alpha: 0.7)
+      ..color = MiuixColors.success.withOpacity(0.7)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;
@@ -483,7 +483,7 @@ class _MeterPainter extends CustomPainter {
     );
 
     final rightPaint = Paint()
-      ..color = MiuixColors.error.withValues(alpha: 0.6)
+      ..color = MiuixColors.error.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;

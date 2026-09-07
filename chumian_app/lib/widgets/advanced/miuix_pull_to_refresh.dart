@@ -240,7 +240,7 @@ class _PetalPainter extends CustomPainter {
           );
 
       final petalPaint = Paint()
-        ..color = color.withValues(alpha: 0.4 + petalProgress * 0.6)
+        ..color = color.withOpacity(0.4 + petalProgress * 0.6)
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(

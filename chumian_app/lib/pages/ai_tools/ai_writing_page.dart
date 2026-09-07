@@ -461,7 +461,7 @@ class _AIWritingPageState extends State<AIWritingPage>
               activeTrackColor: MiuixColors.primary,
               inactiveTrackColor: MiuixColors.surfaceVariant,
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               valueIndicatorColor: MiuixColors.primary,
               trackHeight: 6,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
@@ -590,7 +590,7 @@ class _AIWritingPageState extends State<AIWritingPage>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.7),
+              color: Colors.white.withOpacity(0.7),
               borderRadius: MiuixRadius.mdRadius,
               border: Border.all(color: MiuixColors.borderLight),
             ),

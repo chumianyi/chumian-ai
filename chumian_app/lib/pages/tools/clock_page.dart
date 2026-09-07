@@ -460,7 +460,7 @@ class _ClockPageState extends State<ClockPage>
                       value: _countdownSeconds > 0
                           ? _countdownRemaining / _countdownSeconds
                           : 0,
-                      backgroundColor: Colors.white.withValues(alpha: 0.5),
+                      backgroundColor: Colors.white.withOpacity(0.5),
                       valueColor:
                           const AlwaysStoppedAnimation(MiuixColors.primary),
                     ),

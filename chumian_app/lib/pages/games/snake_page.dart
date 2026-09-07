@@ -401,7 +401,7 @@ class _SnakePainter extends CustomPainter {
 
     // 网格背景
     final gridPaint = Paint()
-      ..color = MiuixColors.divider.withValues(alpha: 0.5)
+      ..color = MiuixColors.divider.withOpacity(0.5)
       ..strokeWidth = 0.5;
     for (int i = 0; i <= gridSize; i++) {
       canvas.drawLine(
@@ -427,7 +427,7 @@ class _SnakePainter extends CustomPainter {
       canvas.drawOval(
         Rect.fromLTWH(foodRect.left + cellW * 0.1, foodRect.top + cellH * 0.05,
             cellW * 0.25, cellH * 0.2),
-        Paint()..color = Colors.white.withValues(alpha: 0.5),
+        Paint()..color = Colors.white.withOpacity(0.5),
       );
     }
 

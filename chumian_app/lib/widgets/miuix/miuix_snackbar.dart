@@ -159,14 +159,14 @@ class _MiuixSnackBarWidgetState extends State<_MiuixSnackBarWidget>
                 ),
                 decoration: BoxDecoration(
                   color: widget.backgroundColor ??
-                      MiuixColors.textPrimary.withValues(alpha: 0.85),
+                      MiuixColors.textPrimary.withOpacity(0.85),
                   borderRadius: BorderRadius.circular(MiuixRadius.lg),
                   border: Border.all(
-                    color: MiuixColors.primary.withValues(alpha: 0.3),
+                    color: MiuixColors.primary.withOpacity(0.3),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.2),
+                      color: MiuixColors.primary.withOpacity(0.2),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),

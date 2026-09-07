@@ -306,7 +306,7 @@ class _WhackAMolePageState extends State<WhackAMolePage>
               borderRadius: BorderRadius.circular(50),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: Colors.black.withOpacity(0.2),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -440,7 +440,7 @@ class _WhackAMolePageState extends State<WhackAMolePage>
               width: 10,
               height: 6,
               decoration: BoxDecoration(
-                color: MiuixColors.primary.withValues(alpha: 0.6),
+                color: MiuixColors.primary.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -496,7 +496,7 @@ class _WhackAMolePageState extends State<WhackAMolePage>
                 fontWeight: FontWeight.bold)),
         Text(label,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: MiuixFontSize.xs)),
       ],
     );

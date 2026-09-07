@@ -147,7 +147,7 @@ class _RulerPageState extends State<RulerPage>
           // 水平辅助线
           Container(
             height: 1,
-            color: MiuixColors.primary.withValues(alpha: 0.3),
+            color: MiuixColors.primary.withOpacity(0.3),
           ),
           const SizedBox(height: MiuixSpacing.sm),
           // 尺子
@@ -210,7 +210,7 @@ class _RulerPageState extends State<RulerPage>
           // 底部辅助线
           Container(
             height: 1,
-            color: MiuixColors.primary.withValues(alpha: 0.3),
+            color: MiuixColors.primary.withOpacity(0.3),
           ),
         ],
       ),

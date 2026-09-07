@@ -96,7 +96,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   Widget _buildTopBar() {
-    return Positioned(top: 0, left: 0, right: 0, child: SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 8), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent])), child: Row(children: [
+    return Positioned(top: 0, left: 0, right: 0, child: SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 8), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withOpacity(0.6), Colors.transparent])), child: Row(children: [
       MiuixRipple(borderRadius: MiuixRadius.pill, child: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context))),
       const Spacer(),
       MiuixRipple(borderRadius: MiuixRadius.pill, child: IconButton(icon: Icon(_isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen, color: Colors.white), onPressed: _toggleFullscreen)),
@@ -104,14 +104,14 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   Widget _buildCenterPlay() {
-    return Center(child: MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: _togglePlay, child: AnimatedContainer(duration: MiuixDuration.fast, width: 64, height: 64, decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), shape: BoxShape.circle, border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.5), width: 2)), child: Center(child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 36))))));
+    return Center(child: MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: _togglePlay, child: AnimatedContainer(duration: MiuixDuration.fast, width: 64, height: 64, decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), shape: BoxShape.circle, border: Border.all(color: MiuixColors.primary.withOpacity(0.5), width: 2)), child: Center(child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 36))))));
   }
 
   Widget _buildBottomBar() {
-    return Positioned(bottom: 0, left: 0, right: 0, child: Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent])), child: Column(children: [
+    return Positioned(bottom: 0, left: 0, right: 0, child: Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black.withOpacity(0.6), Colors.transparent])), child: Column(children: [
       Row(children: [
         Text(_formatDuration(_controller.value.position), style: const TextStyle(color: Colors.white, fontSize: 12)),
-        Expanded(child: SliderTheme(data: SliderThemeData(trackHeight: 3, thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6), activeTrackColor: MiuixColors.primary, inactiveTrackColor: Colors.white24, thumbColor: MiuixColors.primary, overlayColor: MiuixColors.primary.withValues(alpha: 0.2)), child: Slider(value: _controller.value.position.inSeconds.toDouble(), max: _controller.value.duration.inSeconds.toDouble().clamp(1, double.infinity), onChanged: (v) => _controller.seekTo(Duration(seconds: v.toInt()))))),
+        Expanded(child: SliderTheme(data: SliderThemeData(trackHeight: 3, thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6), activeTrackColor: MiuixColors.primary, inactiveTrackColor: Colors.white24, thumbColor: MiuixColors.primary, overlayColor: MiuixColors.primary.withOpacity(0.2)), child: Slider(value: _controller.value.position.inSeconds.toDouble(), max: _controller.value.duration.inSeconds.toDouble().clamp(1, double.infinity), onChanged: (v) => _controller.seekTo(Duration(seconds: v.toInt()))))),
         Text(_formatDuration(_controller.value.duration), style: const TextStyle(color: Colors.white, fontSize: 12)),
       ]),
       const SizedBox(height: 8),
@@ -126,6 +126,6 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   Widget _buildControlButton(IconData icon, String label, VoidCallback onTap, {bool isMain = false}) {
-    return MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: onTap, child: Container(width: isMain ? 48 : 40, height: isMain ? 48 : 40, decoration: BoxDecoration(color: isMain ? MiuixColors.primary : Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle), child: Center(child: Icon(icon, color: Colors.white, size: isMain ? 28 : 22)))));
+    return MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: onTap, child: Container(width: isMain ? 48 : 40, height: isMain ? 48 : 40, decoration: BoxDecoration(color: isMain ? MiuixColors.primary : Colors.white.withOpacity(0.15), shape: BoxShape.circle), child: Center(child: Icon(icon, color: Colors.white, size: isMain ? 28 : 22)))));
   }
 }

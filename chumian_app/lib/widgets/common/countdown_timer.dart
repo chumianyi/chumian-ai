@@ -187,14 +187,14 @@ class _CountdownTimerState extends State<CountdownTimer> {
           padding: widget.digitPadding,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [bgColor, bgColor.withValues(alpha: 0.85)],
+              colors: [bgColor, bgColor.withOpacity(0.85)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
             borderRadius: BorderRadius.circular(widget.digitBorderRadius),
             boxShadow: [
               BoxShadow(
-                color: bgColor.withValues(alpha: 0.3),
+                color: bgColor.withOpacity(0.3),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -363,7 +363,7 @@ class CountdownBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(MiuixRadius.md),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.3),
+              color: MiuixColors.primary.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

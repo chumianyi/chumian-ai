@@ -207,7 +207,7 @@ class _ChangelogPageState extends State<ChangelogPage>
             boxShadow: isLatest
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                       blurRadius: 8,
                     ),
                   ]
@@ -226,7 +226,7 @@ class _ChangelogPageState extends State<ChangelogPage>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  MiuixColors.primary.withValues(alpha: 0.3),
+                  MiuixColors.primary.withOpacity(0.3),
                   MiuixColors.border,
                 ],
                 begin: Alignment.topCenter,
@@ -297,7 +297,7 @@ class _ChangelogPageState extends State<ChangelogPage>
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               borderRadius: MiuixRadius.xsRadius,
             ),
             child: Icon(icon, size: 12, color: color),

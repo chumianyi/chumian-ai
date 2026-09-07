@@ -285,7 +285,7 @@ class _ColorMatchPageState extends State<ColorMatchPage>
               borderRadius: MiuixRadius.lgRadius,
               boxShadow: [
                 BoxShadow(
-                  color: color.withValues(alpha: 0.4),
+                  color: color.withOpacity(0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -382,7 +382,7 @@ class _ColorMatchPageState extends State<ColorMatchPage>
                 fontWeight: FontWeight.bold)),
         Text(label,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: MiuixFontSize.xs)),
       ],
     );

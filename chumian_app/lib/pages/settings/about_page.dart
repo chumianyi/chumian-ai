@@ -83,7 +83,7 @@ class AboutPage extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: MiuixColors.primary.withValues(alpha: 0.4),
+                  color: MiuixColors.primary.withOpacity(0.4),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -125,7 +125,7 @@ class AboutPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: MiuixColors.success.withValues(alpha: 0.1),
+            color: MiuixColors.success.withOpacity(0.1),
             borderRadius: MiuixRadius.pillRadius,
           ),
           child: Text(
@@ -148,7 +148,7 @@ class AboutPage extends StatelessWidget {
               Container(
                 width: 40, height: 40,
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.12),
+                  color: MiuixColors.primary.withOpacity(0.12),
                   borderRadius: MiuixRadius.smRadius,
                 ),
                 child: const Icon(Icons.favorite, color: MiuixColors.primary, size: 22),
@@ -213,7 +213,7 @@ class AboutPage extends StatelessWidget {
               Container(
                 width: 40, height: 40,
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.12),
+                  color: MiuixColors.primary.withOpacity(0.12),
                   borderRadius: MiuixRadius.smRadius,
                 ),
                 child: const Icon(Icons.groups, color: MiuixColors.primary, size: 22),
@@ -266,7 +266,7 @@ class AboutPage extends StatelessWidget {
               Container(
                 width: 40, height: 40,
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.12),
+                  color: MiuixColors.primary.withOpacity(0.12),
                   borderRadius: MiuixRadius.smRadius,
                 ),
                 child: const Icon(Icons.code, color: MiuixColors.primary, size: 22),
@@ -314,7 +314,7 @@ class AboutPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: MiuixColors.primary.withValues(alpha: 0.08),
+              color: MiuixColors.primary.withOpacity(0.08),
               borderRadius: MiuixRadius.xsRadius,
             ),
             child: Text(license, style: TextStyle(color: MiuixColors.primary, fontSize: 9, fontWeight: FontWeight.w500)),
@@ -347,7 +347,7 @@ class AboutPage extends StatelessWidget {
         leading: Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: MiuixColors.primary.withValues(alpha: 0.12),
+            color: MiuixColors.primary.withOpacity(0.12),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(icon, color: MiuixColors.primary, size: 20),

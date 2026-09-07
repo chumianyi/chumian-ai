@@ -242,7 +242,7 @@ class _FilterChipItemState extends State<_FilterChipItem>
             boxShadow: widget.isSelected
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -325,7 +325,7 @@ class MiuixChoiceChip extends StatelessWidget {
         ),
       ),
       elevation: selected ? 4 : 0,
-      shadowColor: MiuixColors.primary.withValues(alpha: 0.3),
+      shadowColor: MiuixColors.primary.withOpacity(0.3),
     );
   }
 }
@@ -355,7 +355,7 @@ class MiuixInputChip extends StatelessWidget {
       onDeleted: onDeleted,
       avatar: avatar,
       onPressed: onPressed,
-      backgroundColor: MiuixColors.primary.withValues(alpha: 0.1),
+      backgroundColor: MiuixColors.primary.withOpacity(0.1),
       deleteIconColor: MiuixColors.primary,
       labelStyle: const TextStyle(
         color: MiuixColors.primary,
@@ -364,7 +364,7 @@ class MiuixInputChip extends StatelessWidget {
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(MiuixRadius.pill),
-        side: BorderSide(color: MiuixColors.primary.withValues(alpha: 0.3)),
+        side: BorderSide(color: MiuixColors.primary.withOpacity(0.3)),
       ),
     );
   }
@@ -402,7 +402,7 @@ class MiuixActionChip extends StatelessWidget {
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(MiuixRadius.pill),
-        side: BorderSide(color: MiuixColors.primary.withValues(alpha: 0.3)),
+        side: BorderSide(color: MiuixColors.primary.withOpacity(0.3)),
       ),
     );
   }

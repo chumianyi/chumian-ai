@@ -137,7 +137,7 @@ class _ErrorStateState extends State<ErrorState>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MiuixColors.error.withValues(alpha: 0.08),
+                  color: MiuixColors.error.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(MiuixRadius.xs),
                 ),
                 child: Text(
@@ -206,8 +206,8 @@ class _ErrorStateState extends State<ErrorState>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                MiuixColors.error.withValues(alpha: 0.15),
-                MiuixColors.error.withValues(alpha: 0.05),
+                MiuixColors.error.withOpacity(0.15),
+                MiuixColors.error.withOpacity(0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -223,7 +223,7 @@ class _ErrorStateState extends State<ErrorState>
             gradient: LinearGradient(
               colors: [
                 MiuixColors.error,
-                MiuixColors.error.withValues(alpha: 0.8),
+                MiuixColors.error.withOpacity(0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -231,7 +231,7 @@ class _ErrorStateState extends State<ErrorState>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.error.withValues(alpha: 0.3),
+                color: MiuixColors.error.withOpacity(0.3),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -261,7 +261,7 @@ class _ErrorStateState extends State<ErrorState>
           borderRadius: BorderRadius.circular(MiuixRadius.pill),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.35),
+              color: MiuixColors.primary.withOpacity(0.35),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

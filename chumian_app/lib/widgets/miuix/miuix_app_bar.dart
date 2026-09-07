@@ -106,11 +106,11 @@ class MiuixAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: transparent
                 ? Colors.transparent
                 : (backgroundColor ??
-                    MiuixColors.surface.withValues(alpha: 0.85)),
+                    MiuixColors.surface.withOpacity(0.85)),
             border: elevation > 0
                 ? Border(
                     bottom: BorderSide(
-                      color: MiuixColors.border.withValues(alpha: 0.5),
+                      color: MiuixColors.border.withOpacity(0.5),
                       width: 0.5,
                     ),
                   )
@@ -118,7 +118,7 @@ class MiuixAppBar extends StatelessWidget implements PreferredSizeWidget {
             boxShadow: elevation > 0
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.06),
+                      color: MiuixColors.primary.withOpacity(0.06),
                       blurRadius: elevation * 2,
                       offset: Offset(0, elevation),
                     ),
@@ -272,7 +272,7 @@ class MiuixLargeTitleAppBar extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    MiuixColors.primaryLight.withValues(alpha: 0.08),
+                    MiuixColors.primaryLight.withOpacity(0.08),
                     MiuixColors.background,
                   ],
                 ),

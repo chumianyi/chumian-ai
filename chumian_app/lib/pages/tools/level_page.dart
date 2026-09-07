@@ -130,7 +130,7 @@ class _LevelPageState extends State<LevelPage>
         duration: MiuixDuration.normal,
         padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.xl, vertical: MiuixSpacing.md),
         decoration: BoxDecoration(
-          color: (_isLevel ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.1),
+          color: (_isLevel ? MiuixColors.success : MiuixColors.primary).withOpacity(0.1),
           borderRadius: MiuixRadius.pillRadius,
           border: Border.all(
             color: _isLevel ? MiuixColors.success : MiuixColors.primary,
@@ -191,7 +191,7 @@ class _LevelPageState extends State<LevelPage>
                     border: Border.all(color: MiuixColors.border, width: 3),
                     boxShadow: [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.1),
+                        color: MiuixColors.primary.withOpacity(0.1),
                         blurRadius: 20,
                         inset: true,
                       ),
@@ -210,7 +210,7 @@ class _LevelPageState extends State<LevelPage>
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: i == 0
-                                  ? MiuixColors.primary.withValues(alpha: 0.5)
+                                  ? MiuixColors.primary.withOpacity(0.5)
                                   : MiuixColors.border,
                               width: i == 0 ? 2 : 1,
                             ),
@@ -231,13 +231,13 @@ class _LevelPageState extends State<LevelPage>
                             gradient: RadialGradient(
                               colors: [
                                 _isLevel ? MiuixColors.success : MiuixColors.primary,
-                                (_isLevel ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.6),
+                                (_isLevel ? MiuixColors.success : MiuixColors.primary).withOpacity(0.6),
                               ],
                             ),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: (_isLevel ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.4),
+                                color: (_isLevel ? MiuixColors.success : MiuixColors.primary).withOpacity(0.4),
                                 blurRadius: 12,
                                 spreadRadius: 2,
                               ),
@@ -248,7 +248,7 @@ class _LevelPageState extends State<LevelPage>
                               width: size * 0.06,
                               height: size * 0.06,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.6),
+                                color: Colors.white.withOpacity(0.6),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -292,7 +292,7 @@ class _LevelPageState extends State<LevelPage>
                 alignment: Alignment.center,
                 children: [
                   // 中心刻度
-                  Container(width: 2, height: 30, color: MiuixColors.primary.withValues(alpha: 0.5)),
+                  Container(width: 2, height: 30, color: MiuixColors.primary.withOpacity(0.5)),
                   // 左右刻度
                   Positioned(left: barWidth * 0.2, child: Container(width: 1, height: 20, color: MiuixColors.border)),
                   Positioned(right: barWidth * 0.2, child: Container(width: 1, height: 20, color: MiuixColors.border)),
@@ -307,13 +307,13 @@ class _LevelPageState extends State<LevelPage>
                         gradient: LinearGradient(
                           colors: [
                             _angleX.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary,
-                            (_angleX.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.7),
+                            (_angleX.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withOpacity(0.7),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color: (_angleX.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.4),
+                            color: (_angleX.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withOpacity(0.4),
                             blurRadius: 8,
                           ),
                         ],
@@ -323,7 +323,7 @@ class _LevelPageState extends State<LevelPage>
                           width: 12,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: Colors.white.withOpacity(0.4),
                             borderRadius: BorderRadius.circular(6),
                           ),
                         ),
@@ -380,7 +380,7 @@ class _LevelPageState extends State<LevelPage>
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Container(width: 30, height: 1, color: MiuixColors.primary.withValues(alpha: 0.5)),
+                  Container(width: 30, height: 1, color: MiuixColors.primary.withOpacity(0.5)),
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 100),
                     top: (barHeight / 2 - 18) + bubbleOffset,
@@ -391,13 +391,13 @@ class _LevelPageState extends State<LevelPage>
                         gradient: LinearGradient(
                           colors: [
                             _angleY.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary,
-                            (_angleY.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.7),
+                            (_angleY.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withOpacity(0.7),
                           ],
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: (_angleY.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withValues(alpha: 0.4),
+                            color: (_angleY.abs() < 0.5 ? MiuixColors.success : MiuixColors.primary).withOpacity(0.4),
                             blurRadius: 8,
                           ),
                         ],
@@ -407,7 +407,7 @@ class _LevelPageState extends State<LevelPage>
                           width: 10,
                           height: 20,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: Colors.white.withOpacity(0.4),
                             borderRadius: BorderRadius.circular(5),
                           ),
                         ),

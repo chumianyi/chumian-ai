@@ -173,13 +173,13 @@ class _SigninCalendarPageState extends State<SigninCalendarPage>
           Container(
             width: 1,
             height: 40,
-            color: Colors.white.withValues(alpha: 0.3),
+            color: Colors.white.withOpacity(0.3),
           ),
           _buildStatItem('累计签到', '$_totalDays', '天', Icons.calendar_today),
           Container(
             width: 1,
             height: 40,
-            color: Colors.white.withValues(alpha: 0.3),
+            color: Colors.white.withOpacity(0.3),
           ),
           _buildStatItem('本月签到', '${_signedDays.length}', '天', Icons.check_circle),
         ],
@@ -211,7 +211,7 @@ class _SigninCalendarPageState extends State<SigninCalendarPage>
                 child: Text(
                   unit,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: Colors.white.withOpacity(0.8),
                     fontSize: MiuixFontSize.xs,
                   ),
                 ),
@@ -222,7 +222,7 @@ class _SigninCalendarPageState extends State<SigninCalendarPage>
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
               fontSize: MiuixFontSize.xs,
             ),
           ),
@@ -332,7 +332,7 @@ class _SigninCalendarPageState extends State<SigninCalendarPage>
                       color: isSigned
                           ? null
                           : isToday
-                              ? MiuixColors.primaryLight.withValues(alpha: 0.2)
+                              ? MiuixColors.primaryLight.withOpacity(0.2)
                               : Colors.transparent,
                       borderRadius: MiuixRadius.smRadius,
                       border: isToday && !isSigned
@@ -436,7 +436,7 @@ class _SigninCalendarPageState extends State<SigninCalendarPage>
                         style: TextStyle(
                           fontSize: 10,
                           color: achieved
-                              ? Colors.white.withValues(alpha: 0.8)
+                              ? Colors.white.withOpacity(0.8)
                               : MiuixColors.textTertiary,
                         ),
                       ),
@@ -539,7 +539,7 @@ class _SigninPainter extends CustomPainter {
       canvas.drawCircle(
         Offset(dx, dy),
         3 * (1 - progress),
-        Paint()..color = MiuixColors.primary.withValues(alpha: 1 - progress),
+        Paint()..color = MiuixColors.primary.withOpacity(1 - progress),
       );
     }
   }

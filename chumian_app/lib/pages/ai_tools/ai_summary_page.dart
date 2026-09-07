@@ -310,7 +310,7 @@ class _AISummaryPageState extends State<AISummaryPage>
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: isSelected
-                                          ? Colors.white.withValues(alpha: 0.8)
+                                          ? Colors.white.withOpacity(0.8)
                                           : MiuixColors.textTertiary,
                                     ),
                                   ),
@@ -423,7 +423,7 @@ class _AISummaryPageState extends State<AISummaryPage>
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withOpacity(0.7),
                     borderRadius: MiuixRadius.mdRadius,
                   ),
                   child: Text(
@@ -501,7 +501,7 @@ class _AISummaryPageState extends State<AISummaryPage>
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withOpacity(0.7),
                     borderRadius: MiuixRadius.mdRadius,
                   ),
                   child: Row(
@@ -510,7 +510,7 @@ class _AISummaryPageState extends State<AISummaryPage>
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: MiuixColors.primaryLight.withValues(alpha: 0.2),
+                          color: MiuixColors.primaryLight.withOpacity(0.2),
                           borderRadius: MiuixRadius.smRadius,
                         ),
                         child: Icon(point.icon,

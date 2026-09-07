@@ -119,7 +119,7 @@ class _GradientButtonState extends State<GradientButton> {
               boxShadow: _isEnabled
                   ? [
                       BoxShadow(
-                        color: colors.first.withValues(alpha: 0.4),
+                        color: colors.first.withOpacity(0.4),
                         blurRadius: _isPressed ? 6 : 12,
                         offset: Offset(0, _isPressed ? 2 : 4),
                       ),
@@ -131,8 +131,8 @@ class _GradientButtonState extends State<GradientButton> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 onTap: _isEnabled ? widget.onTap : null,
-                splashColor: Colors.white.withValues(alpha: 0.2),
-                highlightColor: Colors.white.withValues(alpha: 0.1),
+                splashColor: Colors.white.withOpacity(0.2),
+                highlightColor: Colors.white.withOpacity(0.1),
                 child: Center(
                   child: widget.isLoading
                       ? _buildLoading()

@@ -49,9 +49,9 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MiuixColors.primary.withValues(alpha: 0.02),
+      backgroundColor: MiuixColors.primary.withOpacity(0.02),
       body: Stack(children: [
-        GestureDetector(onTap: _toggleAppBar, child: PhotoView(imageProvider: _getImageProvider(), minScale: PhotoViewComputedScale.contained * 0.8, maxScale: PhotoViewComputedScale.covered * 3, initialScale: PhotoViewComputedScale.contained, backgroundDecoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.02)), heroAttributes: widget.tag.isNotEmpty ? PhotoViewHeroAttributes(tag: widget.tag) : null, loadingBuilder: (context, event) => Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(value: event == null ? 0 : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1), color: MiuixColors.primary, strokeWidth: 2))), errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image, color: MiuixColors.textTertiary, size: 64)))),
+        GestureDetector(onTap: _toggleAppBar, child: PhotoView(imageProvider: _getImageProvider(), minScale: PhotoViewComputedScale.contained * 0.8, maxScale: PhotoViewComputedScale.covered * 3, initialScale: PhotoViewComputedScale.contained, backgroundDecoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.02)), heroAttributes: widget.tag.isNotEmpty ? PhotoViewHeroAttributes(tag: widget.tag) : null, loadingBuilder: (context, event) => Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(value: event == null ? 0 : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1), color: MiuixColors.primary, strokeWidth: 2))), errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image, color: MiuixColors.textTertiary, size: 64)))),
         AnimatedOpacity(opacity: _showAppBar ? 1 : 0, duration: MiuixDuration.fast, child: IgnorePointer(ignoring: !_showAppBar, child: Column(children: [_buildAppBar(), const Spacer(), _buildBottomBar()]))),
       ]),
     );
@@ -65,7 +65,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> with SingleTickerPr
   }
 
   Widget _buildAppBar() {
-    return SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: 0.5), Colors.transparent])), child: Row(children: [
+    return SafeArea(child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withOpacity(0.5), Colors.transparent])), child: Row(children: [
       MiuixRipple(borderRadius: MiuixRadius.pill, child: IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Navigator.pop(context))),
       const Spacer(),
       MiuixRipple(borderRadius: MiuixRadius.pill, child: IconButton(icon: const Icon(Icons.download, color: Colors.white), onPressed: _saveToGallery)),
@@ -74,7 +74,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> with SingleTickerPr
   }
 
   Widget _buildBottomBar() {
-    return SafeArea(child: Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black.withValues(alpha: 0.5), Colors.transparent])), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return SafeArea(child: Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black.withOpacity(0.5), Colors.transparent])), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       _buildBottomAction(Icons.zoom_in, '放大'),
       const SizedBox(width: 24),
       _buildBottomAction(Icons.zoom_out, '缩小'),

@@ -156,7 +156,7 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage>
               boxShadow: widget.isUser
                   ? [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.3),
+                        color: MiuixColors.primary.withOpacity(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -193,8 +193,8 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage>
       height: 32,
       decoration: BoxDecoration(
         color: widget.isUser
-            ? Colors.white.withValues(alpha: 0.25)
-            : MiuixColors.primary.withValues(alpha: 0.1),
+            ? Colors.white.withOpacity(0.25)
+            : MiuixColors.primary.withOpacity(0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -221,7 +221,7 @@ class _ChatVoiceMessageState extends State<ChatVoiceMessage>
               color: isPlayed
                   ? (widget.isUser ? Colors.white : MiuixColors.primary)
                   : (widget.isUser
-                      ? Colors.white.withValues(alpha: 0.4)
+                      ? Colors.white.withOpacity(0.4)
                       : MiuixColors.border),
               borderRadius: BorderRadius.circular(2),
             ),

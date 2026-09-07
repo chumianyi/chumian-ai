@@ -187,7 +187,7 @@ class _TimerPageState extends State<TimerPage>
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.15),
+              color: MiuixColors.primary.withOpacity(0.15),
               blurRadius: 40,
               spreadRadius: 5,
             ),
@@ -285,7 +285,7 @@ class _TimerPageState extends State<TimerPage>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.4),
+                    color: MiuixColors.primary.withOpacity(0.4),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),

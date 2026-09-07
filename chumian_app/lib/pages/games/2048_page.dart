@@ -404,7 +404,7 @@ class _Game2048PageState extends State<Game2048Page>
         boxShadow: value != 0
             ? [
                 BoxShadow(
-                  color: color.withValues(alpha: 0.4),
+                  color: color.withOpacity(0.4),
                   blurRadius: 6,
                   offset: const Offset(0, 2),
                 ),

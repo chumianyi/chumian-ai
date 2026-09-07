@@ -113,7 +113,7 @@ class _MiuixColorPickerState extends State<MiuixColorPicker> {
             borderRadius: BorderRadius.circular(MiuixRadius.md),
             boxShadow: [
               BoxShadow(
-                color: _currentColor.withValues(alpha: 0.4),
+                color: _currentColor.withOpacity(0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -186,7 +186,7 @@ class _MiuixColorPickerState extends State<MiuixColorPicker> {
                         border: Border.all(color: Colors.white, width: 3),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
+                            color: Colors.black.withOpacity(0.2),
                             blurRadius: 4,
                           ),
                         ],
@@ -251,7 +251,7 @@ class _MiuixColorPickerState extends State<MiuixColorPicker> {
                       border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: Colors.black.withOpacity(0.2),
                           blurRadius: 4,
                         ),
                       ],
@@ -296,7 +296,7 @@ class _MiuixColorPickerState extends State<MiuixColorPicker> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: color.withValues(alpha: 0.5),
+                        color: color.withOpacity(0.5),
                         blurRadius: 8,
                       ),
                     ]

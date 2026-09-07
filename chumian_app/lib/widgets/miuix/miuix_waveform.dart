@@ -153,7 +153,7 @@ class _MiuixWaveformState extends State<MiuixWaveform>
                     boxShadow: [
                       BoxShadow(
                         color: (widget.color ?? MiuixColors.primary)
-                            .withValues(alpha: 0.3),
+                            .withOpacity(0.3),
                         blurRadius: 4,
                       ),
                     ],

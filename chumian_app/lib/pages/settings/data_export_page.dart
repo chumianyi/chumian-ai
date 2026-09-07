@@ -132,9 +132,9 @@ class _DataExportPageState extends State<DataExportPage>
       child: Container(
         padding: const EdgeInsets.all(MiuixSpacing.md),
         decoration: BoxDecoration(
-          color: MiuixColors.info.withValues(alpha: 0.08),
+          color: MiuixColors.info.withOpacity(0.08),
           borderRadius: MiuixRadius.lgRadius,
-          border: Border.all(color: MiuixColors.info.withValues(alpha: 0.2)),
+          border: Border.all(color: MiuixColors.info.withOpacity(0.2)),
         ),
         child: const Row(
           children: [
@@ -189,7 +189,7 @@ class _DataExportPageState extends State<DataExportPage>
         duration: MiuixDuration.fast,
         padding: const EdgeInsets.all(MiuixSpacing.md),
         decoration: BoxDecoration(
-          color: isSelected ? MiuixColors.primary.withValues(alpha: 0.06) : MiuixColors.surface,
+          color: isSelected ? MiuixColors.primary.withOpacity(0.06) : MiuixColors.surface,
           borderRadius: MiuixRadius.lgRadius,
           border: Border.all(
             color: isSelected ? MiuixColors.primary : MiuixColors.borderLight,
@@ -246,7 +246,7 @@ class _DataExportPageState extends State<DataExportPage>
                   duration: MiuixDuration.fast,
                   padding: const EdgeInsets.all(MiuixSpacing.md),
                   decoration: BoxDecoration(
-                    color: isSelected ? MiuixColors.primary.withValues(alpha: 0.04) : MiuixColors.surface,
+                    color: isSelected ? MiuixColors.primary.withOpacity(0.04) : MiuixColors.surface,
                     borderRadius: MiuixRadius.lgRadius,
                     border: Border.all(
                       color: isSelected ? MiuixColors.primary : MiuixColors.borderLight,
@@ -259,7 +259,7 @@ class _DataExportPageState extends State<DataExportPage>
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: (isSelected ? MiuixColors.primary : MiuixColors.textTertiary).withValues(alpha: 0.1),
+                          color: (isSelected ? MiuixColors.primary : MiuixColors.textTertiary).withOpacity(0.1),
                           borderRadius: MiuixRadius.smRadius,
                         ),
                         child: Icon(option['icon'] as IconData, size: 18, color: isSelected ? MiuixColors.primary : MiuixColors.textTertiary),
@@ -362,7 +362,7 @@ class _DataExportPageState extends State<DataExportPage>
             value: value,
             onChanged: onChanged,
             activeColor: MiuixColors.primary,
-            activeTrackColor: MiuixColors.primary.withValues(alpha: 0.3),
+            activeTrackColor: MiuixColors.primary.withOpacity(0.3),
           ),
         ],
       ),
@@ -381,7 +381,7 @@ class _DataExportPageState extends State<DataExportPage>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.1),
+                    color: MiuixColors.primary.withOpacity(0.1),
                     borderRadius: MiuixRadius.mdRadius,
                   ),
                   child: _isExporting

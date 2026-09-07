@@ -154,7 +154,7 @@ class _TaskCenterPageState extends State<TaskCenterPage>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               borderRadius: MiuixRadius.lgRadius,
             ),
             child: const Icon(Icons.stars, color: Colors.white, size: 32),
@@ -284,8 +284,8 @@ class _TaskCenterPageState extends State<TaskCenterPage>
                   ? const LinearGradient(colors: MiuixColors.primaryGradient)
                   : LinearGradient(
                       colors: [
-                        MiuixColors.primaryLight.withValues(alpha: 0.3),
-                        MiuixColors.primary.withValues(alpha: 0.2),
+                        MiuixColors.primaryLight.withOpacity(0.3),
+                        MiuixColors.primary.withOpacity(0.2),
                       ],
                     ),
               borderRadius: MiuixRadius.lgRadius,
@@ -317,7 +317,7 @@ class _TaskCenterPageState extends State<TaskCenterPage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+                        color: MiuixColors.primaryLight.withOpacity(0.15),
                         borderRadius: MiuixRadius.pillRadius,
                       ),
                       child: Row(
@@ -381,7 +381,7 @@ class _TaskCenterPageState extends State<TaskCenterPage>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: MiuixColors.success.withValues(alpha: 0.1),
+                    color: MiuixColors.success.withOpacity(0.1),
                     borderRadius: MiuixRadius.pillRadius,
                   ),
                   child: const Row(

@@ -181,7 +181,7 @@ class _MiuixSliderState extends State<MiuixSlider>
                         height: widget.trackHeight,
                         decoration: BoxDecoration(
                           color: widget.inactiveColor ??
-                              MiuixColors.border.withValues(alpha: 0.5),
+                              MiuixColors.border.withOpacity(0.5),
                           borderRadius:
                               BorderRadius.circular(widget.trackHeight / 2),
                         ),
@@ -225,7 +225,7 @@ class _MiuixSliderState extends State<MiuixSlider>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: MiuixColors.primary.withValues(alpha: 0.4),
+                                color: MiuixColors.primary.withOpacity(0.4),
                                 blurRadius: _isDragging ? 12 : 6,
                                 spreadRadius: _isDragging ? 2 : 0,
                               ),

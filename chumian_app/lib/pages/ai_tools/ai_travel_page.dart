@@ -375,7 +375,7 @@ class _AITravelPageState extends State<AITravelPage>
                             height: 12,
                             decoration: BoxDecoration(gradient: const LinearGradient(colors: MiuixColors.primaryGradient), shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
                           ),
-                          if (!isLast) Container(width: 2, height: 60, color: MiuixColors.primaryLight.withValues(alpha: 0.4)),
+                          if (!isLast) Container(width: 2, height: 60, color: MiuixColors.primaryLight.withOpacity(0.4)),
                         ],
                       ),
                       const SizedBox(width: 12),

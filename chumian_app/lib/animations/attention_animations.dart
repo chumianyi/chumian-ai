@@ -384,7 +384,7 @@ class _GlowPulseAnimationState extends State<GlowPulseAnimation>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: widget.glowColor.withValues(alpha: 0.4 * t),
+                color: widget.glowColor.withOpacity(0.4 * t),
                 blurRadius: widget.maxBlur * t,
                 spreadRadius: widget.maxSpread * t,
               ),

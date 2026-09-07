@@ -111,7 +111,7 @@ class _SectionHeaderState extends State<SectionHeader>
                       borderRadius: BorderRadius.circular(MiuixRadius.sm),
                       boxShadow: [
                         BoxShadow(
-                          color: MiuixColors.primary.withValues(alpha: 0.3),
+                          color: MiuixColors.primary.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

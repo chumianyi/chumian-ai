@@ -77,7 +77,7 @@ class _HoverLiftState extends State<HoverLift> {
             boxShadow: _isActive
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.25),
+                      color: MiuixColors.primary.withOpacity(0.25),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -315,7 +315,7 @@ class _HoverComboState extends State<HoverCombo> {
             boxShadow: _isActive
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                       blurRadius: 24,
                       offset: const Offset(0, 10),
                     ),

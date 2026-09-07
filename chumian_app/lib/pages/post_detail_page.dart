@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:chumian_ai/theme/miuix_colors.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_ripple.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_glass.dart';
@@ -283,7 +284,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         children: [
           Container(
             width: 36, height: 36,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: MiuixColors.primary.withValues(alpha: 0.1)),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: MiuixColors.primary.withOpacity(0.1)),
             child: const Center(child: Icon(Icons.person, color: MiuixColors.primary, size: 20)),
           ),
           const SizedBox(width: 10),
@@ -312,7 +313,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     return MiuixGlassContainer(
       blur: 24,
       borderRadius: 0,
-      backgroundColor: Colors.white.withValues(alpha: 0.9),
+      backgroundColor: Colors.white.withOpacity(0.9),
       borderColor: Colors.transparent,
       child: SafeArea(
         top: false,

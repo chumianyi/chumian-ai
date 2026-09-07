@@ -202,7 +202,7 @@ class _StoragePageState extends State<StoragePage>
                         Text(
                           '/ ${_formatSize(_totalStorage)}',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: Colors.white.withOpacity(0.7),
                             fontSize: MiuixFontSize.xs,
                           ),
                         ),
@@ -226,7 +226,7 @@ class _StoragePageState extends State<StoragePage>
           Text(
             '${(_usagePercent * 100).toStringAsFixed(1)}% 已使用',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
               fontSize: MiuixFontSize.sm,
             ),
           ),
@@ -327,7 +327,7 @@ class _StoragePageState extends State<StoragePage>
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+                  color: MiuixColors.primaryLight.withOpacity(0.15),
                   borderRadius: MiuixRadius.mdRadius,
                 ),
                 child: const Icon(Icons.cleaning_services,
@@ -433,7 +433,7 @@ class _StoragePageState extends State<StoragePage>
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: item.color.withValues(alpha: 0.15),
+                          color: item.color.withOpacity(0.15),
                           borderRadius: MiuixRadius.mdRadius,
                         ),
                         child: Icon(item.icon, color: item.color, size: 22),
@@ -533,7 +533,7 @@ class _StorageRingPainter extends CustomPainter {
 
     // 背景环
     final bgPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
+      ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.round;
@@ -542,7 +542,7 @@ class _StorageRingPainter extends CustomPainter {
     // 进度环
     final progressPaint = Paint()
       ..shader = SweepGradient(
-        colors: [Colors.white, Colors.white.withValues(alpha: 0.7), Colors.white],
+        colors: [Colors.white, Colors.white.withOpacity(0.7), Colors.white],
       ).createShader(Rect.fromCircle(center: center, radius: radius))
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
@@ -566,7 +566,7 @@ class _StorageRingPainter extends CustomPainter {
         canvas.drawCircle(
           Offset(dx, dy),
           2 + sin(angle * 2) * 1,
-          Paint()..color = Colors.white.withValues(alpha: 0.6 - clearProgress * 0.6),
+          Paint()..color = Colors.white.withOpacity(0.6 - clearProgress * 0.6),
         );
       }
     }

@@ -325,7 +325,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
                 child: CircularProgressIndicator(
                   value: 0.85,
                   strokeWidth: 6,
-                  backgroundColor: Colors.white.withValues(alpha: 0.3),
+                  backgroundColor: Colors.white.withOpacity(0.3),
                   valueColor: const AlwaysStoppedAnimation(Colors.white),
                 ),
               ),
@@ -459,7 +459,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: device.isCurrent
-                      ? MiuixColors.primaryLight.withValues(alpha: 0.1)
+                      ? MiuixColors.primaryLight.withOpacity(0.1)
                       : MiuixColors.surfaceVariant,
                   borderRadius: MiuixRadius.mdRadius,
                 ),
@@ -468,7 +468,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: MiuixColors.primaryLight.withValues(alpha: 0.2),
+                        color: MiuixColors.primaryLight.withOpacity(0.2),
                         borderRadius: MiuixRadius.smRadius,
                       ),
                       child: Icon(
@@ -502,7 +502,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
                                       horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: MiuixColors.success
-                                        .withValues(alpha: 0.15),
+                                        .withOpacity(0.15),
                                     borderRadius: MiuixRadius.pillRadius,
                                   ),
                                   child: const Text(
@@ -557,7 +557,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
   Widget _buildDangerZone() {
     return MiuixCard(
       style: MiuixCardStyle.outlined,
-      borderColor: MiuixColors.error.withValues(alpha: 0.3),
+      borderColor: MiuixColors.error.withOpacity(0.3),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,7 +612,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+            color: MiuixColors.primaryLight.withOpacity(0.15),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -655,7 +655,7 @@ class _AccountSecurityPageState extends State<AccountSecurityPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: MiuixColors.primary, size: 20),

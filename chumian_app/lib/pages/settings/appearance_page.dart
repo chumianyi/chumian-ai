@@ -121,7 +121,7 @@ class _AppearancePageState extends State<AppearancePage>
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [theme.light.withValues(alpha: 0.3), theme.primary.withValues(alpha: 0.2)],
+        colors: [theme.light.withOpacity(0.3), theme.primary.withOpacity(0.2)],
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -149,7 +149,7 @@ class _AppearancePageState extends State<AppearancePage>
             decoration: BoxDecoration(
               color: _darkMode
                   ? MiuixColors.darkSurface
-                  : Colors.white.withValues(alpha: 0.8),
+                  : Colors.white.withOpacity(0.8),
               borderRadius: MiuixRadius.lgRadius,
             ),
             child: Column(
@@ -385,7 +385,7 @@ class _AppearancePageState extends State<AppearancePage>
               activeTrackColor: theme.primary,
               inactiveTrackColor: MiuixColors.surfaceVariant,
               thumbColor: Colors.white,
-              overlayColor: theme.light.withValues(alpha: 0.3),
+              overlayColor: theme.light.withOpacity(0.3),
               trackHeight: 6,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
             ),
@@ -482,7 +482,7 @@ class _AppearancePageState extends State<AppearancePage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+              color: color.withOpacity(0.12),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: color, size: 20),

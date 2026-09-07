@@ -277,7 +277,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble>
             vertical: MiuixSpacing.sm,
           ),
           decoration: BoxDecoration(
-            color: MiuixColors.surfaceVariant.withValues(alpha: 0.6),
+            color: MiuixColors.surfaceVariant.withOpacity(0.6),
             borderRadius: MiuixRadius.mdRadius,
             border: Border.all(
               color: MiuixColors.borderLight,
@@ -375,7 +375,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble>
       ),
       boxShadow: [
         BoxShadow(
-          color: MiuixColors.primary.withValues(alpha: 0.3),
+          color: MiuixColors.primary.withOpacity(0.3),
           blurRadius: 12,
           offset: const Offset(0, 4),
         ),
@@ -385,7 +385,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble>
 
   BoxDecoration _assistantBubbleDecoration() {
     return BoxDecoration(
-      color: MiuixColors.surface.withValues(alpha: 0.85),
+      color: MiuixColors.surface.withOpacity(0.85),
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(MiuixRadius.lg),
         topRight: Radius.circular(MiuixRadius.lg),
@@ -473,7 +473,7 @@ class _ChatMessageBubbleState extends State<ChatMessageBubble>
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: MiuixColors.primary.withValues(alpha: 0.2),
+                  color: MiuixColors.primary.withOpacity(0.2),
                   borderRadius: MiuixRadius.xsRadius,
                 ),
                 child: Text(

@@ -167,21 +167,21 @@ class _MiuixNeonButtonState extends State<MiuixNeonButton>
                     // 外层霓虹光晕
                     BoxShadow(
                       color: widget.neonColor
-                          .withValues(alpha: 0.6 * glowIntensity),
+                          .withOpacity(0.6 * glowIntensity),
                       blurRadius: 20 * glowIntensity,
                       spreadRadius: 2,
                     ),
                     // 内层霓虹光晕
                     BoxShadow(
                       color: widget.neonColor
-                          .withValues(alpha: 0.3 * glowIntensity),
+                          .withOpacity(0.3 * glowIntensity),
                       blurRadius: 40 * glowIntensity,
                       spreadRadius: 4,
                     ),
                     // 内发光
                     BoxShadow(
                       color: widget.neonColor
-                          .withValues(alpha: 0.15),
+                          .withOpacity(0.15),
                       blurRadius: 10,
                       spreadRadius: 1,
                       blurStyle: BlurStyle.inner,
@@ -296,15 +296,15 @@ class _MiuixNeonTextState extends State<MiuixNeonText>
             color: widget.color,
             shadows: [
               Shadow(
-                color: widget.color.withValues(alpha: intensity),
+                color: widget.color.withOpacity(intensity),
                 blurRadius: 8 * intensity,
               ),
               Shadow(
-                color: widget.color.withValues(alpha: intensity * 0.6),
+                color: widget.color.withOpacity(intensity * 0.6),
                 blurRadius: 16 * intensity,
               ),
               Shadow(
-                color: widget.color.withValues(alpha: intensity * 0.3),
+                color: widget.color.withOpacity(intensity * 0.3),
                 blurRadius: 32 * intensity,
               ),
             ],
@@ -374,17 +374,17 @@ class _MiuixNeonCardState extends State<MiuixNeonCard>
           height: widget.height,
           padding: widget.padding,
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withOpacity(0.3),
             borderRadius: BorderRadius.circular(widget.borderRadius),
             border: Border.all(color: widget.color, width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: widget.color.withValues(alpha: 0.5 * intensity),
+                color: widget.color.withOpacity(0.5 * intensity),
                 blurRadius: 16 * intensity,
                 spreadRadius: 1,
               ),
               BoxShadow(
-                color: widget.color.withValues(alpha: 0.2 * intensity),
+                color: widget.color.withOpacity(0.2 * intensity),
                 blurRadius: 32 * intensity,
                 spreadRadius: 2,
               ),

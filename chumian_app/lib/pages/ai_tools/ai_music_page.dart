@@ -335,7 +335,7 @@ class _AIMusicPageState extends State<AIMusicPage>
             activeTrackColor: MiuixColors.primary,
             inactiveTrackColor: MiuixColors.surfaceVariant,
             thumbColor: Colors.white,
-            overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+            overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
             trackHeight: 6,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),
@@ -423,9 +423,9 @@ class _AIMusicPageState extends State<AIMusicPage>
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: MiuixColors.primary,
-              inactiveTrackColor: Colors.white.withValues(alpha: 0.5),
+              inactiveTrackColor: Colors.white.withOpacity(0.5),
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               trackHeight: 4,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
             ),

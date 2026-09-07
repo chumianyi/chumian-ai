@@ -198,7 +198,7 @@ class _NetworkImageWidgetState extends State<NetworkImageWidget> {
         gradient: LinearGradient(
           colors: [
             MiuixColors.surfaceVariant,
-            MiuixColors.primary.withValues(alpha: 0.05),
+            MiuixColors.primary.withOpacity(0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -212,7 +212,7 @@ class _NetworkImageWidgetState extends State<NetworkImageWidget> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: MiuixColors.primary.withValues(alpha: 0.1),
+                color: MiuixColors.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

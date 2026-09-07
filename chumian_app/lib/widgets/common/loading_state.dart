@@ -159,7 +159,7 @@ class _LoadingStateState extends State<LoadingState>
                     height: widget.size * 0.25,
                     decoration: BoxDecoration(
                       color: MiuixColors.primary
-                          .withValues(alpha: 0.5 + t * 0.5),
+                          .withOpacity(0.5 + t * 0.5),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -190,7 +190,7 @@ class _LoadingStateState extends State<LoadingState>
                 height: widget.size * scale,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: MiuixColors.primary.withValues(alpha: opacity * 0.3),
+                  color: MiuixColors.primary.withOpacity(opacity * 0.3),
                 ),
               ),
               Container(

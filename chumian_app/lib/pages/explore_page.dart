@@ -254,7 +254,7 @@ class _ExplorePageState extends State<ExplorePage>
           if (post.type == 'video')
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.xsRadius),
+              decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.xsRadius),
               child: const Icon(Icons.videocam, color: MiuixColors.primary, size: 14),
             ),
         ],

@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              MiuixColors.primary.withValues(alpha: 0.04),
+              MiuixColors.primary.withOpacity(0.04),
               Colors.transparent,
             ],
           ),
@@ -172,8 +172,8 @@ class _HomePageState extends State<HomePage>
 
   Widget _buildBottomNav(bool isDark) {
     final bgColor = isDark
-        ? MiuixColors.darkSurface.withValues(alpha: 0.92)
-        : Colors.white.withValues(alpha: 0.92);
+        ? MiuixColors.darkSurface.withOpacity(0.92)
+        : Colors.white.withOpacity(0.92);
     final borderColor = isDark ? MiuixColors.darkBorder : MiuixColors.borderLight;
 
     return Container(
@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage>
         border: Border(top: BorderSide(color: borderColor, width: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.06),
+            color: MiuixColors.primary.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage>
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? MiuixColors.primary.withValues(alpha: 0.12)
+                            ? MiuixColors.primary.withOpacity(0.12)
                             : Colors.transparent,
                         borderRadius: MiuixRadius.pillRadius,
                       ),

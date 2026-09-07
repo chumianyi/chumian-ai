@@ -151,7 +151,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: Colors.black.withOpacity(0.5),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -177,7 +177,7 @@ class _ImageGalleryState extends State<ImageGallery> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         child: Container(
-          color: MiuixColors.primary.withValues(alpha: 0.15),
+          color: MiuixColors.primary.withOpacity(0.15),
           child: Center(
             child: Text(
               '+$count',

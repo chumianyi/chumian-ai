@@ -254,7 +254,7 @@ class _AIVoicePageState extends State<AIVoicePage>
                         Container(
                           width: 40,
                           height: 40,
-                          decoration: BoxDecoration(gradient: isSelected ? const LinearGradient(colors: MiuixColors.primaryGradient) : null, color: isSelected ? null : MiuixColors.primaryLight.withValues(alpha: 0.2), borderRadius: MiuixRadius.smRadius),
+                          decoration: BoxDecoration(gradient: isSelected ? const LinearGradient(colors: MiuixColors.primaryGradient) : null, color: isSelected ? null : MiuixColors.primaryLight.withOpacity(0.2), borderRadius: MiuixRadius.smRadius),
                           child: Icon(_voiceIcons[index], color: isSelected ? Colors.white : MiuixColors.primary, size: 22),
                         ),
                         const SizedBox(width: 12),
@@ -315,7 +315,7 @@ class _AIVoicePageState extends State<AIVoicePage>
             activeTrackColor: MiuixColors.primary,
             inactiveTrackColor: MiuixColors.surfaceVariant,
             thumbColor: Colors.white,
-            overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+            overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
             trackHeight: 6,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),
@@ -376,9 +376,9 @@ class _AIVoicePageState extends State<AIVoicePage>
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: MiuixColors.primary,
-              inactiveTrackColor: Colors.white.withValues(alpha: 0.5),
+              inactiveTrackColor: Colors.white.withOpacity(0.5),
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               trackHeight: 4,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
             ),

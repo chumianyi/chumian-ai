@@ -255,7 +255,7 @@ class _CollectionPageState extends State<CollectionPage>
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: MiuixSpacing.xl),
             decoration: BoxDecoration(
-              color: MiuixColors.error.withValues(alpha: 0.1),
+              color: MiuixColors.error.withOpacity(0.1),
               borderRadius: MiuixRadius.lgRadius,
             ),
             child: const Icon(Icons.delete_outline, color: MiuixColors.error),
@@ -273,7 +273,7 @@ class _CollectionPageState extends State<CollectionPage>
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
+                        color: color.withOpacity(0.1),
                         borderRadius: MiuixRadius.smRadius,
                       ),
                       child: Icon(icon, size: 16, color: color),
@@ -295,7 +295,7 @@ class _CollectionPageState extends State<CollectionPage>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: MiuixColors.primary.withValues(alpha: 0.08),
+                          color: MiuixColors.primary.withOpacity(0.08),
                           borderRadius: MiuixRadius.xsRadius,
                         ),
                         child: Text(

@@ -195,10 +195,10 @@ class _ChatQuickRepliesState extends State<ChatQuickReplies>
               vertical: MiuixSpacing.sm,
             ),
             decoration: BoxDecoration(
-              color: MiuixColors.primary.withValues(alpha: 0.06),
+              color: MiuixColors.primary.withOpacity(0.06),
               borderRadius: MiuixRadius.pillRadius,
               border: Border.all(
-                color: MiuixColors.primary.withValues(alpha: 0.2),
+                color: MiuixColors.primary.withOpacity(0.2),
                 width: 1,
               ),
             ),

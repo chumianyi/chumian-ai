@@ -200,7 +200,7 @@ class _MiuixBadgeState extends State<MiuixBadge>
         border: Border.all(color: Colors.white, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: bgColor.withValues(alpha: 0.4),
+            color: bgColor.withOpacity(0.4),
             blurRadius: 4,
           ),
         ],

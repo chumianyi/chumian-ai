@@ -303,7 +303,7 @@ class _SearchPageState extends State<SearchPage>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: MiuixColors.error.withValues(alpha: 0.1),
+                                color: MiuixColors.error.withOpacity(0.1),
                                 borderRadius: MiuixRadius.pillRadius,
                               ),
                               child: Text(
@@ -410,7 +410,7 @@ class _SearchPageState extends State<SearchPage>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: MiuixColors.primaryLight.withValues(alpha: 0.2),
+                color: MiuixColors.primaryLight.withOpacity(0.2),
                 borderRadius: MiuixRadius.lgRadius,
               ),
               child: const Icon(Icons.article,

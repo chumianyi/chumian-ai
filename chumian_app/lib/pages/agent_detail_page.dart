@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:chumian_ai/theme/miuix_colors.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_ripple.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_glass.dart';
@@ -99,13 +100,13 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
   }
 
   Widget _buildHeader() {
-    return Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [MiuixColors.primaryLight.withValues(alpha: 0.4), MiuixColors.background])), child: SafeArea(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [MiuixColors.primaryLight.withOpacity(0.4), MiuixColors.background])), child: SafeArea(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       const SizedBox(height: 40),
       Container(width: 100, height: 100, decoration: BoxDecoration(shape: BoxShape.circle, gradient: const LinearGradient(colors: MiuixColors.primaryGradient), border: Border.all(color: Colors.white, width: 4), boxShadow: MiuixShadows.lg), child: const Center(child: Icon(Icons.smart_toy, color: Colors.white, size: 48))),
       const SizedBox(height: 12),
       Text(_agent?['name'] ?? '', style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.xxl, fontWeight: FontWeight.bold)),
       const SizedBox(height: 4),
-      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.pillRadius), child: Text(_agent?['category'] ?? '通用', style: TextStyle(color: MiuixColors.primary, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w500))),
+      Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.pillRadius), child: Text(_agent?['category'] ?? '通用', style: TextStyle(color: MiuixColors.primary, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w500))),
     ]))));
   }
 
@@ -136,7 +137,7 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
     return MiuixGlassCard(borderRadius: MiuixRadius.lg, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [const Icon(Icons.psychology, color: MiuixColors.primary, size: 20), const SizedBox(width: 8), Text('系统提示词', style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.bold))]),
       const SizedBox(height: 12),
-      Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.05), borderRadius: MiuixRadius.smRadius, border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.15))), child: Text(_showFullPrompt ? prompt : (prompt.length > 200 ? '${prompt.substring(0, 200)}...' : prompt), style: TextStyle(color: MiuixColors.textSecondary, fontSize: MiuixFontSize.sm, height: 1.6))),
+      Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.05), borderRadius: MiuixRadius.smRadius, border: Border.all(color: MiuixColors.primary.withOpacity(0.15))), child: Text(_showFullPrompt ? prompt : (prompt.length > 200 ? '${prompt.substring(0, 200)}...' : prompt), style: TextStyle(color: MiuixColors.textSecondary, fontSize: MiuixFontSize.sm, height: 1.6))),
       if (prompt.length > 200) GestureDetector(onTap: () => setState(() => _showFullPrompt = !_showFullPrompt), child: Padding(padding: const EdgeInsets.only(top: 8), child: Text(_showFullPrompt ? '收起' : '展开全部', style: TextStyle(color: MiuixColors.primary, fontSize: MiuixFontSize.sm, fontWeight: FontWeight.w500)))),
     ]));
   }
@@ -150,7 +151,7 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
   }
 
   Widget _buildBottomBar() {
-    return SafeArea(child: Container(padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), decoration: BoxDecoration(color: MiuixColors.surface, border: Border(top: BorderSide(color: MiuixColors.borderLight, width: 0.5)), boxShadow: [BoxShadow(color: MiuixColors.primary.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, -4))]), child: Row(children: [
+    return SafeArea(child: Container(padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), decoration: BoxDecoration(color: MiuixColors.surface, border: Border(top: BorderSide(color: MiuixColors.borderLight, width: 0.5)), boxShadow: [BoxShadow(color: MiuixColors.primary.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, -4))]), child: Row(children: [
       _buildBottomAction(Icons.favorite, _isLiked ? '已赞' : '点赞', _isLiked ? MiuixColors.error : MiuixColors.textTertiary, _toggleLike),
       const SizedBox(width: 12),
       _buildBottomAction(Icons.copy, '克隆', MiuixColors.textTertiary, _cloneAgent),

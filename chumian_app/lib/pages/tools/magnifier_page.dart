@@ -266,7 +266,7 @@ class _MagnifierPageState extends State<MagnifierPage>
         border: Border.all(color: MiuixColors.primary, width: 4),
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.3),
+            color: MiuixColors.primary.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

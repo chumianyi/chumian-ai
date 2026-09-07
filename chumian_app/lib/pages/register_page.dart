@@ -282,7 +282,7 @@ class _RegisterPageState extends State<RegisterPage>
         prefixIcon: Icon(icon, color: MiuixColors.primary, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.6),
+        fillColor: Colors.white.withOpacity(0.6),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: MiuixRadius.mdRadius,

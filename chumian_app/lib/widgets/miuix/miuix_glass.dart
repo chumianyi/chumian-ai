@@ -102,7 +102,7 @@ class MiuixGlassContainer extends StatelessWidget {
             alignment: alignment,
             decoration: BoxDecoration(
               borderRadius: borderRadiusObj,
-              color: backgroundColor ?? Colors.white.withValues(alpha: 0.15),
+              color: backgroundColor ?? Colors.white.withOpacity(0.15),
               gradient: gradient,
               border: Border.all(
                 color: borderColor ?? MiuixColors.glassBorder,
@@ -154,11 +154,11 @@ class MiuixGlassCard extends StatelessWidget {
       width: width,
       height: height,
       padding: padding,
-      backgroundColor: Colors.white.withValues(alpha: 0.18),
+      backgroundColor: Colors.white.withOpacity(0.18),
       borderColor: MiuixColors.glassBorder,
       shadow: [
         BoxShadow(
-          color: MiuixColors.primary.withValues(alpha: 0.08),
+          color: MiuixColors.primary.withOpacity(0.08),
           blurRadius: 20 + elevation * 4,
           offset: Offset(0, 4 + elevation * 2),
         ),
@@ -177,7 +177,7 @@ class MiuixGlassCard extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    MiuixColors.primaryLight.withValues(alpha: 0.12),
+                    MiuixColors.primaryLight.withOpacity(0.12),
                     Colors.transparent,
                   ],
                 ),

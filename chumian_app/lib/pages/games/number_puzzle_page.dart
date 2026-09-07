@@ -339,7 +339,7 @@ class _NumberPuzzlePageState extends State<NumberPuzzlePage>
           boxShadow: canMove
               ? [
                   BoxShadow(
-                    color: MiuixColors.primary.withValues(alpha: 0.3),
+                    color: MiuixColors.primary.withOpacity(0.3),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -426,7 +426,7 @@ class _NumberPuzzlePageState extends State<NumberPuzzlePage>
                 fontWeight: FontWeight.bold)),
         Text(label,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: MiuixFontSize.xs)),
       ],
     );

@@ -393,7 +393,7 @@ class _NameTestPageState extends State<NameTestPage>
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: 2),
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: MiuixRadius.pillRadius),
+          decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: MiuixRadius.pillRadius),
           child: Text(luck, style: TextStyle(color: color, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.bold)),
         ),
       ],
@@ -430,7 +430,7 @@ class _NameTestPageState extends State<NameTestPage>
         Container(
           padding: const EdgeInsets.all(MiuixSpacing.sm),
           decoration: BoxDecoration(
-            color: MiuixColors.primary.withValues(alpha: 0.1),
+            color: MiuixColors.primary.withOpacity(0.1),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(icon, color: MiuixColors.primary, size: 18),

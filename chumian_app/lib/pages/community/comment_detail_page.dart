@@ -318,7 +318,7 @@ class _CommentDetailPageState extends State<CommentDetailPage>
       margin: const EdgeInsets.only(left: 44),
       padding: const EdgeInsets.all(MiuixSpacing.md),
       decoration: BoxDecoration(
-        color: MiuixColors.surfaceVariant.withValues(alpha: 0.5),
+        color: MiuixColors.surfaceVariant.withOpacity(0.5),
         borderRadius: MiuixRadius.mdRadius,
       ),
       child: Column(
@@ -409,7 +409,7 @@ class _CommentDetailPageState extends State<CommentDetailPage>
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: MiuixColors.primary.withValues(alpha: 0.15),
+        color: MiuixColors.primary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Center(
@@ -445,7 +445,7 @@ class _CommentDetailPageState extends State<CommentDetailPage>
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.sm, vertical: 4),
                     decoration: BoxDecoration(
-                      color: MiuixColors.primary.withValues(alpha: 0.1),
+                      color: MiuixColors.primary.withOpacity(0.1),
                       borderRadius: MiuixRadius.pillRadius,
                     ),
                     child: Row(

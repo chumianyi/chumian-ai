@@ -330,7 +330,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage>
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: MiuixColors.error.withValues(alpha: 0.1),
+                                  color: MiuixColors.error.withOpacity(0.1),
                                   borderRadius: MiuixRadius.lgRadius,
                                 ),
                                 child: Center(
@@ -487,7 +487,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -535,7 +535,7 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+                color: MiuixColors.primaryLight.withOpacity(0.15),
                 borderRadius: MiuixRadius.smRadius,
               ),
               child: Icon(icon, color: MiuixColors.primary, size: 20),

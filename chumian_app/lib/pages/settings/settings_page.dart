@@ -166,7 +166,7 @@ class _SettingsPageState extends State<SettingsPage> {
         secondary: Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: MiuixColors.primary.withValues(alpha: 0.12),
+            color: MiuixColors.primary.withOpacity(0.12),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -175,7 +175,7 @@ class _SettingsPageState extends State<SettingsPage> {
         subtitle: Text(subtitle, style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs)),
         value: value,
         activeColor: MiuixColors.primary,
-        activeTrackColor: MiuixColors.primary.withValues(alpha: 0.3),
+        activeTrackColor: MiuixColors.primary.withOpacity(0.3),
         onChanged: onChanged,
       ),
     );
@@ -192,7 +192,7 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: MiuixColors.primary.withValues(alpha: 0.12),
+            color: MiuixColors.primary.withOpacity(0.12),
             borderRadius: MiuixRadius.smRadius,
           ),
           child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -210,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: Container(
         width: 36, height: 36,
         decoration: BoxDecoration(
-          color: MiuixColors.primary.withValues(alpha: 0.12),
+          color: MiuixColors.primary.withOpacity(0.12),
           borderRadius: MiuixRadius.smRadius,
         ),
         child: Icon(icon, color: MiuixColors.primary, size: 20),

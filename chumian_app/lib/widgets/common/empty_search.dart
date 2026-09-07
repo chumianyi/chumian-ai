@@ -115,10 +115,10 @@ class _EmptySearchState extends State<EmptySearch>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color: MiuixColors.primary.withValues(alpha: 0.1),
+                    color: MiuixColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(MiuixRadius.pill),
                     border: Border.all(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                     ),
                   ),
                   child: Row(
@@ -165,7 +165,7 @@ class _EmptySearchState extends State<EmptySearch>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: MiuixColors.primary
-                    .withValues(alpha: 0.1 * (1 - _bounceAnimation.value + 0.5)),
+                    .withOpacity(0.1 * (1 - _bounceAnimation.value + 0.5)),
               ),
             ),
             // 放大镜图标
@@ -186,7 +186,7 @@ class _EmptySearchState extends State<EmptySearch>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.3),
+                      color: MiuixColors.primary.withOpacity(0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -239,12 +239,12 @@ class _EmptySearchState extends State<EmptySearch>
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: isHot
-                      ? MiuixColors.primary.withValues(alpha: 0.08)
+                      ? MiuixColors.primary.withOpacity(0.08)
                       : MiuixColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(MiuixRadius.pill),
                   border: Border.all(
                     color: isHot
-                        ? MiuixColors.primary.withValues(alpha: 0.2)
+                        ? MiuixColors.primary.withOpacity(0.2)
                         : MiuixColors.borderLight,
                   ),
                 ),

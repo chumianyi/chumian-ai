@@ -202,8 +202,8 @@ class _LiquidPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color.withValues(alpha: 0.6),
-          color.withValues(alpha: 0.85),
+          color.withOpacity(0.6),
+          color.withOpacity(0.85),
         ],
       ).createShader(Rect.fromLTWH(0, liquidTop, size.width, liquidHeight));
     canvas.drawPath(wavePath, liquidPaint);
@@ -224,7 +224,7 @@ class _LiquidPainter extends CustomPainter {
     wavePath2.close();
 
     final liquidPaint2 = Paint()
-      ..color = color.withValues(alpha: 0.3);
+      ..color = color.withOpacity(0.3);
     canvas.drawPath(wavePath2, liquidPaint2);
 
     // 气泡
@@ -242,7 +242,7 @@ class _LiquidPainter extends CustomPainter {
             0.2 + random.nextDouble() * 0.3;
 
         final bubblePaint = Paint()
-          ..color = Colors.white.withValues(alpha: bubbleOpacity)
+          ..color = Colors.white.withOpacity(bubbleOpacity)
           ..style = PaintingStyle.fill;
         canvas.drawCircle(
           Offset(bubbleX, bubbleY),
@@ -263,7 +263,7 @@ class _LiquidPainter extends CustomPainter {
 
     // 边框光晕
     final glowPaint = Paint()
-      ..color = color.withValues(alpha: 0.2)
+      ..color = color.withOpacity(0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth + 4
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
@@ -424,7 +424,7 @@ class _LiquidFillPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [color.withValues(alpha: 0.7), color],
+        colors: [color.withOpacity(0.7), color],
       ).createShader(Offset.zero & size);
     canvas.drawPath(path, paint);
   }

@@ -301,7 +301,7 @@ class _MiuixShimmerState extends State<MiuixShimmer>
               colors: [
                 widget.baseColor ?? MiuixColors.surfaceVariant,
                 widget.highlightColor ??
-                    MiuixColors.primaryLight.withValues(alpha: 0.3),
+                    MiuixColors.primaryLight.withOpacity(0.3),
                 widget.baseColor ?? MiuixColors.surfaceVariant,
               ],
               stops: [

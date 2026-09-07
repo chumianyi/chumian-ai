@@ -228,7 +228,7 @@ class _LanguagePageState extends State<LanguagePage>
                 Text(
                   '${current.region} · ${current.code.toUpperCase()}',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: MiuixFontSize.xs,
                   ),
                 ),
@@ -238,7 +238,7 @@ class _LanguagePageState extends State<LanguagePage>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               borderRadius: MiuixRadius.pillRadius,
             ),
             child: const Row(
@@ -278,8 +278,8 @@ class _LanguagePageState extends State<LanguagePage>
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    MiuixColors.primaryLight.withValues(alpha: 0.1),
-                    MiuixColors.primary.withValues(alpha: 0.05),
+                    MiuixColors.primaryLight.withOpacity(0.1),
+                    MiuixColors.primary.withOpacity(0.05),
                   ],
                 )
               : null,
@@ -354,7 +354,7 @@ class _LanguagePageState extends State<LanguagePage>
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: MiuixColors.primaryLight.withValues(alpha: 0.1),
+          color: MiuixColors.primaryLight.withOpacity(0.1),
           borderRadius: MiuixRadius.mdRadius,
         ),
         child: const Row(

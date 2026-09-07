@@ -281,7 +281,7 @@ class _HelpCenterPageState extends State<HelpCenterPage>
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withOpacity(0.1),
                 borderRadius: MiuixRadius.smRadius,
               ),
               child: Icon(icon, size: 18, color: color),
@@ -351,7 +351,7 @@ class _HelpCenterPageState extends State<HelpCenterPage>
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: category.color.withValues(alpha: 0.1),
+                            color: category.color.withOpacity(0.1),
                             borderRadius: MiuixRadius.smRadius,
                           ),
                           child: Icon(category.icon, size: 18, color: category.color),
@@ -470,7 +470,7 @@ class _HelpCenterPageState extends State<HelpCenterPage>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MiuixColors.success.withValues(alpha: 0.1),
+                            color: MiuixColors.success.withOpacity(0.1),
                             borderRadius: MiuixRadius.pillRadius,
                           ),
                           child: const Row(
@@ -490,7 +490,7 @@ class _HelpCenterPageState extends State<HelpCenterPage>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MiuixColors.error.withValues(alpha: 0.1),
+                            color: MiuixColors.error.withOpacity(0.1),
                             borderRadius: MiuixRadius.pillRadius,
                           ),
                           child: const Row(

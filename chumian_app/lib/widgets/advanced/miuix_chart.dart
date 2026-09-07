@@ -309,8 +309,8 @@ class _LineChartPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            MiuixColors.primary.withValues(alpha: 0.35 * animation),
-            MiuixColors.primary.withValues(alpha: 0.02),
+            MiuixColors.primary.withOpacity(0.35 * animation),
+            MiuixColors.primary.withOpacity(0.02),
           ],
         ).createShader(chartRect);
       canvas.drawPath(fillPath, fillPaint);
@@ -358,7 +358,7 @@ class _LineChartPainter extends CustomPainter {
 
       // 外圈光晕
       final glowPaint = Paint()
-        ..color = MiuixColors.primary.withValues(alpha: 0.3)
+        ..color = MiuixColors.primary.withOpacity(0.3)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(points[i], radius + 4, glowPaint);
 
@@ -511,7 +511,7 @@ class _BarChartPainter extends CustomPainter {
 
       // 顶部高光
       final highlightPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.25)
+        ..color = Colors.white.withOpacity(0.25)
         ..style = PaintingStyle.fill;
       canvas.drawRRect(
         RRect.fromRectAndRadius(

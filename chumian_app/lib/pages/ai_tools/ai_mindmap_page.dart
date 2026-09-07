@@ -324,7 +324,7 @@ class _AIMindmapPageState extends State<AIMindmapPage>
               activeTrackColor: MiuixColors.primary,
               inactiveTrackColor: MiuixColors.surfaceVariant,
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               trackHeight: 6,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
             ),
@@ -376,9 +376,9 @@ class _AIMindmapPageState extends State<AIMindmapPage>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _statItem('$totalNodes', '总节点'),
-                Container(width: 1, height: 24, color: Colors.white.withValues(alpha: 0.3)),
+                Container(width: 1, height: 24, color: Colors.white.withOpacity(0.3)),
                 _statItem('${(_mindmap['children'] as List).length}', '主分支'),
-                Container(width: 1, height: 24, color: Colors.white.withValues(alpha: 0.3)),
+                Container(width: 1, height: 24, color: Colors.white.withOpacity(0.3)),
                 _statItem('$_levelCount', '层级'),
               ],
             ),
@@ -442,7 +442,7 @@ class _AIMindmapPageState extends State<AIMindmapPage>
         children: [
           Row(
             children: [
-              if (level > 0) Container(width: 12, height: 2, color: color.withValues(alpha: 0.5)),
+              if (level > 0) Container(width: 12, height: 2, color: color.withOpacity(0.5)),
               MiuixRipple(
                 borderRadius: MiuixRadius.sm,
                 child: GestureDetector(
@@ -451,9 +451,9 @@ class _AIMindmapPageState extends State<AIMindmapPage>
                     duration: MiuixDuration.fast,
                     padding: EdgeInsets.symmetric(horizontal: 12 + level * 2.0, vertical: 8),
                     decoration: BoxDecoration(
-                      color: level == 0 ? color.withValues(alpha: 0.15) : MiuixColors.surfaceVariant,
+                      color: level == 0 ? color.withOpacity(0.15) : MiuixColors.surfaceVariant,
                       borderRadius: MiuixRadius.smRadius,
-                      border: Border.all(color: color.withValues(alpha: 0.3)),
+                      border: Border.all(color: color.withOpacity(0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -473,7 +473,7 @@ class _AIMindmapPageState extends State<AIMindmapPage>
           if (hasChildren && !isCollapsed) ...[
             Padding(
               padding: EdgeInsets.only(left: level > 0 ? 12.0 : 0),
-              child: Container(width: 2, height: 4, color: color.withValues(alpha: 0.3)),
+              child: Container(width: 2, height: 4, color: color.withOpacity(0.3)),
             ),
             ...List.generate((node['children'] as List).length, (childIndex) {
               return _buildTreeNode(node['children'][childIndex], level + 1, '${key}_$childIndex');

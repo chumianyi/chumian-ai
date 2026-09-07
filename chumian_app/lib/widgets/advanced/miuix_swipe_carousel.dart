@@ -239,13 +239,13 @@ class _MiuixSwipeCarouselState extends State<MiuixSwipeCarousel>
           end: Alignment.bottomRight,
           colors: [
             card.color ?? MiuixColors.primaryLight,
-            (card.color ?? MiuixColors.primary).withValues(alpha: 0.8),
+            (card.color ?? MiuixColors.primary).withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(MiuixRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: (card.color ?? MiuixColors.primary).withValues(alpha: 0.3),
+            color: (card.color ?? MiuixColors.primary).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -276,7 +276,7 @@ class _MiuixSwipeCarouselState extends State<MiuixSwipeCarousel>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.5),
+                        Colors.black.withOpacity(0.5),
                       ],
                     ),
                   ),
@@ -304,7 +304,7 @@ class _MiuixSwipeCarouselState extends State<MiuixSwipeCarousel>
                       Text(
                         card.subtitle!,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: Colors.white.withOpacity(0.9),
                           fontSize: MiuixFontSize.md,
                         ),
                       ),

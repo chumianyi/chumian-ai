@@ -254,7 +254,7 @@ class _AudioPlayerBarState extends State<AudioPlayerBar>
               height: waveHeight,
               margin: const EdgeInsets.symmetric(horizontal: 1),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(1.5),
               ),
             );
@@ -322,7 +322,7 @@ class _AudioPlayerBarState extends State<AudioPlayerBar>
                       border: Border.all(color: MiuixColors.primary, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: MiuixColors.primary.withValues(alpha: 0.3),
+                          color: MiuixColors.primary.withOpacity(0.3),
                           blurRadius: 4,
                         ),
                       ],
@@ -363,7 +363,7 @@ class _AudioPlayerBarState extends State<AudioPlayerBar>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: MiuixColors.primary.withValues(alpha: 0.35),
+                  color: MiuixColors.primary.withOpacity(0.35),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),

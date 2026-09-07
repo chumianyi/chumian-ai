@@ -390,7 +390,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+              color: MiuixColors.primaryLight.withOpacity(0.15),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -438,7 +438,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+                color: MiuixColors.primaryLight.withOpacity(0.15),
                 borderRadius: MiuixRadius.smRadius,
               ),
               child: Icon(icon, color: MiuixColors.primary, size: 20),
@@ -458,7 +458,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
               padding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: MiuixColors.primaryLight.withValues(alpha: 0.15),
+                color: MiuixColors.primaryLight.withOpacity(0.15),
                 borderRadius: MiuixRadius.pillRadius,
               ),
               child: Text(

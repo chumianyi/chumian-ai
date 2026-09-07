@@ -417,7 +417,7 @@ class _AITitlePageState extends State<AITitlePage>
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.6), borderRadius: MiuixRadius.smRadius),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.6), borderRadius: MiuixRadius.smRadius),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

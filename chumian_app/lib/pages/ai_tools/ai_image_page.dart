@@ -319,7 +319,7 @@ class _AIImagePageState extends State<AIImagePage>
                           style: TextStyle(
                             fontSize: 10,
                             color: isSelected
-                                ? Colors.white.withValues(alpha: 0.8)
+                                ? Colors.white.withOpacity(0.8)
                                 : MiuixColors.textTertiary,
                           ),
                         ),
@@ -520,7 +520,7 @@ class _AIImagePageState extends State<AIImagePage>
                   child: Icon(
                     Icons.image,
                     size: 48,
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: Colors.white.withOpacity(0.6),
                   ),
                 ),
               ),
@@ -536,7 +536,7 @@ class _AIImagePageState extends State<AIImagePage>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.5),
+                        Colors.black.withOpacity(0.5),
                       ],
                     ),
                     borderRadius: const BorderRadius.vertical(
@@ -560,7 +560,7 @@ class _AIImagePageState extends State<AIImagePage>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.4),
+                    color: Colors.black.withOpacity(0.4),
                     borderRadius: MiuixRadius.pillRadius,
                   ),
                   child: Text(
@@ -609,12 +609,12 @@ class _AIImagePageState extends State<AIImagePage>
                 height: 250,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: MiuixRadius.lgRadius,
                 ),
                 child: Center(
                   child: Icon(Icons.image,
-                      size: 80, color: Colors.white.withValues(alpha: 0.7)),
+                      size: 80, color: Colors.white.withOpacity(0.7)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -630,7 +630,7 @@ class _AIImagePageState extends State<AIImagePage>
               Text(
                 '${image.style} · ${_sizes[_selectedSize]}',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: Colors.white.withOpacity(0.8),
                   fontSize: MiuixFontSize.sm,
                 ),
               ),

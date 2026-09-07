@@ -261,14 +261,14 @@ class _WaterfallCardState extends State<_WaterfallCard>
                   colors: [
                     widget.item.color ?? MiuixColors.primaryLight,
                     (widget.item.color ?? MiuixColors.primary)
-                        .withValues(alpha: 0.7),
+                        .withOpacity(0.7),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(MiuixRadius.lg),
                 boxShadow: [
                   BoxShadow(
                     color: (widget.item.color ?? MiuixColors.primary)
-                        .withValues(alpha: 0.25),
+                        .withOpacity(0.25),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -284,7 +284,7 @@ class _WaterfallCardState extends State<_WaterfallCard>
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: Colors.white.withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -313,7 +313,7 @@ class _WaterfallCardState extends State<_WaterfallCard>
                             Text(
                               widget.item.subtitle!,
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.85),
+                                color: Colors.white.withOpacity(0.85),
                                 fontSize: MiuixFontSize.sm,
                               ),
                             ),

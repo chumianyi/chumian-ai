@@ -221,7 +221,7 @@ class _MiuixDataTableState extends State<MiuixDataTable> {
           colors: [
             widget.headerColor ?? MiuixColors.primaryLight,
             (widget.headerColor ?? MiuixColors.primary)
-                .withValues(alpha: 0.8),
+                .withOpacity(0.8),
           ],
         ),
         borderRadius: const BorderRadius.vertical(
@@ -285,7 +285,7 @@ class _MiuixDataTableState extends State<MiuixDataTable> {
                                   : Icons.arrow_downward)
                               : Icons.unfold_more,
                           size: 14,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Colors.white.withOpacity(0.8),
                         ),
                       ],
                     ],
@@ -417,7 +417,7 @@ class _MiuixDataTableState extends State<MiuixDataTable> {
         height: 28,
         decoration: BoxDecoration(
           color: enabled
-              ? MiuixColors.primary.withValues(alpha: 0.1)
+              ? MiuixColors.primary.withOpacity(0.1)
               : MiuixColors.surfaceVariant,
           borderRadius: BorderRadius.circular(MiuixRadius.sm),
         ),
@@ -484,9 +484,9 @@ class _DataRowCellState extends State<_DataRowCell>
           return Container(
             decoration: BoxDecoration(
               color: widget.isSelected
-                  ? MiuixColors.primary.withValues(alpha: 0.08)
+                  ? MiuixColors.primary.withOpacity(0.08)
                   : widget.isEven
-                      ? MiuixColors.surfaceVariant.withValues(alpha: 0.5)
+                      ? MiuixColors.surfaceVariant.withOpacity(0.5)
                       : Colors.transparent,
             ),
             child: Stack(
@@ -525,7 +525,7 @@ class _RipplePainter extends CustomPainter {
     final maxRadius = size.width > size.height ? size.width : size.height;
     final radius = maxRadius * progress;
     final paint = Paint()
-      ..color = MiuixColors.primary.withValues(alpha: 0.15 * (1 - progress))
+      ..color = MiuixColors.primary.withOpacity(0.15 * (1 - progress))
       ..style = PaintingStyle.fill;
     canvas.drawCircle(position, radius, paint);
   }

@@ -148,7 +148,7 @@ class _MiuixProgressState extends State<MiuixProgress>
           width: widget.width ?? double.infinity,
           height: widget.height,
           decoration: BoxDecoration(
-            color: widget.trackColor ?? MiuixColors.border.withValues(alpha: 0.5),
+            color: widget.trackColor ?? MiuixColors.border.withOpacity(0.5),
             borderRadius: BorderRadius.circular(radius),
           ),
           child: Stack(
@@ -171,7 +171,7 @@ class _MiuixProgressState extends State<MiuixProgress>
                   boxShadow: [
                     BoxShadow(
                       color: (widget.color ?? MiuixColors.primary)
-                          .withValues(alpha: 0.4),
+                          .withOpacity(0.4),
                       blurRadius: 4,
                     ),
                   ],
@@ -185,7 +185,7 @@ class _MiuixProgressState extends State<MiuixProgress>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withValues(alpha: 0.3),
+                        Colors.white.withOpacity(0.3),
                         Colors.transparent,
                       ],
                     ),
@@ -222,7 +222,7 @@ class _MiuixProgressState extends State<MiuixProgress>
           progress: progress,
           color: widget.color ?? MiuixColors.primary,
           trackColor: widget.trackColor ??
-              MiuixColors.border.withValues(alpha: 0.5),
+              MiuixColors.border.withOpacity(0.5),
           strokeWidth: widget.strokeWidth,
         ),
         child: Center(
@@ -256,7 +256,7 @@ class _MiuixProgressState extends State<MiuixProgress>
           width: widget.width ?? double.infinity,
           height: widget.height,
           decoration: BoxDecoration(
-            color: widget.trackColor ?? MiuixColors.border.withValues(alpha: 0.5),
+            color: widget.trackColor ?? MiuixColors.border.withOpacity(0.5),
             borderRadius: BorderRadius.circular(radius),
           ),
           child: LayoutBuilder(
@@ -339,7 +339,7 @@ class _CircularProgressPainter extends CustomPainter {
     // 进度弧
     final Paint progressPaint = Paint()
       ..shader = SweepGradient(
-        colors: [color.withValues(alpha: 0.3), color],
+        colors: [color.withOpacity(0.3), color],
       ).createShader(Rect.fromCircle(center: center, radius: radius))
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke
@@ -439,7 +439,7 @@ class _MiuixLoadingIndicatorState extends State<MiuixLoadingIndicator>
                   width: dotSize,
                   height: dotSize,
                   decoration: BoxDecoration(
-                    color: c.withValues(alpha: 0.5 + scale * 0.5),
+                    color: c.withOpacity(0.5 + scale * 0.5),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -471,8 +471,7 @@ class _MiuixLoadingIndicatorState extends State<MiuixLoadingIndicator>
                   height: widget.size * 0.4,
                   margin: EdgeInsets.only(top: widget.size * 0.05),
                   decoration: BoxDecoration(
-                    color: c.withValues(
-                      alpha: 0.3 + 0.7 * (index / 6),
+                    color: c.withOpacity(0.3 + 0.7 * (index / 6),
                     ),
                     borderRadius: BorderRadius.circular(widget.size * 0.075),
                   ),
@@ -505,7 +504,7 @@ class _MiuixLoadingIndicatorState extends State<MiuixLoadingIndicator>
           width: widget.size,
           height: widget.size,
           decoration: BoxDecoration(
-            color: c.withValues(alpha: 0.3 + 0.3 * scale),
+            color: c.withOpacity(0.3 + 0.3 * scale),
             shape: BoxShape.circle,
           ),
           child: Center(

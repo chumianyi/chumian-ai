@@ -286,7 +286,7 @@ class _AIGrammarPageState extends State<AIGrammarPage>
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
             child: SingleChildScrollView(
               maxHeight: 300,
               child: Text(_correctedController.text, style: const TextStyle(fontSize: MiuixFontSize.md, height: 1.8, color: MiuixColors.textPrimary)),
@@ -319,13 +319,13 @@ class _AIGrammarPageState extends State<AIGrammarPage>
                       Container(
                         width: 32,
                         height: 32,
-                        decoration: BoxDecoration(color: MiuixColors.error.withValues(alpha: 0.1), borderRadius: MiuixRadius.smRadius),
+                        decoration: BoxDecoration(color: MiuixColors.error.withOpacity(0.1), borderRadius: MiuixRadius.smRadius),
                         child: Center(child: Text('${index + 1}', style: const TextStyle(color: MiuixColors.error, fontWeight: FontWeight.w700))),
                       ),
                       const SizedBox(width: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: MiuixColors.error.withValues(alpha: 0.1), borderRadius: MiuixRadius.pillRadius),
+                        decoration: BoxDecoration(color: MiuixColors.error.withOpacity(0.1), borderRadius: MiuixRadius.pillRadius),
                         child: Text(error['type']!, style: const TextStyle(fontSize: MiuixFontSize.sm, color: MiuixColors.error, fontWeight: FontWeight.w600)),
                       ),
                     ],

@@ -441,7 +441,7 @@ class _StepCircleState extends State<_StepCircle>
             boxShadow: widget.isCurrent
                 ? [
                     BoxShadow(
-                      color: MiuixColors.primary.withValues(alpha: 0.4),
+                      color: MiuixColors.primary.withOpacity(0.4),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),

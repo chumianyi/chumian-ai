@@ -260,7 +260,7 @@ class _AISloganPageState extends State<AISloganPage>
               activeTrackColor: MiuixColors.primary,
               inactiveTrackColor: MiuixColors.surfaceVariant,
               thumbColor: Colors.white,
-              overlayColor: MiuixColors.primaryLight.withValues(alpha: 0.3),
+              overlayColor: MiuixColors.primaryLight.withOpacity(0.3),
               trackHeight: 6,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
             ),

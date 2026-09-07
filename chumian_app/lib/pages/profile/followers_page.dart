@@ -232,7 +232,7 @@ class _FollowersPageState extends State<FollowersPage>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: MiuixColors.primaryLight.withValues(alpha: 0.2),
+                          color: MiuixColors.primaryLight.withOpacity(0.2),
                           borderRadius: MiuixRadius.pillRadius,
                         ),
                         child: const Text(

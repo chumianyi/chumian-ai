@@ -230,14 +230,14 @@ class _MasonryCardState extends State<_MasonryCard>
                   colors: [
                     widget.item.color ?? MiuixColors.primaryLight,
                     (widget.item.color ?? MiuixColors.primary)
-                        .withValues(alpha: 0.75),
+                        .withOpacity(0.75),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(MiuixRadius.lg),
                 boxShadow: [
                   BoxShadow(
                     color: (widget.item.color ?? MiuixColors.primary)
-                        .withValues(alpha: 0.25),
+                        .withOpacity(0.25),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -254,7 +254,7 @@ class _MasonryCardState extends State<_MasonryCard>
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.12),
+                            color: Colors.white.withOpacity(0.12),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -266,7 +266,7 @@ class _MasonryCardState extends State<_MasonryCard>
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.08),
+                            color: Colors.white.withOpacity(0.08),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -293,7 +293,7 @@ class _MasonryCardState extends State<_MasonryCard>
                                 widget.item.subtitle!,
                                 style: TextStyle(
                                   color:
-                                      Colors.white.withValues(alpha: 0.85),
+                                      Colors.white.withOpacity(0.85),
                                   fontSize: MiuixFontSize.sm,
                                 ),
                               ),

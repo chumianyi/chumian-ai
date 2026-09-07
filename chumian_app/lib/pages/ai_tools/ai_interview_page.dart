@@ -311,7 +311,7 @@ class _AIInterviewPageState extends State<AIInterviewPage>
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.6), borderRadius: MiuixRadius.smRadius),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.6), borderRadius: MiuixRadius.smRadius),
             child: Row(
               children: [
                 const Icon(Icons.lightbulb_outline, size: 16, color: MiuixColors.primary),
@@ -405,7 +405,7 @@ class _AIInterviewPageState extends State<AIInterviewPage>
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
             child: SingleChildScrollView(
               maxHeight: 450,
               child: Text(_evaluation, style: const TextStyle(fontSize: MiuixFontSize.md, height: 1.8, color: MiuixColors.textPrimary)),

@@ -160,9 +160,9 @@ class _MiuixParallaxState extends State<MiuixParallax> {
                                       colors: [
                                         Colors.transparent,
                                         MiuixColors.primary
-                                            .withValues(alpha: 0.15),
+                                            .withOpacity(0.15),
                                         MiuixColors.background
-                                            .withValues(alpha: 0.9),
+                                            .withOpacity(0.9),
                                       ],
                                       stops: const [0.4, 0.75, 1.0],
                                     ),
@@ -239,8 +239,8 @@ class _MiuixParallaxState extends State<MiuixParallax> {
       child: Container(
         decoration: BoxDecoration(
           color: dark
-              ? Colors.white.withValues(alpha: 0.9)
-              : Colors.black.withValues(alpha: 0.2),
+              ? Colors.white.withOpacity(0.9)
+              : Colors.black.withOpacity(0.2),
           borderRadius: BorderRadius.circular(MiuixRadius.pill),
         ),
         child: Icon(

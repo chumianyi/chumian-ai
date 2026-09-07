@@ -378,7 +378,7 @@ class _TicTacToePageState extends State<TicTacToePage>
         curve: MiuixCurves.miuixSpring,
         decoration: BoxDecoration(
           color: isWinning
-              ? MiuixColors.primaryLight.withValues(alpha: 0.3)
+              ? MiuixColors.primaryLight.withOpacity(0.3)
               : MiuixColors.surfaceVariant,
           borderRadius: MiuixRadius.mdRadius,
           border: Border.all(

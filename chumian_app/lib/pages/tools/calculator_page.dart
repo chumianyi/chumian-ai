@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:chumian_ai/theme/miuix_colors.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_card.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_app_bar.dart';
@@ -424,7 +425,7 @@ class _CalculatorPageState extends State<CalculatorPage>
             color: isOperator
                 ? null
                 : isFunction
-                    ? MiuixColors.primaryLight.withValues(alpha: 0.2)
+                    ? MiuixColors.primaryLight.withOpacity(0.2)
                     : MiuixColors.surface,
             borderRadius: MiuixRadius.lgRadius,
             boxShadow: isOperator ? MiuixShadows.sm : MiuixShadows.xs,

@@ -227,7 +227,7 @@ class _MessageActionsSheetState extends State<_MessageActionsSheet>
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: action.color.withValues(alpha: 0.1),
+                  color: action.color.withOpacity(0.1),
                   borderRadius: MiuixRadius.lgRadius,
                 ),
                 child: Icon(

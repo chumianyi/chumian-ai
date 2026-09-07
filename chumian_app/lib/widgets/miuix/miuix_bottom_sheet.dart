@@ -77,7 +77,7 @@ class MiuixBottomSheet extends StatefulWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black.withValues(alpha: 0.4),
+      barrierColor: Colors.black.withOpacity(0.4),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) {
         return MiuixBottomSheet(
@@ -143,13 +143,13 @@ class _MiuixBottomSheetState extends State<MiuixBottomSheet> {
           width: double.infinity,
           decoration: BoxDecoration(
             color: widget.backgroundColor ??
-                MiuixColors.surface.withValues(alpha: 0.97),
+                MiuixColors.surface.withOpacity(0.97),
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(MiuixRadius.xxl),
             ),
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.15),
+                color: MiuixColors.primary.withOpacity(0.15),
                 blurRadius: 30,
                 offset: const Offset(0, -4),
               ),

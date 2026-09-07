@@ -125,7 +125,7 @@ class _MiuixSegmentControlState extends State<MiuixSegmentControl> {
                     borderRadius: BorderRadius.circular(radius - widget.padding),
                     boxShadow: [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.3),
+                        color: MiuixColors.primary.withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

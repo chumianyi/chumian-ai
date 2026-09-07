@@ -245,9 +245,9 @@ class _ProgressRingPainter extends CustomPainter {
           startAngle: -math.pi / 2,
           endAngle: -math.pi / 2 + sweepAngle,
           colors: [
-            ringColor.withValues(alpha: 0.6),
+            ringColor.withOpacity(0.6),
             ringColor,
-            ringColor.withValues(alpha: 0.8),
+            ringColor.withOpacity(0.8),
           ],
           stops: const [0.0, 0.5, 1.0],
           transform: GradientRotation(-math.pi / 2),
@@ -273,7 +273,7 @@ class _ProgressRingPainter extends CustomPainter {
               math.sin(endAngle) * radius,
             );
         final glowPaint = Paint()
-          ..color = ringColor.withValues(alpha: 0.4)
+          ..color = ringColor.withOpacity(0.4)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
         canvas.drawCircle(endPoint, strokeWidth * 0.6, glowPaint);
 
@@ -441,7 +441,7 @@ class _CircularProgressPainter extends CustomPainter {
       ..shader = SweepGradient(
         startAngle: -math.pi / 2,
         endAngle: -math.pi / 2 + 2 * math.pi * value,
-        colors: [color.withValues(alpha: 0.6), color],
+        colors: [color.withOpacity(0.6), color],
         transform: GradientRotation(-math.pi / 2),
       ).createShader(Rect.fromCircle(center: center, radius: radius))
       ..strokeWidth = strokeWidth
@@ -580,7 +580,7 @@ class _MiuixLinearProgressState extends State<MiuixLinearProgress>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            progressColor.withValues(alpha: 0.7),
+                            progressColor.withOpacity(0.7),
                             progressColor,
                           ],
                         ),

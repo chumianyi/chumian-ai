@@ -343,7 +343,7 @@ class _ProtractorPainter extends CustomPainter {
       final startRad = (180 - max(angle, secondAngle!)) * pi / 180;
       final sweepRad = (secondAngle! - angle).abs() * pi / 180;
       final sectorPaint = Paint()
-        ..color = MiuixColors.primary.withValues(alpha: 0.2)
+        ..color = MiuixColors.primary.withOpacity(0.2)
         ..style = PaintingStyle.fill;
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius * 0.5),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:chumian_ai/theme/miuix_colors.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_ripple.dart';
 import 'package:chumian_ai/widgets/miuix/miuix_glass.dart';
@@ -146,7 +147,7 @@ class _AgentLeaderboardPageState extends State<AgentLeaderboardPage> {
       const SizedBox(height: 4),
       Text('${agent.likes} 赞', style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs)),
       const SizedBox(height: 8),
-      Container(width: double.infinity, height: height, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [rank == 1 ? const Color(0xFFFFD700).withValues(alpha: 0.3) : MiuixColors.primary.withValues(alpha: 0.2), MiuixColors.primary.withValues(alpha: 0.05)]), borderRadius: const BorderRadius.vertical(top: Radius.circular(MiuixRadius.lg)), border: Border.all(color: MiuixColors.primary.withValues(alpha: 0.2), width: 1)), child: Center(child: Icon(rank == 1 ? Icons.emoji_events : rank == 2 ? Icons.military_tech : Icons.workspace_premium, color: rank == 1 ? const Color(0xFFFFD700) : MiuixColors.primary, size: rank == 1 ? 36 : 28))),
+      Container(width: double.infinity, height: height, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [rank == 1 ? const Color(0xFFFFD700).withOpacity(0.3) : MiuixColors.primary.withOpacity(0.2), MiuixColors.primary.withOpacity(0.05)]), borderRadius: const BorderRadius.vertical(top: Radius.circular(MiuixRadius.lg)), border: Border.all(color: MiuixColors.primary.withOpacity(0.2), width: 1)), child: Center(child: Icon(rank == 1 ? Icons.emoji_events : rank == 2 ? Icons.military_tech : Icons.workspace_premium, color: rank == 1 ? const Color(0xFFFFD700) : MiuixColors.primary, size: rank == 1 ? 36 : 28))),
     ]));
   }
 
@@ -157,16 +158,16 @@ class _AgentLeaderboardPageState extends State<AgentLeaderboardPage> {
       Container(width: 48, height: 48, decoration: BoxDecoration(shape: BoxShape.circle, gradient: const LinearGradient(colors: MiuixColors.softGradient)), child: const Center(child: Icon(Icons.smart_toy, color: MiuixColors.primary, size: 24))),
       const SizedBox(width: 12),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Text(agent.name, style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w600)), const SizedBox(width: 6), Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), borderRadius: MiuixRadius.xsRadius), child: Text(agent.category, style: TextStyle(color: MiuixColors.primary, fontSize: 9, fontWeight: FontWeight.w500)))],),
+        Row(children: [Text(agent.name, style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.md, fontWeight: FontWeight.w600)), const SizedBox(width: 6), Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), borderRadius: MiuixRadius.xsRadius), child: Text(agent.category, style: TextStyle(color: MiuixColors.primary, fontSize: 9, fontWeight: FontWeight.w500)))],),
         const SizedBox(height: 3),
         Text(agent.description, style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs), maxLines: 1, overflow: TextOverflow.ellipsis),
         const SizedBox(height: 4),
         Row(children: [Icon(Icons.favorite, color: MiuixColors.error, size: 12), const SizedBox(width: 3), Text('${agent.likes}', style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs)), const SizedBox(width: 12), Icon(Icons.copy, color: MiuixColors.textTertiary, size: 12), const SizedBox(width: 3), Text('${agent.clones}', style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.xs))]),
       ])),
       Column(children: [
-        GestureDetector(onTap: () => _likeAgent(agent), child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: agent.isLiked ? MiuixColors.error.withValues(alpha: 0.1) : MiuixColors.surfaceVariant, shape: BoxShape.circle), child: Icon(agent.isLiked ? Icons.favorite : Icons.favorite_border, color: agent.isLiked ? MiuixColors.error : MiuixColors.textTertiary, size: 18))),
+        GestureDetector(onTap: () => _likeAgent(agent), child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: agent.isLiked ? MiuixColors.error.withOpacity(0.1) : MiuixColors.surfaceVariant, shape: BoxShape.circle), child: Icon(agent.isLiked ? Icons.favorite : Icons.favorite_border, color: agent.isLiked ? MiuixColors.error : MiuixColors.textTertiary, size: 18))),
         const SizedBox(height: 6),
-        GestureDetector(onTap: () => _cloneAgent(agent), child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: MiuixColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle), child: const Icon(Icons.copy, color: MiuixColors.primary, size: 18))),
+        GestureDetector(onTap: () => _cloneAgent(agent), child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: MiuixColors.primary.withOpacity(0.1), shape: BoxShape.circle), child: const Icon(Icons.copy, color: MiuixColors.primary, size: 18))),
       ]),
     ]))));
   }

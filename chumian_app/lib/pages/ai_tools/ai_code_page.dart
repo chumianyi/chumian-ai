@@ -243,7 +243,7 @@ class _AICodePageState extends State<AICodePage>
                     decoration: BoxDecoration(
                       gradient: isSelected
                           ? LinearGradient(colors: [
-                              lang.color.withValues(alpha: 0.9),
+                              lang.color.withOpacity(0.9),
                               lang.color,
                             ])
                           : null,

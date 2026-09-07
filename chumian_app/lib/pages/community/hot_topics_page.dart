@@ -359,7 +359,7 @@ class _HotTopicsPageState extends State<HotTopicsPage>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: MiuixColors.error.withValues(alpha: 0.1),
+                                color: MiuixColors.error.withOpacity(0.1),
                                 borderRadius: MiuixRadius.pillRadius,
                               ),
                               child: const Text(
@@ -378,7 +378,7 @@ class _HotTopicsPageState extends State<HotTopicsPage>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: MiuixColors.success.withValues(alpha: 0.1),
+                                color: MiuixColors.success.withOpacity(0.1),
                                 borderRadius: MiuixRadius.pillRadius,
                               ),
                               child: const Text(

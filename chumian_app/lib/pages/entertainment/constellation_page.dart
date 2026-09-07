@@ -284,7 +284,7 @@ class _ConstellationPageState extends State<ConstellationPage>
           Container(
             padding: const EdgeInsets.all(MiuixSpacing.md),
             decoration: BoxDecoration(
-              color: MiuixColors.primary.withValues(alpha: 0.08),
+              color: MiuixColors.primary.withOpacity(0.08),
               borderRadius: MiuixRadius.mdRadius,
             ),
             child: Row(
@@ -375,7 +375,7 @@ class _ConstellationPageState extends State<ConstellationPage>
       padding: const EdgeInsets.symmetric(
           horizontal: MiuixSpacing.md, vertical: MiuixSpacing.xs),
       decoration: BoxDecoration(
-        color: MiuixColors.primary.withValues(alpha: 0.1),
+        color: MiuixColors.primary.withOpacity(0.1),
         borderRadius: MiuixRadius.pillRadius,
       ),
       child: Text('$label: $value',
@@ -454,7 +454,7 @@ class _ConstellationPageState extends State<ConstellationPage>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: score >= 80
-              ? [MiuixColors.primaryLight.withValues(alpha: 0.2), MiuixColors.primary.withValues(alpha: 0.1)]
+              ? [MiuixColors.primaryLight.withOpacity(0.2), MiuixColors.primary.withOpacity(0.1)]
               : [MiuixColors.surfaceVariant, MiuixColors.surfaceHover],
         ),
         borderRadius: MiuixRadius.mdRadius,

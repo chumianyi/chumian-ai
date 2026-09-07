@@ -122,7 +122,7 @@ class _InfoTileState extends State<InfoTile> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: iconBg.withValues(alpha: 0.15),
+                            color: iconBg.withOpacity(0.15),
                             borderRadius:
                                 BorderRadius.circular(MiuixRadius.sm),
                           ),

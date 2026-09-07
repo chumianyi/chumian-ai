@@ -427,7 +427,7 @@ class _EditProfilePageState extends State<EditProfilePage>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: MiuixColors.primaryLight.withValues(alpha: 0.1),
+              color: MiuixColors.primaryLight.withOpacity(0.1),
               borderRadius: MiuixRadius.smRadius,
             ),
             child: const Row(

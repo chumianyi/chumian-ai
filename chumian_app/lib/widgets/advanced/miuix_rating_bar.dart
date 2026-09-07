@@ -253,7 +253,7 @@ class _RatingIconPainter extends CustomPainter {
 
       // 高光
       final highlightPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.3)
+        ..color = Colors.white.withOpacity(0.3)
         ..style = PaintingStyle.fill;
       final highlightPath = Path()
         ..addOval(Rect.fromLTWH(

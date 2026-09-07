@@ -167,7 +167,7 @@ class _MiuixCardState extends State<MiuixCard>
           borderRadius: BorderRadius.circular(radius),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.08),
+              color: MiuixColors.primary.withOpacity(0.08),
               blurRadius: 12 + currentElevation * 2,
               offset: Offset(0, 2 + currentElevation),
             ),
@@ -176,14 +176,14 @@ class _MiuixCardState extends State<MiuixCard>
       case MiuixCardStyle.glass:
         return BoxDecoration(
           color: widget.backgroundColor ??
-              Colors.white.withValues(alpha: 0.15),
+              Colors.white.withOpacity(0.15),
           borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: widget.borderColor ?? MiuixColors.glassBorder,
           ),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.06),
+              color: MiuixColors.primary.withOpacity(0.06),
               blurRadius: 16,
               offset: Offset(0, 2 + currentElevation),
             ),
@@ -194,7 +194,7 @@ class _MiuixCardState extends State<MiuixCard>
           gradient: widget.gradient ??
               LinearGradient(
                 colors: [
-                  MiuixColors.primaryLight.withValues(alpha: 0.9),
+                  MiuixColors.primaryLight.withOpacity(0.9),
                   MiuixColors.primary,
                 ],
                 begin: Alignment.topLeft,
@@ -203,7 +203,7 @@ class _MiuixCardState extends State<MiuixCard>
           borderRadius: BorderRadius.circular(radius),
           boxShadow: [
             BoxShadow(
-              color: MiuixColors.primary.withValues(alpha: 0.25),
+              color: MiuixColors.primary.withOpacity(0.25),
               blurRadius: 16 + currentElevation * 2,
               offset: Offset(0, 4 + currentElevation),
             ),
@@ -247,8 +247,8 @@ class _MiuixCardState extends State<MiuixCard>
       content = MiuixRipple(
         borderRadius: BorderRadius.circular(radius),
         color: widget.style == MiuixCardStyle.gradient
-            ? Colors.white.withValues(alpha: 0.2)
-            : MiuixColors.primary.withValues(alpha: 0.1),
+            ? Colors.white.withOpacity(0.2)
+            : MiuixColors.primary.withOpacity(0.1),
         child: content,
       );
     }

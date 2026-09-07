@@ -103,7 +103,7 @@ class _VideoThumbnailState extends State<VideoThumbnail>
             borderRadius: BorderRadius.circular(widget.borderRadius),
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.15),
+                color: MiuixColors.primary.withOpacity(0.15),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -123,8 +123,8 @@ class _VideoThumbnailState extends State<VideoThumbnail>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.1),
-                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withOpacity(0.1),
+                        Colors.black.withOpacity(0.3),
                       ],
                     ),
                   ),
@@ -197,7 +197,7 @@ class _VideoThumbnailState extends State<VideoThumbnail>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: MiuixColors.primary
-                      .withValues(alpha: 0.15 * _pulseController.value),
+                      .withOpacity(0.15 * _pulseController.value),
                 ),
               ),
               // 播放按钮
@@ -216,7 +216,7 @@ class _VideoThumbnailState extends State<VideoThumbnail>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.4),
+                        color: MiuixColors.primary.withOpacity(0.4),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -243,10 +243,10 @@ class _VideoThumbnailState extends State<VideoThumbnail>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.6),
+          color: Colors.black.withOpacity(0.6),
           borderRadius: BorderRadius.circular(MiuixRadius.xs),
           border: Border.all(
-            color: MiuixColors.primary.withValues(alpha: 0.5),
+            color: MiuixColors.primary.withOpacity(0.5),
             width: 0.5,
           ),
         ),

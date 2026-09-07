@@ -296,7 +296,7 @@ class _CompassPageState extends State<CompassPage>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: MiuixColors.primary.withValues(alpha: 0.5),
+                          color: MiuixColors.primary.withOpacity(0.5),
                           width: 1),
                     ),
                   ),
@@ -311,13 +311,13 @@ class _CompassPageState extends State<CompassPage>
                       decoration: BoxDecoration(
                         gradient: RadialGradient(
                           colors: [
-                            MiuixColors.primaryLight.withValues(alpha: 0.6),
-                            MiuixColors.primary.withValues(alpha: 0.3),
+                            MiuixColors.primaryLight.withOpacity(0.6),
+                            MiuixColors.primary.withOpacity(0.3),
                           ],
                         ),
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: MiuixColors.primary.withValues(alpha: 0.5)),
+                            color: MiuixColors.primary.withOpacity(0.5)),
                       ),
                     ),
                   ),

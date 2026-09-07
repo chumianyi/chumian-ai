@@ -111,7 +111,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       }
     }, child: MiuixGlassContainer(margin: const EdgeInsets.only(bottom: 10), borderRadius: MiuixRadius.lg, padding: const EdgeInsets.all(14), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Stack(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: _getIconColor(n.type).withValues(alpha: 0.12), shape: BoxShape.circle), child: Center(child: Icon(_getIcon(n.type), color: _getIconColor(n.type), size: 22))),
+        Container(width: 44, height: 44, decoration: BoxDecoration(color: _getIconColor(n.type).withOpacity(0.12), shape: BoxShape.circle), child: Center(child: Icon(_getIcon(n.type), color: _getIconColor(n.type), size: 22))),
         if (!n.isRead) Positioned(top: 0, right: 0, child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: MiuixColors.error, shape: BoxShape.circle, border: Border.fromBorderSide(BorderSide(color: Colors.white, width: 1))))),
       ]),
       const SizedBox(width: 12),

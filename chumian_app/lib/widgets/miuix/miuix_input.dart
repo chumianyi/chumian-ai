@@ -328,7 +328,7 @@ class _MiuixInputState extends State<MiuixInput>
                     ? [
                         BoxShadow(
                           color: MiuixColors.primary
-                              .withValues(alpha: 0.15 * _glowAnimation.value),
+                              .withOpacity(0.15 * _glowAnimation.value),
                           blurRadius: 12,
                           spreadRadius: 1,
                         ),
@@ -336,7 +336,7 @@ class _MiuixInputState extends State<MiuixInput>
                     : isError
                         ? [
                             BoxShadow(
-                              color: MiuixColors.error.withValues(alpha: 0.1),
+                              color: MiuixColors.error.withOpacity(0.1),
                               blurRadius: 8,
                             ),
                           ]
@@ -431,7 +431,7 @@ class _MiuixInputState extends State<MiuixInput>
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: MiuixColors.textTertiary.withValues(alpha: 0.2),
+                        color: MiuixColors.textTertiary.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(

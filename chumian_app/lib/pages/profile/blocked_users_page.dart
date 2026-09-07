@@ -227,7 +227,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage>
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: MiuixColors.error.withValues(alpha: 0.08),
+                            color: MiuixColors.error.withOpacity(0.08),
                             borderRadius: MiuixRadius.xsRadius,
                           ),
                           child: const Text(
@@ -359,8 +359,8 @@ class _BlockedUsersPageState extends State<BlockedUsersPage>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  MiuixColors.primary.withValues(alpha: 0.1),
-                  MiuixColors.primaryLight.withValues(alpha: 0.05),
+                  MiuixColors.primary.withOpacity(0.1),
+                  MiuixColors.primaryLight.withOpacity(0.05),
                 ],
               ),
               shape: BoxShape.circle,

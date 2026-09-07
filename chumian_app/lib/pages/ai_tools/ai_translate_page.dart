@@ -262,7 +262,7 @@ class _AITranslatePageState extends State<AITranslatePage>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
+            color: Colors.white.withOpacity(0.6),
             borderRadius: MiuixRadius.mdRadius,
           ),
           child: Row(
@@ -478,7 +478,7 @@ class _AITranslatePageState extends State<AITranslatePage>
             minHeight: 120,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.7),
+              color: Colors.white.withOpacity(0.7),
               borderRadius: MiuixRadius.mdRadius,
             ),
             child: _isTranslating

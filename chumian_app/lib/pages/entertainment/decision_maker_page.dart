@@ -381,7 +381,7 @@ class _DecisionMakerPageState extends State<DecisionMakerPage>
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: MiuixSpacing.md, vertical: MiuixSpacing.xs),
                 decoration: BoxDecoration(
-                  color: e.key == 0 ? MiuixColors.primary.withValues(alpha: 0.15) : MiuixColors.surfaceVariant,
+                  color: e.key == 0 ? MiuixColors.primary.withOpacity(0.15) : MiuixColors.surfaceVariant,
                   borderRadius: MiuixRadius.pillRadius,
                   border: Border.all(color: e.key == 0 ? MiuixColors.primary : MiuixColors.borderLight),
                 ),
@@ -478,7 +478,7 @@ class _PointerPainter extends CustomPainter {
 
     // 高光
     final highlightPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
+      ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(size.width / 2, 8), 4, highlightPaint);
   }

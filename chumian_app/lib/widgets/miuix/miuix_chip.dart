@@ -151,7 +151,7 @@ class _MiuixChipState extends State<MiuixChip>
 
     if (widget.style == MiuixChipStyle.glass) {
       return BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
+        color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: MiuixColors.glassBorder),
       );
@@ -167,7 +167,7 @@ class _MiuixChipState extends State<MiuixChip>
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(
-            color: MiuixColors.primary.withValues(alpha: 0.25),
+            color: MiuixColors.primary.withOpacity(0.25),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -207,8 +207,8 @@ class _MiuixChipState extends State<MiuixChip>
         child: MiuixRipple(
           borderRadius: BorderRadius.circular(radius),
           color: widget.isSelected
-              ? Colors.white.withValues(alpha: 0.3)
-              : MiuixColors.primary.withValues(alpha: 0.15),
+              ? Colors.white.withOpacity(0.3)
+              : MiuixColors.primary.withOpacity(0.15),
           child: Opacity(
             opacity: widget.disabled ? 0.5 : 1.0,
             child: Container(
@@ -249,7 +249,7 @@ class _MiuixChipState extends State<MiuixChip>
                         width: 16,
                         height: 16,
                         decoration: BoxDecoration(
-                          color: _getTextColor().withValues(alpha: 0.2),
+                          color: _getTextColor().withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

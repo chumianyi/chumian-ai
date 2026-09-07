@@ -152,7 +152,7 @@ class _Miuix3DCardState extends State<Miuix3DCard>
             borderRadius: BorderRadius.circular(MiuixRadius.xl),
             boxShadow: [
               BoxShadow(
-                color: MiuixColors.primary.withValues(alpha: 0.3),
+                color: MiuixColors.primary.withOpacity(0.3),
                 blurRadius: _isPressed ? 12 : 24,
                 offset: Offset(
                   -_tilt.dx * 20,
@@ -189,7 +189,7 @@ class _Miuix3DCardState extends State<Miuix3DCard>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(MiuixRadius.xl),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withOpacity(0.2),
                           width: 1,
                         ),
                       ),
@@ -227,8 +227,8 @@ class _GlarePainter extends CustomPainter {
         ),
         radius: 0.6,
         colors: [
-          Colors.white.withValues(alpha: 0.5),
-          Colors.white.withValues(alpha: 0.1),
+          Colors.white.withOpacity(0.5),
+          Colors.white.withOpacity(0.1),
           Colors.transparent,
         ],
         stops: const [0.0, 0.4, 1.0],

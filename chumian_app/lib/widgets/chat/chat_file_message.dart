@@ -141,7 +141,7 @@ class _ChatFileMessageState extends State<ChatFileMessage>
               boxShadow: widget.isUser
                   ? [
                       BoxShadow(
-                        color: MiuixColors.primary.withValues(alpha: 0.3),
+                        color: MiuixColors.primary.withOpacity(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -185,7 +185,7 @@ class _ChatFileMessageState extends State<ChatFileMessage>
         borderRadius: MiuixRadius.mdRadius,
         boxShadow: [
           BoxShadow(
-            color: bgColor.withValues(alpha: 0.3),
+            color: bgColor.withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -219,7 +219,7 @@ class _ChatFileMessageState extends State<ChatFileMessage>
           style: TextStyle(
             fontSize: MiuixFontSize.sm,
             color: widget.isUser
-                ? Colors.white.withValues(alpha: 0.7)
+                ? Colors.white.withOpacity(0.7)
                 : MiuixColors.textTertiary,
           ),
         ),
@@ -249,8 +249,8 @@ class _ChatFileMessageState extends State<ChatFileMessage>
         height: 32,
         decoration: BoxDecoration(
           color: widget.isUser
-              ? Colors.white.withValues(alpha: 0.2)
-              : MiuixColors.primary.withValues(alpha: 0.1),
+              ? Colors.white.withOpacity(0.2)
+              : MiuixColors.primary.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -269,7 +269,7 @@ class _ChatFileMessageState extends State<ChatFileMessage>
         value: widget.data.downloadProgress,
         minHeight: 4,
         backgroundColor: widget.isUser
-            ? Colors.white.withValues(alpha: 0.2)
+            ? Colors.white.withOpacity(0.2)
             : MiuixColors.surfaceVariant,
         valueColor: AlwaysStoppedAnimation<Color>(
           widget.isUser ? Colors.white : MiuixColors.primary,

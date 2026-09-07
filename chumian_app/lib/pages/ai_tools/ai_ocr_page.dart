@@ -278,7 +278,7 @@ class _AIOcrPageState extends State<AIOcrPage>
               Expanded(child: Text('识别结果 · $_selectedImage', style: const TextStyle(fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600, color: MiuixColors.textPrimary))),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: MiuixColors.success.withValues(alpha: 0.15), borderRadius: MiuixRadius.pillRadius),
+                decoration: BoxDecoration(color: MiuixColors.success.withOpacity(0.15), borderRadius: MiuixRadius.pillRadius),
                 child: const Text('置信度 98.5%', style: TextStyle(fontSize: MiuixFontSize.sm, color: MiuixColors.success, fontWeight: FontWeight.w600)),
               ),
             ],
@@ -287,7 +287,7 @@ class _AIOcrPageState extends State<AIOcrPage>
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: MiuixRadius.mdRadius, border: Border.all(color: MiuixColors.borderLight)),
             child: TextField(
               controller: _resultController,
               maxLines: 12,
