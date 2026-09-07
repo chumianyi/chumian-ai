@@ -141,7 +141,7 @@ class _CheckinPageState extends State<CheckinPage> with SingleTickerProviderStat
       return Transform.scale(scale: _scaleAnim.value, child: MiuixRipple(borderRadius: MiuixRadius.pill, child: GestureDetector(onTap: _doCheckin, child: Container(width: double.infinity, height: 56, decoration: BoxDecoration(gradient: _isCheckedToday ? null : const LinearGradient(colors: MiuixColors.primaryGradient), color: _isCheckedToday ? MiuixColors.surfaceVariant : null, borderRadius: MiuixRadius.pillRadius, boxShadow: _isCheckedToday ? null : MiuixShadows.lg, border: _isCheckedToday ? Border.all(color: MiuixColors.success.withOpacity(0.3)) : null), child: Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         if (_isCheckedToday) ...[const Icon(Icons.check_circle, color: MiuixColors.success, size: 24), const SizedBox(width: 8), Text('今日已签到', style: TextStyle(color: MiuixColors.success, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600))]
         else ...[const Icon(Icons.calendar_today, color: Colors.white, size: 22), const SizedBox(width: 8), Text(_isAnimating ? '签到中...' : '立即签到', style: const TextStyle(color: Colors.white, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600, letterSpacing: 1))],
-      ])))));
+      ]))))));
     });
   }
 

@@ -63,7 +63,7 @@ class _ActivityPageState extends State<ActivityPage> with SingleTickerProviderSt
       final result = await ApiService.guessActivity(_betPoints, _betChoice);
       // 数据从 ApiService 拉取，无延迟
       final won = result['won'] ?? false;
-      final winAmount = result['win_amount'] ?? 0;
+      final winAmount = (result['win_amount'] ?? 0) as int;
       setState(() {
         _isRolling = false;
         _lastResult = won ? '大' : '小';
@@ -154,7 +154,7 @@ class _ActivityPageState extends State<ActivityPage> with SingleTickerProviderSt
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [Expanded(child: Text(activity.title, style: TextStyle(color: MiuixColors.textPrimary, fontSize: MiuixFontSize.lg, fontWeight: FontWeight.w600))), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: (activity.status == '进行中' ? MiuixColors.success : activity.status == '即将开始' ? MiuixColors.warning : MiuixColors.primary).withOpacity(0.1), borderRadius: MiuixRadius.xsRadius), child: Text(activity.status, style: TextStyle(color: activity.status == '进行中' ? MiuixColors.success : activity.status == '即将开始' ? MiuixColors.warning : MiuixColors.primary, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w500)))],),
         const SizedBox(height: 4),
-        Text(activity.desc, style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.sm, maxLines: 2, overflow: TextOverflow.ellipsis)),
+        Text(activity.desc, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: MiuixColors.textTertiary, fontSize: MiuixFontSize.sm)),
         const SizedBox(height: 8),
         Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5), decoration: BoxDecoration(gradient: const LinearGradient(colors: MiuixColors.primaryGradient), borderRadius: MiuixRadius.pillRadius), child: const Text('立即参与', style: TextStyle(color: Colors.white, fontSize: MiuixFontSize.xs, fontWeight: FontWeight.w600))),
       ])),

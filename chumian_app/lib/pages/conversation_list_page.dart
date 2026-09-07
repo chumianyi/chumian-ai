@@ -120,7 +120,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
       ])),
       const SizedBox(width: 8),
       Icon(Icons.chevron_right, color: MiuixColors.textTertiary, size: 20),
-    ]))));
+    ])));
   }
 }
 

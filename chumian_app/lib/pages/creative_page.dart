@@ -124,7 +124,7 @@ class _CreativePageState extends State<CreativePage>
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
 
     return Scaffold(
       backgroundColor: isDark ? MiuixColors.darkBackground : MiuixColors.background,

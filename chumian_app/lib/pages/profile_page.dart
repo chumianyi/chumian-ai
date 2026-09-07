@@ -107,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
     final bgColor = isDark ? MiuixColors.darkBackground : MiuixColors.background;
 
     return Scaffold(

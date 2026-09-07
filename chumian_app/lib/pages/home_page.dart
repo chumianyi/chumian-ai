@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
     final bgColor = isDark ? MiuixColors.darkBackground : MiuixColors.background;
 
     return MiuixRipple(

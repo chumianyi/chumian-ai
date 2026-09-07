@@ -27,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
     final bgColor = isDark ? MiuixColors.darkBackground : MiuixColors.background;
 
     return Scaffold(
@@ -46,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: '深色模式',
                 subtitle: '跟随系统或手动切换',
                 value: isDark,
-                onChanged: (v) => themeProvider.toggleTheme(),
+                onChanged: (v) => themeProvider.toggleDark(),
               ),
               _buildDivider(),
               _buildSwitchTile(

@@ -73,9 +73,9 @@ class _RegisterPageState extends State<RegisterPage>
     setState(() => _isLoading = true);
     try {
       await context.read<UserProvider>().register(
-            _usernameController.text.trim(),
-            _passwordController.text,
-            _nicknameController.text.trim(),
+            username: _usernameController.text.trim(),
+            password: _passwordController.text,
+            nickname: _nicknameController.text.trim(),
           );
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/oobe');

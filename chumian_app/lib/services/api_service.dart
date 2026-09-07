@@ -592,10 +592,10 @@ class ApiService {
   }
 
   /// 探索页内容（按类型筛选：all / image / video / agent）
-  static Future<List<dynamic>> getExplore({String type = 'all'}) async {
+  static Future<List<dynamic>> getExplore({String type = 'all', int page = 1}) async {
     try {
       final resp = await _dio.get('/api/explore',
-          queryParameters: {'type': type});
+          queryParameters: {'type': type, 'page': page});
       return List<dynamic>.from(resp.data);
     } catch (_) {
       return [];

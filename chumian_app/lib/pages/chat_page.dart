@@ -411,7 +411,7 @@ class _ChatPageState extends State<ChatPage>
               _buildMenuTile(Icons.copy, '复制', () async {
                 Navigator.pop(context);
                 final plain = MarkdownStripper.strip(msg.content);
-                await ClipboardUtils.copy(plain);
+                await Clipboard.setData(ClipboardData(text: plain));
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -498,7 +498,7 @@ class _ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
     final bgColor =
         isDark ? MiuixColors.darkBackground : MiuixColors.background;
 

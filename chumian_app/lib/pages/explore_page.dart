@@ -71,7 +71,7 @@ class _ExplorePageState extends State<ExplorePage>
     setState(() => _isLoading = true);
     try {
       final data = await ApiService.getExplore(page: _page);
-      final newPosts = (data['posts'] as List<dynamic>? ?? [])
+      final newPosts = (data as List<dynamic>? ?? [])
           .map((e) => PostItem.fromJson(e as Map<String, dynamic>))
           .toList();
       if (mounted) {
@@ -101,7 +101,7 @@ class _ExplorePageState extends State<ExplorePage>
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final isDark = themeProvider.isDark;
 
     return Scaffold(
       backgroundColor: isDark ? MiuixColors.darkBackground : MiuixColors.background,
@@ -354,4 +354,20 @@ class PostItem {
   final int likes;
   final int comments;
   final DateTime timestamp;
+
+  factory PostItem.fromJson(Map<String, dynamic> json) {
+    return PostItem(
+      id: json['id']?.toString() ?? '',
+      userId: json['user_id']?.toString() ?? json['userId']?.toString() ?? '',
+      nickname: json['nickname']?.toString() ?? '',
+      avatar: json['avatar']?.toString() ?? '',
+      content: json['content']?.toString() ?? '',
+      type: json['type']?.toString() ?? 'text',
+      imageUrl: json['image_url']?.toString() ?? json['imageUrl']?.toString(),
+      videoUrl: json['video_url']?.toString() ?? json['videoUrl']?.toString(),
+      likes: (json['likes'] ?? 0) as int,
+      comments: (json['comments'] ?? 0) as int,
+      timestamp: DateTime.tryParse(json['timestamp']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
 }

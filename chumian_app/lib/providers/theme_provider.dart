@@ -217,7 +217,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
 
       // ===== Card 主题（圆角、柔和阴影、表面色）=====
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: surfaceColor,
         elevation: 0,
         shadowColor: MiuixColors.shadowColor,
@@ -355,7 +355,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
 
       // ===== Dialog 对话框主题 =====
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: surfaceColor,
         elevation: 0,
         shape: RoundedRectangleBorder(

@@ -44,13 +44,12 @@ class ChumianApp extends StatelessWidget {
             title: '初眠AI',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.theme,
-            darkTheme: themeProvider.darkTheme,
-            themeMode: themeProvider.themeMode,
+            darkTheme: themeProvider.theme,
+            themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
             // 全局粉色水晕覆盖层
             builder: (context, child) {
-              return GlobalRippleOverlay(
-                child: child!,
-              );
+              GlobalRippleOverlay.instance.init(context);
+              return child!;
             },
             home: const AppInitializer(),
             // 自定义页面转场动画
@@ -182,11 +181,7 @@ class _AppInitializerState extends State<AppInitializer>
           return const LoginPage();
         }
         if (!userProvider.oobeCompleted) {
-          return OobePage(
-            onComplete: () {
-              userProvider.completeOobe();
-            },
-          );
+          return const OobePage();
         }
         return const HomePage();
       },
