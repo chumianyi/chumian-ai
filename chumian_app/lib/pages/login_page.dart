@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage>
     return Hero(
       tag: 'mascot_hero',
       child: Image.asset(
-        'assets/illustrations/login_welcome.png',
+        'assets/mascot/mascot_full.png',
         width: 160,
         height: 160,
         fit: BoxFit.contain,
@@ -291,40 +291,33 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildLoginButton() {
-    return MiuixRipple(
-      borderRadius: MiuixRadius.pill,
-      child: GestureDetector(
-        onTap: _isLoading ? null : _handleLogin,
-        child: AnimatedContainer(
-          duration: MiuixDuration.fast,
-          width: double.infinity,
-          height: 52,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: MiuixColors.primaryGradient),
-            borderRadius: MiuixRadius.pillRadius,
-            boxShadow: _isLoading ? null : MiuixShadows.md,
-          ),
-          child: Center(
-            child: _isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
-                  )
-                : const Text(
-                    '登 录',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: MiuixFontSize.lg,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 2,
-                    ),
-                  ),
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: FilledButton(
+        onPressed: _isLoading ? null : _handleLogin,
+        style: FilledButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(26),
           ),
         ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : const Text(
+                '登录',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                ),
+              ),
       ),
     );
   }

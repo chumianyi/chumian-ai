@@ -626,23 +626,17 @@ class _ChatPageState extends State<ChatPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 40),
-            // 空状态插画
-            Image.asset(
-              'assets/illustrations/empty_chat.png',
-              width: 140,
-              height: 140,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Container(
-                width: 110,
-                height: 110,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient:
-                      LinearGradient(colors: MiuixColors.primaryGradient),
-                ),
-                child: const Icon(Icons.smart_toy,
-                    color: Colors.white, size: 48),
+            // 空状态图标
+            Container(
+              width: 110,
+              height: 110,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient:
+                    LinearGradient(colors: MiuixColors.primaryGradient),
               ),
+              child: const Icon(Icons.smart_toy,
+                  color: Colors.white, size: 48),
             ),
             const SizedBox(height: 20),
             Text(

@@ -92,7 +92,7 @@ class ApiService {
     required String nickname,
   }) async {
     try {
-      final resp = await _dio.post('/api/auth/register', data: {
+      final resp = await _dio.post('/api/register', data: {
         'username': username,
         'password': password,
         'nickname': nickname,

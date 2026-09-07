@@ -89,6 +89,7 @@ class ChumianApp extends StatelessWidget {
   static final Map<String, WidgetBuilder> _routes = {
     '/login': (context) => const LoginPage(),
     '/register': (context) => const RegisterPage(),
+    '/oobe': (context) => const OobePage(),
     '/home': (context) => const HomePage(),
   };
 }
