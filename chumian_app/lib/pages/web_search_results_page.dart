@@ -249,6 +249,7 @@ class _WebSearchResultsPageState extends State<WebSearchResultsPage> {
       ),
     );
   }
+}
 
 class SearchResultItem {
   SearchResultItem({required this.title, required this.url, required this.snippet, required this.source});
