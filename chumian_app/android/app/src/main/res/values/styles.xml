@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 初眠AI 粉色启动主题 -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:statusBarColor">#FFF5F8</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <!-- 初眠AI 粉色正常主题 -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@color/background_pink</item>
+        <item name="android:statusBarColor">#FFF5F8</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#FFFAFC</item>
+    </style>
+</resources>

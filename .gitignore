@@ -1,0 +1,34 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+*.log
+
+# Android
+chumian_app/android/.gradle/
+chumian_app/android/local.properties
+chumian_app/android/captures/
+chumian_app/android/key.properties
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+server/venv/
+server/.venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db

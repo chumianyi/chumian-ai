@@ -1,0 +1,26 @@
+# 初眠AI 分析配置 —— 粉色 Miuix 风格
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # 关闭一些在大型代码库中过于严格的规则
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    avoid_print: false
+    use_key_in_widget_constructors: false
+    library_private_types_in_public_api: false
+    no_leading_underscores_for_local_identifiers: false
+    sort_child_properties_last: false
+    unnecessary_this: false
+    prefer_final_fields: false
+    curly_braces_in_flow_control_structures: false
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  errors:
+    # 将某些警告降级为 info
+    unused_import: warning
+    unused_local_variable: warning
+    deprecated_member_use: info
