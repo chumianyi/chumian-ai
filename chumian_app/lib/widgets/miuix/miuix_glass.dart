@@ -130,6 +130,7 @@ class MiuixGlassCard extends StatelessWidget {
     this.blur = 24.0,
     this.borderRadius,
     this.padding = const EdgeInsets.all(MiuixSpacing.lg),
+    this.margin,
     this.width,
     this.height,
     this.onTap,
@@ -155,6 +156,7 @@ class MiuixGlassCard extends StatelessWidget {
       width: width,
       height: height,
       padding: padding,
+      margin: margin,
       backgroundColor: Colors.white.withOpacity(0.18),
       borderColor: MiuixColors.glassBorder,
       shadow: [
