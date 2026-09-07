@@ -140,6 +140,7 @@ class MiuixGlassCard extends StatelessWidget {
   final double blur;
   final double? borderRadius;
   final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? margin;
   final double? width;
   final double? height;
   final VoidCallback? onTap;

@@ -92,7 +92,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
                       _deleteConversation(conv);
                       return false;
                     },
-                    child: TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: 1), duration: MiuixDuration.normal, curve: Interval((index % 5) * 0.1, (index % 5) * 0.1 + 0.9, curve: MiuixCurves.easeOut), builder: (context, value, child) => Opacity(opacity: value, child: Transform.translate(offset: Offset(0, (1 - value) * 20), child: child)), child: _buildConversationItem(conv))));
+                    child: TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: 1), duration: MiuixDuration.normal, curve: Interval((index % 5) * 0.1, (index % 5) * 0.1 + 0.9, curve: MiuixCurves.easeOut), builder: (context, value, child) => Opacity(opacity: value, child: Transform.translate(offset: Offset(0, (1 - value) * 20), child: child)), child: _buildConversationItem(conv));
                 }),
     );
   }
